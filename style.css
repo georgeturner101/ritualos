@@ -1,0 +1,872 @@
+/* Reset and base */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Verdana', sans-serif;
+  overflow: hidden;
+  background: black;
+  color: white;
+}
+
+/* Video background */
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Boot screen */
+#boot-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: sparkleFade 2s ease-in-out infinite;
+}
+
+#boot-screen::before {
+  content: 'LOADING...';
+  font-size: 28px;
+  color: #ffb6f4;
+  text-shadow:
+    0 0 10px #ffb6f4,
+    0 0 20px #ffa3e5,
+    0 0 40px #ffd0fa,
+    0 0 60px #ffd0fa;
+  animation: shimmer 1.5s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    text-shadow: 0 0 10px #ffb6f4, 0 0 20px #ffa3e5, 0 0 40px #ffd0fa, 0 0 60px #ffd0fa;
+  }
+  50% {
+    text-shadow: 0 0 5px #ffd0fa, 0 0 10px #ffdefc, 0 0 20px #ffade5, 0 0 30px #ffc1ec;
+  }
+  100% {
+    text-shadow: 0 0 10px #ffb6f4, 0 0 20px #ffa3e5, 0 0 40px #ffd0fa, 0 0 60px #ffd0fa;
+  }
+}
+
+@keyframes sparkleFade {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Desktop icons */
+#desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.icon {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  vertical-align: top;
+  color: white;
+  filter: drop-shadow(0 0 6px rgba(255, 200, 255, 0.4));
+  border-radius: 6px;
+  padding: 4px;
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.icon.selected {
+  background: rgba(255, 200, 255, 0.1);
+  box-shadow: 0 0 12px rgba(255, 160, 240, 0.5);
+  outline: 1px dashed #ffb6f4;
+}
+
+.icon img {
+  width: 64px;
+  height: 64px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.icon-title {
+  margin-top: 5px;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 180, 250, 0.8);
+  cursor: pointer;
+}
+
+/* Taskbar */
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 36px;
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(10px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 3;
+  font-size: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -1px 10px rgba(255, 150, 250, 0.2);
+}
+
+#start-button {
+  background: linear-gradient(145deg, #ffc1ec, #ff90cb);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  box-shadow: 0 3px 12px rgba(255, 120, 200, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  text-shadow: 0 0 5px #fff0fa;
+}
+
+#start-button:hover {
+  background: linear-gradient(145deg, #ffd0f0, #ffa2dc);
+  box-shadow: 0 5px 18px rgba(255, 105, 185, 0.9);
+}
+
+#search {
+  flex: 1;
+  margin-left: 10px;
+  color: #eee;
+  font-style: italic;
+  padding-left: 10px;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+#taskbar-center {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffc1ec;
+  text-shadow: 0 0 6px #ffcdf2;
+}
+
+#audio-toggle {
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 6px rgba(255, 180, 255, 0.4);
+}
+
+#clock {
+  min-width: 80px;
+  text-align: right;
+  padding-left: 10px;
+  text-shadow: 0 0 5px #ffade5;
+}
+
+/* Start menu */
+#start-menu {
+  position: fixed;
+  bottom: 36px;
+  left: 10px;
+  background: rgba(255, 180, 240, 0.92);
+  border: 1px solid #ff9edb;
+  padding: 10px;
+  z-index: 4;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(255, 130, 210, 0.4);
+}
+
+#start-menu.hidden {
+  display: none;
+}
+
+#start-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#start-menu li {
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 4px;
+  box-shadow: 0 0 6px rgba(255, 200, 240, 0.1);
+}
+
+#start-menu li:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 8px rgba(255, 200, 240, 0.3);
+}
+
+/* Windows */
+.window {
+  position: absolute;
+  width: 400px;
+  height: 300px;
+  background: linear-gradient(145deg, #ffcef0, #ffc6e9);
+  border: 2px solid #ffa2dc;
+  display: none;
+  flex-direction: column;
+  z-index: 5;
+  color: #3a003a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(255, 150, 220, 0.45), 0 0 20px rgba(255, 180, 255, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.title-bar {
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: white;
+  cursor: move;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+}
+
+.window-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.pdf-list {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.pdf-list a {
+  display: block;
+  margin: 4px 0;
+  color: #660066;
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(255, 180, 240, 0.5);
+}
+
+.pdf-list a:hover {
+  color: #ff9edb;
+  text-decoration: underline;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  box-shadow: 0 0 12px rgba(255, 200, 255, 0.4);
+}
+#selection-box {
+  position: absolute;
+  border: 1px dashed #aeefff; /* baby blue border */
+  background-color: rgba(150, 240, 255, 0.2); /* soft baby blue fill */
+  pointer-events: none;
+  z-index: 3;
+  display: none;
+  backdrop-filter: blur(2px);
+  border-radius: 4px;
+}
+
+
+#taskbar-apps {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.taskbar-app {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 200, 255, 0.1);
+  border: 1px solid #ffb6f4;
+  box-shadow: 0 0 6px rgba(255, 180, 255, 0.3);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.taskbar-app.active {
+  background-color: rgba(255, 180, 255, 0.2);
+  box-shadow: 0 0 10px rgba(255, 160, 240, 0.6);
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #ffc0f0 0%, #c0eaff 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 1;
+  transform: scale(1);
+  animation: sparkle-fade 0.8s forwards;
+}
+
+@keyframes sparkle-fade {
+  to {
+    transform: translateY(-15px) scale(0.4);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 1;
+  transform: scale(1);
+  animation: sparkle-fade 0.8s forwards;
+  background: radial-gradient(circle, #ffc0f0 0%, #c0eaff 100%);
+}
+
+.sparkle.star {
+  width: 10px;
+  height: 10px;
+  background: url('icons/star.svg') no-repeat center center;
+  background-size: cover;
+  transform: scale(1) rotate(0deg);
+  animation: sparkle-star 1s ease-out forwards;
+}
+
+@keyframes sparkle-fade {
+  to {
+    transform: translateY(-15px) scale(0.4);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+@keyframes sparkle-star {
+  to {
+    transform: translateY(-20px) scale(0.3) rotate(360deg);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+.sparkle.star {
+  width: 16px;
+  height: 16px;
+  background: url('icons/star.png') no-repeat center center;
+  background-size: cover;
+  border-radius: 0;
+  transform: scale(1) rotate(0deg);
+  animation: sparkle-star 2s ease-out forwards;
+}
+
+@keyframes sparkle-star {
+  to {
+    transform: translateY(-20px) scale(0.3) rotate(360deg);
+    opacity: 0;
+    filter: blur(1px);
+  }
+}
+
+#spirit-ghost {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  z-index: 9998;
+  pointer-events: none;
+  transition: transform 0.2s ease-out;
+  filter: drop-shadow(0 0 4px #ffcaff);
+  animation: ghost-idle-blink 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes ghost-idle-blink {
+  0%, 100% {
+    opacity: 1;
+    scale: 1;
+  }
+  45% {
+    opacity: 0.95;
+    scale: 1.02;
+  }
+  50% {
+    opacity: 0.6;
+    scale: 0.98;
+  }
+  55% {
+    opacity: 0.95;
+    scale: 1.02;
+  }
+}
+
+.ghost-trail {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle, rgba(255, 200, 255, 0.4), transparent 70%);
+  pointer-events: none;
+  z-index: 9997;
+  border-radius: 50%;
+  animation: trail-fade 1.2s ease-out forwards;
+}
+
+@keyframes trail-fade {
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+    filter: blur(3px);
+  }
+}
+
+.ghost-whisper {
+  position: absolute;
+  background: linear-gradient(145deg, #ffe6ff, #ffccff);
+  color: #3a003a;
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 500;
+  max-width: 220px;
+  box-shadow:
+    inset 0 0 6px rgba(255, 255, 255, 0.5),
+    0 2px 10px rgba(255, 190, 255, 0.6),
+    0 0 30px rgba(255, 190, 255, 0.2);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  animation: whisper-fade 6s ease-in-out forwards;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 0 2px #ffffff;
+  transform: translateY(0) scale(1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Speech bubble tail */
+.ghost-whisper::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid #ffccff;
+  filter: drop-shadow(0 0 2px rgba(255, 180, 255, 0.5));
+}
+
+@keyframes whisper-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+}
+
+.icon.dragging {
+  cursor: grabbing;
+}
+
+#birdsweeper-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  grid-gap: 4px;
+  margin-top: 12px;
+}
+
+.bird-cell {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 240, 255, 0.7);
+  border: 1px solid #ffb6f4;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 40px;
+  font-weight: bold;
+  font-size: 18px;
+  color: #3a003a;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(255, 180, 255, 0.2);
+}
+
+.bird-cell.revealed {
+  background: white;
+  cursor: default;
+}
+
+.bird-cell.bird {
+  background: #ffc6e9;
+  color: #3a003a;
+  font-size: 20px;
+}
+
+.bird-popup {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  text-align: center;
+}
+
+.bird-popup img {
+  width: 80px;
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(255, 180, 255, 0.4));
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.bird-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+#window-game {
+  width: 400px;
+  height: 460px;
+}
+
+/* 🐟 Tuna Game Window */
+#window-tuna {
+  width: 500px;
+  height: 560px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(145deg, #ffcef0, #ffc6e9); /* MATCHING WINDOW PINK */
+  box-shadow: 0 0 25px rgba(255, 190, 255, 0.4), inset 0 0 20px rgba(255, 200, 255, 0.3);
+  border-radius: 16px;
+  border: 2px solid #ffaee6;
+  position: absolute;
+  z-index: 5;
+  padding: 0; /* 🔧 removes offset */
+}
+
+#window-tuna .title-bar {
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: white;
+  cursor: move;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 🌊 Tuna Grid */
+#tuna-grid {
+  display: grid;
+  grid-template-columns: repeat(20, 20px);
+  gap: 1px;
+  width: 420px;
+  height: 420px;
+  margin: 10px auto;
+  background: url('images/ocean-ripple.png');
+  background-size: cover;
+  border: 2px solid #aef;
+  box-shadow: 0 0 25px rgba(173, 255, 255, 0.4), inset 0 0 15px rgba(0, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+/* 🎮 Tuna Cells */
+.tuna-cell {
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.tuna {
+  background: radial-gradient(circle, #ffe2fb 30%, #ff96ec 100%);
+  box-shadow: 0 0 6px #ffc7f9, inset 0 0 4px #ffb0f2;
+  border-radius: 3px;
+}
+
+.tuna-head {
+  background: linear-gradient(135deg, #fff6ff, #fcd3ff);
+  border: 1px solid #ffbdf2;
+  box-shadow: 0 0 10px #ffa8f2, 0 0 6px #ffdaf7 inset;
+}
+
+.tuna-food {
+  background: radial-gradient(circle, #fff3b8 10%, #ffcb66 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffe499, 0 0 6px #ffcc33 inset;
+  border: 1px solid #fff5d1;
+  transition: transform 0.2s ease;
+}
+
+/* ❌ Tuna Game Over Popup */
+.tuna-popup {
+  display: flex;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  background: linear-gradient(145deg, #ffcef0, #ffc6e9); /* MATCHING WINDOW PINK */
+  box-shadow: 0 0 20px rgba(255, 160, 240, 0.6);
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Verdana', sans-serif;
+}
+
+.tuna-popup .title-bar {
+  font-weight: bold;
+  margin-bottom: 12px;
+  width: 100%;
+  text-align: center;
+  color: #660066;
+}
+
+.tuna-popup .window-content {
+  text-align: center;
+  width: 100%;
+}
+
+.tuna-popup input {
+  margin-top: 10px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 80%;
+  text-align: center;
+  font-family: 'Verdana', sans-serif;
+}
+
+.tuna-popup button {
+  margin-top: 12px;
+  background: #ff9edb;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 8px #ffc7f5;
+  font-family: 'Verdana', sans-serif;
+  transition: background 0.3s ease;
+}
+
+.tuna-popup button:hover {
+  background: #ffa8ef;
+  box-shadow: 0 0 12px #ffd2f7;
+}
+
+#tuna-leaderboard {
+  margin-top: 16px;
+  text-align: left;
+  width: 100%;
+}
+
+#tuna-leaderboard li {
+  margin: 4px 0;
+  color: #3a003a;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Video Window */
+#window-video {
+  width: 420px;
+  height: 400px;
+  display: none;
+  flex-direction: column;
+  background: linear-gradient(145deg, #ffcef0, #ffc6e9) !important;
+  border: 2px solid #ffb6f4;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(255, 150, 220, 0.45), 0 0 20px rgba(255, 180, 255, 0.3);
+  backdrop-filter: blur(6px);
+  color: #3a003a;
+  position: absolute;
+  z-index: 5;
+}
+
+#window-video .title-bar {
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: white;
+  cursor: move;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+}
+
+#video-list {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Style the links like in pdf-list */
+#video-list a {
+  display: block;
+  margin: 6px 0;
+  color: #660066;
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(255, 180, 240, 0.5);
+}
+
+#video-list a:hover {
+  color: #ff9edb;
+  text-decoration: underline;
+}
+.window {
+  background: linear-gradient(145deg, #ffcef0, #ffc6e9); /* pink gradient */
+  /* other styles... */
+}
+
+.window-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  background: transparent; /* ✅ make sure it's not white */
+}
+
+
+/* Video Player Window */
+#window-video-player {
+  width: 640px;
+  height: 420px;
+  display: none;
+  flex-direction: column;
+  background: linear-gradient(145deg, #fff0fc, #ffdff4);
+  border: 2px solid #ffb6f4;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(255, 150, 220, 0.45), 0 0 20px rgba(255, 180, 255, 0.3);
+  backdrop-filter: blur(6px);
+  color: #3a003a;
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  z-index: 9998;
+}
+
+#window-video-player .title-bar {
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: white;
+  cursor: move;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+}
+
+#video-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: black;
+}
+
+.window {
+  display: none;
+}
+
+.internet-link {
+  display: block;
+  margin: 4px 0;
+  color: #660066;
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(255, 180, 240, 0.5);
+}
+
+.internet-link:hover {
+  color: #ff9edb;
+  text-decoration: underline;
+}
+
+.about-photo-container {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.about-photo {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #999;
+  box-shadow: 0 0 12px rgba(255, 180, 240, 0.3);
+  image-rendering: pixelated;
+}
+
+

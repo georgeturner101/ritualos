@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RitualOS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="icons/favicon.png" />
+  <script>
+    // If user is on mobile, redirect to mobile.html
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      window.location.href = "mobile.html";
+    }
+  </script>  
+</head>
+<body>
+  <!-- Video background -->
+  <video id="bg-video" autoplay loop muted playsinline>
+    <source src="video/church.mp4" type="video/mp4">
+  </video>
+
+  <!-- Boot screen -->
+  <div id="boot-screen"></div>
+
+  <!-- Desktop icons -->
+  <div id="desktop"></div>
+
+  <!-- Selection Box for drag -->
+  <div id="selection-box"></div>
+
+  <div id="taskbar">
+    <button id="start-button" onclick="toggleStartMenu()">Start</button>
+    <div id="search">Search...</div>
+    <div id="taskbar-center">George Turner</div>
+    <div id="taskbar-apps"></div>
+    <div id="clock"></div>
+    <div id="audio-toggle" onclick="toggleAudio()">🔊</div>
+  </div>    
+
+  <!-- Start menu -->
+  <div id="start-menu" class="hidden">
+    <ul>
+      <li onclick="openWindow('exhibitions')">Exhibitions</li>
+      <li onclick="openWindow('freelance')">Freelance</li>
+      <li onclick="openWindow('about')">About Me</li>
+      <li onclick="openWindow('music')">Music</li>
+      <li onclick="openWindow('contact')">Contact</li>
+      <li onclick="openWindow('game')">Birdsweeper</li>
+      <li onclick="openWindow('tuna')">Tuna</li>
+      <li onclick="openWindow('video')">Video</li>
+      <li onclick="openWindow('internet')">Internet</li>
+      <li onclick="openWindow('press')">Press</li>
+    </ul>
+  </div>
+  
+
+  <!-- Exhibitions Window -->
+  <div class="window" id="window-exhibitions">
+    <div class="title-bar">Exhibitions <button onclick="closeWindow('exhibitions')">X</button></div>
+    <div class="pdf-list" id="pdfs-exhibitions"></div>
+  </div>
+
+  <!-- Freelance Window -->
+  <div class="window" id="window-freelance">
+    <div class="title-bar">Freelance <button onclick="closeWindow('freelance')">X</button></div>
+    <div class="pdf-list" id="pdfs-freelance"></div>
+  </div>
+
+<!-- About Window -->
+<div class="window" id="window-about" style="width: 550px; height: 650px;">
+  <div class="title-bar">About Me <button onclick="closeWindow('about')">X</button></div>
+  <div class="window-content">
+    <div class="about-photo-container">
+      <img src="images/portrait.jpg" alt="Portrait of George Turner" class="about-photo">
+    </div>      
+
+    <p><strong>George Turner (Pākehā)</strong> is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.</p>
+
+    <p>Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including <em>Ihi</em> (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and <em>The Battle</em> (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.</p>
+
+    <p>As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.</p>
+
+    <p>Also an accomplished musician, Turner has released two EPs (<em>Some Days</em>, <em>Thank You For Your Time</em>) and a full-length debut album, <em>Insect</em> (2019), followed by several tours across Aotearoa and Australia. Their highly anticipated sophomore album is scheduled for release in 2025.</p>
+  </div>
+</div>
+
+
+<!-- Contact Window -->
+<div class="window" id="window-contact">
+  <div class="title-bar">Contact <button onclick="closeWindow('contact')">X</button></div>
+  <div class="window-content">
+    <p>Email: stowaway101@gmail.com</p>
+    <p>Instagram: <a href="https://instagram.com/georgeturner___" target="_blank">@georgeturner___</a></p>
+    <p>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank">@georgeturner8087</a></p>
+    <p>Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq?si=Mam8Lm2DRUawDOoQyc-2wg" target="_blank">George Turner</a></p>
+  </div>
+</div>
+
+  <!-- Music Window -->
+  <div class="window" id="window-music">
+    <div class="title-bar">Music <button onclick="closeWindow('music')">X</button></div>
+    <div class="window-content">
+      <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/0pyvTVrYsT8QXB8EYyJdxF?..." width="100%" height="352"></iframe>
+    </div>
+  </div>
+
+  <!-- Game Window -->
+<div class="window" id="window-game">
+  <div class="title-bar">Birdsweeper <button onclick="closeWindow('game')">X</button></div>
+  <div class="window-content">
+    <div id="birdsweeper-grid"></div>
+    <button onclick="resetBirdsweeper()">Reset Game</button>
+  </div>
+</div>
+
+<!-- Bird Found Window -->
+<div class="window" id="window-bird-found">
+  <div class="title-bar">You Found a Bird! <button onclick="closeWindow('bird-found')">X</button></div>
+  <div class="window-content bird-popup">
+    <img id="bird-found-img" src="" alt="Bird Found" />
+    <p id="bird-found-name"><strong>Species:</strong></p>
+    <p id="bird-found-fact"></p>
+  </div>
+</div>
+
+<!-- Video Window -->
+<div class="window" id="window-video">
+  <div class="title-bar">Videos <button onclick="closeWindow('video')">X</button></div>
+  <div class="window-content"> <!-- ✅ wrap this -->
+    <div id="video-list"></div>
+  </div>
+</div>
+
+
+<!-- Tuna Game -->
+<div class="window" id="window-tuna" style="display: none;">
+  <div class="title-bar">Tuna 🐟 <button onclick="closeWindow('tuna')">X</button></div>
+  <div class="window-content">
+    <div id="tuna-grid" style="display: grid; grid-template-columns: repeat(20, 20px); gap: 1px; width: 420px; height: 420px; margin: 10px auto;"></div>
+  </div>
+</div>
+
+<!-- Internet Window -->
+<div class="window" id="window-internet" style="display: none;">
+  <div class="title-bar">Internet <button onclick="closeWindow('internet')">X</button></div>
+  <div class="window-content" id="internet-links">
+    <!-- Links will be injected here -->
+  </div>
+</div>
+
+<!-- Press Desktop Icon -->
+<div class="desktop-icon" onclick="openWindow('press')">
+  <img src="icons/press.png" alt="Press Icon">
+  <span>Press</span>
+</div>
+
+<!-- Press Window -->
+<div class="window" id="window-press" style="display: none;">
+  <div class="title-bar">Press <button onclick="closeWindow('press')">X</button></div>
+  <div class="window-content" id="press-links">
+    <!-- Press links will be injected here -->
+  </div>
+</div>
+
+
+<!-- Video Player Window -->
+<div class="window" id="window-video-viewer" style="display:none;">
+  <div class="title-bar">Video Player <button onclick="closeWindow('video-viewer')">X</button></div>
+  <video id="video-frame" controls style="width:100%; height:100%; background:black;"></video>
+</div>
+
+
+  <!-- PDF Viewer Template -->
+  <div class="window" id="window-pdf-viewer" style="display:none;">
+    <div class="title-bar">Viewer <button onclick="closeWindow('pdf-viewer')">X</button></div>
+    <iframe id="pdf-frame" src=""></iframe>
+  </div>
+
+  <audio id="startup"><source src="audio/startup.mp3" type="audio/mpeg"></audio>
+  <audio id="ambient-sound" loop><source src="audio/forest.mp3" type="audio/mpeg"></audio>
+
+  <!-- Spirit Ghost -->
+  <img id="spirit-ghost" src="icons/ghost.png" alt="spirit ghost">
+
+  <script src="script.js"></script>
+</body>
+</html>

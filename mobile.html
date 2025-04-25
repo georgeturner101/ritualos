@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RitualOS</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #fff;
+      background: black;
+    }
+
+    .bg-loop {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.4);
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 1.5em;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #ffccff;
+      box-shadow: 0 0 12px #ffccff;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <video class="bg-loop" autoplay muted loop>
+    <source src="media/church-backdrop.mp4" type="video/mp4">
+  </video>
+  <div class="message">
+    <p><strong>This site is only viewable on a computer.</strong></p>
+    <p>Try opening it on a desktop or laptop for the full experience.</p>
+  </div>
+</body>
+</html>
