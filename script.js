@@ -739,8 +739,8 @@ function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
 
-  saveScoreToFirebase(name, score); // 🚀 save score to Firebase
-
+  saveScoreToFirebase(name, score); // <-- use (name, score)
+  
   if (input) input.disabled = true;
   if (input?.nextElementSibling) input.nextElementSibling.disabled = true;
 }
