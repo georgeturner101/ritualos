@@ -738,8 +738,9 @@ function showTunaGameOver(score) {
 function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
+  const numericScore = Number(score); // Force score to be a number
 
-  saveScoreToFirebase(name, score);
+  saveScoreToFirebase(name, numericScore);
 
   if (input) input.disabled = true;
   if (input?.nextElementSibling) input.nextElementSibling.disabled = true;
