@@ -713,7 +713,7 @@ function showTunaGameOver(score) {
   const popup = document.createElement('div');
   popup.className = 'window tuna-popup';
   popup.style.zIndex = 9999;
-  popup.style.display = 'flex'; // force it to show
+  popup.style.display = 'flex';
 
   popup.innerHTML = `
     <div class="title-bar">
@@ -731,7 +731,7 @@ function showTunaGameOver(score) {
   `;
 
   document.body.appendChild(popup);
-  loadScoresFromFirebase(); // 🚀 load scores right away
+  loadScoresFromFirebase();
   enableDragging();
 }
 
@@ -739,14 +739,14 @@ function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
 
-  saveScoreToFirebase(name, score); // <-- use (name, score)
-  
+  saveScoreToFirebase(name, score);
+
   if (input) input.disabled = true;
   if (input?.nextElementSibling) input.nextElementSibling.disabled = true;
 }
 
 function saveScoreToFirebase(name, score) {
-  const scoresRef = firebase.database().ref('scores');
+  const scoresRef = database.ref('scores'); // <-- fixed here!
 
   const newScore = {
     name: name,
@@ -757,7 +757,7 @@ function saveScoreToFirebase(name, score) {
   scoresRef.push(newScore)
     .then(() => {
       console.log("Score saved successfully!");
-      loadScoresFromFirebase(); // reload leaderboard
+      loadScoresFromFirebase();
     })
     .catch((error) => {
       console.error("Error saving score: ", error);
@@ -765,7 +765,7 @@ function saveScoreToFirebase(name, score) {
 }
 
 function loadScoresFromFirebase() {
-  const scoresRef = firebase.database().ref('scores');
+  const scoresRef = database.ref('scores'); // <-- fixed here!
 
   scoresRef.orderByChild('score').limitToLast(10).once('value', (snapshot) => {
     const scores = [];
@@ -773,8 +773,7 @@ function loadScoresFromFirebase() {
       scores.push(childSnapshot.val());
     });
 
-    scores.reverse(); // because Firebase returns ascending
-
+    scores.reverse(); // because Firebase returns ascending order
     renderTunaLeaderboard(scores);
   });
 }
