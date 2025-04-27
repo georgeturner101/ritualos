@@ -724,13 +724,19 @@ function showTunaGameOver(score) {
       <p><strong>The tuna got tangled...</strong></p>
       <p>Your score: <span style="color:#ffa3e5">${score}</span></p>
       <input id="tuna-name" type="text" placeholder="Your name" />
-      <button onclick="submitTunaScore(${score})">Submit</button>
+      <button id="submit-tuna-score">Submit</button>
       <div id="tuna-leaderboard" style="margin-top:20px;"></div>
       <button onclick="restartTunaGame()">Try Again</button>
     </div>
   `;
 
   document.body.appendChild(popup);
+
+  // ✅ Attach event listener after popup is inserted
+  document.getElementById('submit-tuna-score').onclick = () => {
+    submitTunaScore(score);
+  };
+
   loadScoresFromFirebase();
   enableDragging();
 }
@@ -738,9 +744,9 @@ function showTunaGameOver(score) {
 function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
-  const numericScore = Number(score);
+  const numericScore = Number(score); // 🔥 Force into true number
 
-  console.log("Submitting score:", numericScore, typeof numericScore); // 👈 ADD THIS
+  console.log("Submitting score:", numericScore, typeof numericScore); // Debugging
 
   saveScoreToFirebase(name, numericScore);
 
@@ -749,7 +755,7 @@ function submitTunaScore(score) {
 }
 
 function saveScoreToFirebase(name, score) {
-  const scoresRef = database.ref('scores'); // <-- fixed here!
+  const scoresRef = database.ref('scores');
 
   const newScore = {
     name: name,
@@ -768,7 +774,7 @@ function saveScoreToFirebase(name, score) {
 }
 
 function loadScoresFromFirebase() {
-  const scoresRef = database.ref('scores'); // <-- fixed here!
+  const scoresRef = database.ref('scores');
 
   scoresRef.orderByChild('score').limitToLast(10).once('value', (snapshot) => {
     const scores = [];
@@ -776,7 +782,7 @@ function loadScoresFromFirebase() {
       scores.push(childSnapshot.val());
     });
 
-    scores.reverse(); // because Firebase returns ascending order
+    scores.reverse(); // Firebase sends ascending, so reverse
     renderTunaLeaderboard(scores);
   });
 }
@@ -811,6 +817,7 @@ function restartTunaGame() {
     openWindow('tuna');
   }, 200);
 }
+
 
 
 function listVideos(containerId) {
