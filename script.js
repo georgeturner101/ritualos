@@ -710,13 +710,10 @@ function initTunaGame() {
 function showTunaGameOver(score) {
   document.querySelectorAll('.tuna-popup').forEach(el => el.remove());
 
-  const leaderboard = JSON.parse(localStorage.getItem('tunaLeaderboard') || '[]');
-  const isTopTen = leaderboard.length < 10 || score > leaderboard[leaderboard.length - 1]?.score;
-
   const popup = document.createElement('div');
   popup.className = 'window tuna-popup';
   popup.style.zIndex = 9999;
-  popup.style.display = 'flex'; // 👈 FORCE IT TO SHOW
+  popup.style.display = 'flex'; // force it to show
 
   popup.innerHTML = `
     <div class="title-bar">
@@ -726,43 +723,68 @@ function showTunaGameOver(score) {
     <div class="window-content">
       <p><strong>The tuna got tangled...</strong></p>
       <p>Your score: <span style="color:#ffa3e5">${score}</span></p>
-      ${isTopTen ? `
-        <input id="tuna-name" type="text" placeholder="Your name" />
-        <button onclick="submitTunaScore(${score})">Submit</button>
-      ` : `<p style="margin-top: 8px;">Not in top 10... try again!</p>`}
+      <input id="tuna-name" type="text" placeholder="Your name" />
+      <button onclick="submitTunaScore(${score})">Submit</button>
       <div id="tuna-leaderboard" style="margin-top:20px;"></div>
       <button onclick="restartTunaGame()">Try Again</button>
     </div>
   `;
 
   document.body.appendChild(popup);
-  renderTunaLeaderboard();
+  loadScoresFromFirebase(); // 🚀 load scores right away
   enableDragging();
 }
-
 
 function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
 
-  let leaderboard = JSON.parse(localStorage.getItem('tunaLeaderboard') || '[]');
-  leaderboard.push({ name, score });
-  leaderboard.sort((a, b) => b.score - a.score);
-  leaderboard = leaderboard.slice(0, 10);
+  saveScoreToFirebase(name, score); // 🚀 save score to Firebase
 
-  localStorage.setItem('tunaLeaderboard', JSON.stringify(leaderboard));
-  renderTunaLeaderboard();
   if (input) input.disabled = true;
   if (input?.nextElementSibling) input.nextElementSibling.disabled = true;
 }
 
-function renderTunaLeaderboard() {
-  const leaderboard = JSON.parse(localStorage.getItem('tunaLeaderboard') || '[]');
+function saveScoreToFirebase(name, score) {
+  const scoresRef = firebase.database().ref('scores');
+
+  const newScore = {
+    name: name,
+    score: score,
+    timestamp: Date.now()
+  };
+
+  scoresRef.push(newScore)
+    .then(() => {
+      console.log("Score saved successfully!");
+      loadScoresFromFirebase(); // reload leaderboard
+    })
+    .catch((error) => {
+      console.error("Error saving score: ", error);
+    });
+}
+
+function loadScoresFromFirebase() {
+  const scoresRef = firebase.database().ref('scores');
+
+  scoresRef.orderByChild('score').limitToLast(10).once('value', (snapshot) => {
+    const scores = [];
+    snapshot.forEach(childSnapshot => {
+      scores.push(childSnapshot.val());
+    });
+
+    scores.reverse(); // because Firebase returns ascending
+
+    renderTunaLeaderboard(scores);
+  });
+}
+
+function renderTunaLeaderboard(scores = []) {
   const container = document.getElementById('tuna-leaderboard');
   if (!container) return;
 
   container.innerHTML = '<h4 style="margin-bottom: 10px; color: #660066">Leaderboard</h4>' +
-    leaderboard.map((entry, i) => {
+    scores.map((entry, i) => {
       const bird = birdIcons[i] ? `<img src="${birdIcons[i]}" style="width:16px; vertical-align:middle; margin-right:4px;" />` : '';
       return `<div style="margin:4px 0; color:#3a003a; font-weight:bold;">${bird}${entry.name} — ${entry.score}</div>`;
     }).join('');
@@ -787,6 +809,7 @@ function restartTunaGame() {
     openWindow('tuna');
   }, 200);
 }
+
 
 function listVideos(containerId) {
   fetch('videos/index.json')
