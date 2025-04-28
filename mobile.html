@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background: black;
+      background: linear-gradient(135deg, #ffccff, #ffa3e5);
       font-family: 'Courier New', monospace;
       color: white;
       overflow: hidden;
@@ -36,7 +36,6 @@
       padding: 30px;
       justify-items: center;
       align-items: center;
-      background: black;
     }
 
     .app-icon {
@@ -120,173 +119,223 @@
       color: #ffa3e5;
       text-decoration: underline;
     }
+
+    /* Modal styles */
+    #mobile-warning {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #mobile-warning button {
+      margin-top: 20px;
+      background: #ffccff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      color: black;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ffccff;
+    }
+
+    #mobile-warning button:hover {
+      background: #ffa3e5;
+      box-shadow: 0 0 15px #ffa3e5;
+    }
   </style>
 </head>
 
 <body>
-  <video autoplay muted loop playsinline id="bg-video" style="position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;">
-    <source src="video/church.mp4" type="video/mp4">
-  </video>  
 
-  <div class="status-bar" id="clock">12:00</div>
+<!-- Welcome Modal -->
+<div id="mobile-warning">
+  <p><strong>This site is best experienced on a desktop or laptop.</strong></p>
+  <p>Would you like to continue to the mobile version?</p>
+  <button onclick="enterMobileSite()">Continue</button>
+</div>
 
-  <div class="app-grid">
-    <div class="app-icon" onclick="openWindow('exhibitions')">
-      <img src="icons/folder.png" alt="Exhibitions">
-      <span>Exhibitions</span>
-    </div>
-    <div class="app-icon" onclick="openWindow('freelance')">
-      <img src="icons/drive.png" alt="Freelance">
-      <span>Freelance</span>
-    </div>
-    <div class="app-icon" onclick="openWindow('contact')">
-      <img src="icons/phone.png" alt="Contact">
-      <span>Contact</span>
-    </div>
-    <div class="app-icon" onclick="openWindow('about')">
-      <img src="icons/book.png" alt="About Me">
-      <span>About Me</span>
-    </div>
-    <div class="app-icon" onclick="openWindow('internet')">
-      <img src="icons/internet.png" alt="Internet">
-      <span>Internet</span>
-    </div>
-    <div class="app-icon" onclick="openWindow('press')">
-      <img src="icons/press.png" alt="Press">
-      <span>Press</span>
-    </div>
+<!-- Clock -->
+<div class="status-bar" id="clock">12:00</div>
+
+<!-- App Grid -->
+<div class="app-grid" id="main-site" style="display:none;">
+  <div class="app-icon" onclick="openWindow('exhibitions')">
+    <img src="icons/folder.png" alt="Exhibitions">
+    <span>Exhibitions</span>
   </div>
-
-  <div class="home-button">
-    <button onclick="closeAllWindows()">Home</button>
+  <div class="app-icon" onclick="openWindow('freelance')">
+    <img src="icons/drive.png" alt="Freelance">
+    <span>Freelance</span>
   </div>
+  <div class="app-icon" onclick="openWindow('contact')">
+    <img src="icons/phone.png" alt="Contact">
+    <span>Contact</span>
+  </div>
+  <div class="app-icon" onclick="openWindow('about')">
+    <img src="icons/book.png" alt="About Me">
+    <span>About Me</span>
+  </div>
+  <div class="app-icon" onclick="openWindow('internet')">
+    <img src="icons/internet.png" alt="Internet">
+    <span>Internet</span>
+  </div>
+  <div class="app-icon" onclick="openWindow('press')">
+    <img src="icons/press.png" alt="Press">
+    <span>Press</span>
+  </div>
+</div>
 
-  <div id="mobile-windows-container"></div>
+<!-- Home Button -->
+<div class="home-button" id="home-button" style="display:none;">
+  <button onclick="closeAllWindows()">Home</button>
+</div>
 
-  <!-- Mobile PDF Viewer -->
-  <div id="mobile-pdf-viewer" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:black; border:2px solid #ffccff; z-index:9999; flex-direction: column;">
-    <div style="background:#111; padding:10px; display:flex; justify-content:space-between; align-items:center;">
-      <span style="color:#ffccff;">PDF Viewer</span>
-      <button onclick="closeMobilePDF()" style="background:none; border:none; color:#ffccff; font-size:1.2em;">X</button>
+<!-- Mobile Windows -->
+<div id="mobile-windows-container"></div>
+
+<!-- Mobile PDF Viewer -->
+<div id="mobile-pdf-viewer" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:black; border:2px solid #ffccff; z-index:9999; flex-direction:column;">
+  <div style="background:#111; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+    <span style="color:#ffccff;">PDF Viewer</span>
+    <button onclick="closeMobilePDF()" style="background:none; border:none; color:#ffccff; font-size:1.2em;">X</button>
+  </div>
+  <iframe id="mobile-pdf-frame" src="" style="flex:1; width:100%; height:calc(100% - 50px); border:none;"></iframe>
+</div>
+
+<script>
+function updateClock() {
+  const now = new Date();
+  const timeString = now.getHours().toString().padStart(2, '0') + ':' +
+                     now.getMinutes().toString().padStart(2, '0');
+  document.getElementById('clock').textContent = timeString;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function enterMobileSite() {
+  document.getElementById('mobile-warning').style.display = 'none';
+  document.getElementById('main-site').style.display = 'grid';
+  document.getElementById('home-button').style.display = 'flex';
+}
+
+function openWindow(name) {
+  closeAllWindows();
+  const container = document.getElementById('mobile-windows-container');
+  const win = document.createElement('div');
+  win.className = 'mobile-window';
+  win.innerHTML = `
+    <div class="mobile-title-bar">
+      ${capitalize(name)}
+      <button onclick="closeAllWindows()">X</button>
     </div>
-    <iframe id="mobile-pdf-frame" src="" style="flex:1; width:100%; height:calc(100% - 50px); border:none;"></iframe>
-  </div>
+    <div class="mobile-window-content" id="window-content-${name}">Loading...</div>
+  `;
+  container.appendChild(win);
+  loadWindowContent(name);
+}
 
-  <script>
-    function updateClock() {
-      const now = new Date();
-      const timeString = now.getHours().toString().padStart(2, '0') + ':' +
-                         now.getMinutes().toString().padStart(2, '0');
-      document.getElementById('clock').textContent = timeString;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+function closeAllWindows() {
+  document.getElementById('mobile-windows-container').innerHTML = '';
+}
 
-    function openWindow(name) {
-      closeAllWindows();
-      const container = document.getElementById('mobile-windows-container');
-      const win = document.createElement('div');
-      win.className = 'mobile-window';
-      win.innerHTML = `
-        <div class="mobile-title-bar">
-          ${capitalize(name)}
-          <button onclick="closeAllWindows()">X</button>
-        </div>
-        <div class="mobile-window-content" id="window-content-${name}">
-          Loading...
-        </div>
-      `;
-      container.appendChild(win);
-      loadWindowContent(name);
-    }
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
-    function closeAllWindows() {
-      document.getElementById('mobile-windows-container').innerHTML = '';
-    }
+const internetLinks = [
+  { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
+  { title: "George Turner – Lost at Home", url: "https://www.youtube.com/watch?v=r9GqI2HaAJE&ab_channel=GeorgeTurner(GeorgeTurner)" },
+  { title: "George Turner – Love", url: "https://www.youtube.com/watch?v=EMAbum6atCM&ab_channel=GeorgeTurner(GeorgeTurner)" },
+  { title: "George Turner – Thank You For Your Time (EP)", url: "https://www.youtube.com/watch?v=MUn0ev3RRWs&ab_channel=GeorgeTurner(GeorgeTurner)" },
+  { title: "George Turner – Insect (LP)", url: "https://www.youtube.com/watch?v=g7BoxPGBKE0&ab_channel=GeorgeTurner-Topic" },
+  { title: "Exhibition – Free of Charge", url: "https://freeofcharge.space/" },
+  { title: "Exhibition – Depot Artspace", url: "https://depot.org.nz/event/towards-equilibrium/" },
+  { title: "Exhibition – Bowen Gallery", url: "https://bowengalleries.nz/george-turner-second-impressions/" },
+  { title: "Exhibition – Astor Bristed", url: "https://www.astorbristed.co.nz/exhibitions/29-george-turner/" },
+  { title: "Exhibition – Webb's", url: "https://auctions.webbs.co.nz/lot-details/index/catalog/718/lot/211832/GEORGE-TURNER-The-River-Bank" }
+];
 
-    function capitalize(word) {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }
+const pressLinks = [
+  { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
+  { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
+  { title: "Sniffers – George Turner fuses fine arts with synth pop", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
+  { title: "Sniffers – George Turner grounds debut album 'Insect'", url: "https://www.sniffers.co.nz/article/george-turner-grounds-debut-album-insect" },
+  { title: "Sniffers – George Turner plants their Roots", url: "https://sniffers.co.nz/article/george-turner-plants-roots-kauri" },
+  { title: "Under the Radar – New Single", url: "https://www.undertheradar.co.nz/news/12211/Listen-George-Turner--Age-of-Aquarius.utr" },
+  { title: "Massive Magazine – Artist Profile", url: "https://www.massivemagazine.org.nz/articles/ntqehy32wf0jufy44xsvam2bwlv49s" }
+];
 
-    const internetLinks = [
-      { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
-      { title: "George Turner – Lost at Home", url: "https://www.youtube.com/watch?v=r9GqI2HaAJE&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Love", url: "https://www.youtube.com/watch?v=EMAbum6atCM&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Thank You For Your Time (EP)", url: "https://www.youtube.com/watch?v=MUn0ev3RRWs&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Insect (LP)", url: "https://www.youtube.com/watch?v=g7BoxPGBKE0&ab_channel=GeorgeTurner-Topic" },
-      { title: "Exhibition – Free of Charge", url: "https://freeofcharge.space/" },
-      { title: "Exhibition – Depot Artspace", url: "https://depot.org.nz/event/towards-equilibrium/" },
-      { title: "Exhibition – Bowen Gallery", url: "https://bowengalleries.nz/george-turner-second-impressions/" },
-      { title: "Exhibition – Astor Bristed", url: "https://www.astorbristed.co.nz/exhibitions/29-george-turner/" },
-      { title: "Exhibition – Webb's", url: "https://auctions.webbs.co.nz/lot-details/index/catalog/718/lot/211832/GEORGE-TURNER-The-River-Bank" }
-    ];
+function loadWindowContent(name) {
+  const content = document.getElementById(`window-content-${name}`);
+  if (!content) return;
 
-    const pressLinks = [
-      { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
-      { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
-      { title: "Sniffers – George Turner fuses fine arts with synth pop", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
-      { title: "Sniffers – George Turner grounds debut album 'Insect'", url: "https://www.sniffers.co.nz/article/george-turner-grounds-debut-album-insect" },
-      { title: "Sniffers – George Turner plants their Roots", url: "https://sniffers.co.nz/article/george-turner-plants-roots-kauri" },
-      { title: "Under the Radar – New Single", url: "https://www.undertheradar.co.nz/news/12211/Listen-George-Turner--Age-of-Aquarius.utr" },
-      { title: "Massive Magazine – Artist Profile", url: "https://www.massivemagazine.org.nz/articles/ntqehy32wf0jufy44xsvam2bwlv49s" }
-    ];
+  if (name === 'about') {
+    content.innerHTML = `<p>George Turner (Pākehā) is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.
+Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including Ihi (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and The Battle (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.
+As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.
+Also an accomplished musician, Turner has released two EPs (Some Days, Thank You For Your Time) and a full-length debut album, Insect (2019), as well as playing across Aotearoa and Australia. Their sophomore album is scheduled for release in 2025.
+</p>`;
+  } else if (name === 'contact') {
+    content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank">@georgeturner___</a></p>`;
+  } else if (name === 'internet') {
+    content.innerHTML = internetLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
+  } else if (name === 'press') {
+    content.innerHTML = pressLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
+  } else if (name === 'exhibitions') {
+    loadPdfList('pdfs/exhibitions/index.json', content);
+  } else if (name === 'freelance') {
+    loadPdfList('pdfs/freelance/index.json', content);
+  }
+}
 
-    function loadWindowContent(name) {
-      const content = document.getElementById(`window-content-${name}`);
-      if (!content) return;
+function loadPdfList(jsonPath, container) {
+  fetch(jsonPath)
+    .then(response => response.json())
+    .then(data => {
+      container.innerHTML = '';
+      data.forEach(name => {
+        const link = document.createElement('a');
+        link.href = "#";
+        link.onclick = (e) => {
+          e.preventDefault();
+          openMobilePDF(`pdfs/${jsonPath.split('/')[1]}/${name}`);
+        };
+        link.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
+        link.style.display = 'block';
+        link.style.margin = '8px 0';
+        container.appendChild(link);
+      });
+    })
+    .catch(error => {
+      container.innerHTML = '<p>Error loading PDFs.</p>';
+      console.error(error);
+    });
+}
 
-      if (name === 'about') {
-        content.innerHTML = `<p>George Turner (Pākehā) is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes.<br><br>Through large-scale projections, Virtual Reality, AI, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging. Since 2017, Turner has exhibited extensively, developed a distinctive voice grounded in queer ecology and Pākehā identity, and collaborated with Lisa Reihana and others. They have upcoming releases as a musician and continue to explore themes of nature, technology, and belonging.</p>`;
-      } else if (name === 'contact') {
-        content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank">@georgeturner___</a></p>`;
-      } else if (name === 'internet') {
-        content.innerHTML = internetLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
-      } else if (name === 'press') {
-        content.innerHTML = pressLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
-      } else if (name === 'exhibitions') {
-        loadPdfList('pdfs/exhibitions/index.json', content);
-      } else if (name === 'freelance') {
-        loadPdfList('pdfs/freelance/index.json', content);
-      }
-    }
+function openMobilePDF(src) {
+  const viewer = document.getElementById('mobile-pdf-viewer');
+  const frame = document.getElementById('mobile-pdf-frame');
+  frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0`;
+  viewer.style.display = 'flex';
+}
 
-    function loadPdfList(jsonPath, container) {
-      fetch(jsonPath)
-        .then(response => response.json())
-        .then(data => {
-          container.innerHTML = '';
-          data.forEach(name => {
-            const link = document.createElement('a');
-            link.href = "#";
-            link.onclick = (e) => {
-              e.preventDefault();
-              openMobilePDF(`pdfs/${jsonPath.split('/')[1]}/${name}`);
-            };
-            link.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
-            link.style.display = 'block';
-            link.style.margin = '8px 0';
-            container.appendChild(link);
-          });
-        })
-        .catch(error => {
-          container.innerHTML = '<p>Error loading PDFs.</p>';
-          console.error(error);
-        });
-    }
+function closeMobilePDF() {
+  const viewer = document.getElementById('mobile-pdf-viewer');
+  const frame = document.getElementById('mobile-pdf-frame');
+  frame.src = '';
+  viewer.style.display = 'none';
+}
+</script>
 
-    function openMobilePDF(src) {
-      const viewer = document.getElementById('mobile-pdf-viewer');
-      const frame = document.getElementById('mobile-pdf-frame');
-      frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0`;
-      viewer.style.display = 'flex';
-    }
-
-    function closeMobilePDF() {
-      const viewer = document.getElementById('mobile-pdf-viewer');
-      const frame = document.getElementById('mobile-pdf-frame');
-      frame.src = '';
-      viewer.style.display = 'none';
-    }
-  </script>
 </body>
 </html>
