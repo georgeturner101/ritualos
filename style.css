@@ -869,4 +869,45 @@ iframe {
   image-rendering: pixelated;
 }
 
+.mobile-window {
+  position: absolute;
+  top: 50px;
+  left: 5%;
+  width: 90%;
+  height: 75%;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #ffccff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px #ffccff;
+  overflow: hidden;
+}
+
+.mobile-title-bar {
+  background: #111;
+  color: #fff;
+  padding: 10px;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+.mobile-title-bar button {
+  background: transparent;
+  border: none;
+  color: #ffccff;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.mobile-window-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 1em;
+}
 
