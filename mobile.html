@@ -9,15 +9,14 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: 'Courier New', monospace;
       background: black;
+      font-family: 'Courier New', monospace;
       color: white;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    /* Top status bar */
     .status-bar {
       height: 40px;
       background: #111;
@@ -29,16 +28,15 @@
       border-bottom: 1px solid #333;
     }
 
-    /* App grid */
     .app-grid {
       flex: 1;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-gap: 20px;
       padding: 30px;
       justify-items: center;
       align-items: center;
-      background: black;
+      background: transparent;
     }
 
     .app-icon {
@@ -59,7 +57,6 @@
       text-align: center;
     }
 
-    /* Bottom home button */
     .home-button {
       height: 60px;
       background: #111;
@@ -86,298 +83,174 @@
       box-shadow: 0 0 15px #ffa3e5;
     }
 
-    /* Intro message */
-    #intro-message {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      text-align: center;
-      padding: 20px;
-    }
-
-    #intro-message p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-
-    #intro-message button {
-      background: #ffccff;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1em;
-      border-radius: 20px;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 10px #ffccff;
-    }
-
-    #intro-message button:hover {
-      background: #ffa3e5;
-      box-shadow: 0 0 15px #ffa3e5;
-    }
-
-    .bg-loop {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #background-video {
+      position: fixed;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       z-index: -1;
       filter: brightness(0.4);
     }
+
+    #mobile-windows-container {
+      position: absolute;
+      top: 40px;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 20px;
+      display: none;
+    }
+
+    .mobile-title-bar {
+      font-weight: bold;
+      font-size: 1.4em;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-title-bar button {
+      background: none;
+      border: none;
+      color: #ffccff;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+
+    .mobile-window-content a {
+      display: block;
+      margin: 10px 0;
+      color: #ffccff;
+      font-weight: bold;
+      text-decoration: none;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- Video Background -->
-  <video class="bg-loop" autoplay muted loop>
-    <source src="media/church-backdrop.mp4" type="video/mp4">
+  <!-- Background Video -->
+  <video id="background-video" autoplay muted loop>
+    <source src="video/church.mp4" type="video/mp4">
   </video>
 
-  <!-- Intro Message -->
-  <div id="intro-message">
-    <p><strong>This site is best experienced on a desktop or laptop.</strong></p>
-    <p>Click below to continue to the mobile version:</p>
-    <button onclick="continueToMobileSite()">Continue to Mobile Site</button>
+  <!-- Top Clock Bar -->
+  <div class="status-bar" id="clock">12:00</div>
+
+  <!-- App Icons -->
+  <div class="app-grid">
+    <div class="app-icon" onclick="openWindow('exhibitions')">
+      <img src="icons/folder.png" alt="Exhibitions">
+      <span>Exhibitions</span>
+    </div>
+    <div class="app-icon" onclick="openWindow('freelance')">
+      <img src="icons/drive.png" alt="Freelance">
+      <span>Freelance</span>
+    </div>
+    <div class="app-icon" onclick="openWindow('contact')">
+      <img src="icons/phone.png" alt="Contact">
+      <span>Contact</span>
+    </div>
+    <div class="app-icon" onclick="openWindow('about')">
+      <img src="icons/book.png" alt="About Me">
+      <span>About Me</span>
+    </div>
+    <div class="app-icon" onclick="openWindow('internet')">
+      <img src="icons/internet.png" alt="Internet">
+      <span>Internet</span>
+    </div>
+    <div class="app-icon" onclick="openWindow('press')">
+      <img src="icons/press.png" alt="Press">
+      <span>Press</span>
+    </div>
   </div>
 
-  <!-- Main Mobile Interface (hidden initially) -->
-  <div id="mobile-interface" style="display: none; flex-direction: column; height: 100%;">
-    
-    <div class="status-bar" id="clock">12:00</div>
-
-    <div class="app-grid">
-      <div class="app-icon" onclick="openWindow('exhibitions')">
-        <img src="icons/folder.png" alt="Exhibitions">
-        <span>Exhibitions</span>
-      </div>
-      <div class="app-icon" onclick="openWindow('freelance')">
-        <img src="icons/drive.png" alt="Freelance">
-        <span>Freelance</span>
-      </div>
-      <div class="app-icon" onclick="openWindow('contact')">
-        <img src="icons/phone.png" alt="Contact">
-        <span>Contact</span>
-      </div>
-      <div class="app-icon" onclick="openWindow('about')">
-        <img src="icons/book.png" alt="About">
-        <span>About Me</span>
-      </div>
-      <div class="app-icon" onclick="openWindow('internet')">
-        <img src="icons/internet.png" alt="Internet">
-        <span>Internet</span>
-      </div>
-      <div class="app-icon" onclick="openWindow('press')">
-        <img src="icons/press.png" alt="Press">
-        <span>Press</span>
-      </div>
-    </div>
-
-    <div class="home-button">
-      <button onclick="closeAllWindows()">Home</button>
-    </div>
-
-    <div id="mobile-windows-container"></div>
-
+  <!-- Home Button -->
+  <div class="home-button">
+    <button onclick="closeAllWindows()">Home</button>
   </div>
+
+  <!-- Windows Container -->
+  <div id="mobile-windows-container"></div>
 
   <script>
-    // Continue button
-    function continueToMobileSite() {
-      document.getElementById('intro-message').style.display = 'none';
-      document.getElementById('mobile-interface').style.display = 'flex';
-    }
-  
-    // Clock
     function updateClock() {
       const now = new Date();
-      const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                         now.getMinutes().toString().padStart(2, '0');
       document.getElementById('clock').textContent = timeString;
     }
     setInterval(updateClock, 1000);
     updateClock();
-  
-    // Mobile windows system
+
     function openWindow(name) {
       closeAllWindows();
-  
       const container = document.getElementById('mobile-windows-container');
+      container.style.display = 'block';
       const win = document.createElement('div');
-      win.className = 'mobile-window';
-      win.style.background = '#111';
-      win.style.padding = '20px';
-      win.style.flex = '1';
-      win.style.overflowY = 'auto';
-  
-      const titleBar = document.createElement('div');
-      titleBar.style.display = 'flex';
-      titleBar.style.justifyContent = 'space-between';
-      titleBar.style.alignItems = 'center';
-      titleBar.style.marginBottom = '10px';
-      titleBar.innerHTML = `
-        <strong style="color: #ffccff;">${capitalize(name)}</strong>
-        <button onclick="closeAllWindows()" style="background:none;border:none;color:#ffccff;font-weight:bold;">X</button>
+
+      win.innerHTML = `
+        <div class="mobile-title-bar">
+          ${capitalize(name)}
+          <button onclick="closeAllWindows()">X</button>
+        </div>
+        <div class="mobile-window-content" id="window-content">Loading...</div>
       `;
-  
-      const contentDiv = document.createElement('div');
-      contentDiv.id = `window-content-${name}`;
-      contentDiv.innerHTML = 'Loading...';
-  
-      win.appendChild(titleBar);
-      win.appendChild(contentDiv);
       container.appendChild(win);
-  
       loadWindowContent(name);
     }
-  
+
     function closeAllWindows() {
       const container = document.getElementById('mobile-windows-container');
-      if (container) container.innerHTML = '';
+      container.innerHTML = '';
+      container.style.display = 'none';
     }
-  
+
     function capitalize(word) {
-      if (!word) return '';
       return word.charAt(0).toUpperCase() + word.slice(1);
     }
-  
+
     function loadWindowContent(name) {
-      const content = document.getElementById(`window-content-${name}`);
+      const content = document.getElementById('window-content');
       if (!content) return;
-  
+
       if (name === 'about') {
-        content.innerHTML = `<p>George Turner (Pākehā) is an artist based in Te Whanganui-a-Tara, exploring queer-ecological narratives, digital art, and beyond.</p>`;
+        content.innerHTML = `<p>George Turner (Pākehā) is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes... (full bio continues)</p>`;
       } else if (name === 'contact') {
-        content.innerHTML = `<p>Email: your@email.com<br>Instagram: @yourhandle</p>`;
+        content.innerHTML = `<p>Email: <a href='mailto:stowaway101@gmail.com'>stowaway101@gmail.com</a><br>Instagram: <a href='https://www.instagram.com/georgeturner___/' target='_blank'>@georgeturner___</a></p>`;
       } else if (name === 'internet') {
-        loadInternetLinks(content);
+        content.innerHTML = `
+          <a href="https://www.youtube.com/watch?v=jxwbtwL-2JM" target="_blank">Heavy Chest, Benee – Sunday926</a>
+          <a href="https://www.youtube.com/watch?v=r9GqI2HaAJE" target="_blank">George Turner – Lost at Home</a>
+          ...`;
       } else if (name === 'press') {
-        loadPressLinks(content);
+        content.innerHTML = `
+          <a href="https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" target="_blank">Vice – Interview</a>
+          <a href="https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" target="_blank">Fucking Young – Feature</a>
+          ...`;
       } else if (name === 'exhibitions') {
-        loadExhibitions(content);
+        fetch('pdfs/exhibitions/index.json')
+          .then(response => response.json())
+          .then(data => {
+            content.innerHTML = data.map(item => `<a href="${item.pdf}" target="_blank">${item.title}</a>`).join('');
+          });
       } else if (name === 'freelance') {
-        loadFreelance(content);
+        fetch('pdfs/freelance/index.json')
+          .then(response => response.json())
+          .then(data => {
+            content.innerHTML = data.map(item => `<a href="${item.pdf}" target="_blank">${item.title}</a>`).join('');
+          });
       } else {
-        content.innerHTML = `<p>Loading...</p>`;
+        content.innerHTML = `<p>Coming soon...</p>`;
       }
     }
-  
-    // Load Internet links
-    const internetLinks = [
-      { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
-      { title: "George Turner – Lost at Home", url: "https://www.youtube.com/watch?v=r9GqI2HaAJE&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Love", url: "https://www.youtube.com/watch?v=EMAbum6atCM&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Thank You For Your Time (EP)", url: "https://www.youtube.com/watch?v=MUn0ev3RRWs&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "George Turner – Insect (LP)", url: "https://www.youtube.com/watch?v=g7BoxPGBKE0&ab_channel=GeorgeTurner-Topic" },
-      { title: "Bay1 – Bae1", url: "https://www.youtube.com/watch?v=2tn9MAEhTSc&ab_channel=%E3%83%87%E3%83%BC%E3%83%A2%E3%83%B3Astari" },
-      { title: "FCKCPS ft. George Turner – Block Queen", url: "https://www.youtube.com/watch?v=lLBya7p94Uo&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "Avito – Pancakes", url: "https://www.youtube.com/watch?v=C9ixKJKszq4&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-      { title: "Exhibition – Free of Charge", url: "https://freeofcharge.space/" },
-      { title: "Exhibition – Depot Artspace", url: "https://depot.org.nz/event/towards-equilibrium/" },
-      { title: "Exhibition – Bowen Gallery", url: "https://bowengalleries.nz/george-turner-second-impressions/" },
-      { title: "Exhibition – Astor Bristed", url: "https://www.astorbristed.co.nz/exhibitions/29-george-turner/" },
-      { title: "Exhibition – Webb's", url: "https://auctions.webbs.co.nz/lot-details/index/catalog/718/lot/211832/GEORGE-TURNER-The-River-Bank" }
-    ];
-  
-    function loadInternetLinks(container) {
-      container.innerHTML = '<h4 style="color: #660066; margin-bottom: 10px;">Internet Links</h4>';
-      internetLinks.forEach(link => {
-        const a = document.createElement('a');
-        a.href = link.url;
-        a.target = '_blank';
-        a.textContent = link.title;
-        a.style.display = 'block';
-        a.style.margin = '8px 0';
-        a.style.color = '#ffccff';
-        a.style.textDecoration = 'none';
-        container.appendChild(a);
-      });
-    }
-  
-    // Load Press links
-    const pressLinks = [
-      { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
-      { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
-      { title: "Sniffers – George Turner fuses fine arts with synth pop on ‘Lost at Home’", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
-      { title: "Sniffers – George Turner grounds themselves with debut album, ‘Insect’", url: "https://www.sniffers.co.nz/article/george-turner-grounds-debut-album-insect" },
-      { title: "Sniffers – George Turner plants their Roots", url: "https://sniffers.co.nz/article/george-turner-plants-roots-kauri" },
-      { title: "Under the Radar – New Single", url: "https://www.undertheradar.co.nz/news/12211/Listen-George-Turner--Age-of-Aquarius.utr" },
-      { title: "Massive Magazine – Artist Profile", url: "https://www.massivemagazine.org.nz/articles/ntqehy32wf0jufy44xsvam2bwlv49s" }
-    ];
-  
-    function loadPressLinks(container) {
-      container.innerHTML = '<h4 style="color: #660066; margin-bottom: 10px;">Press Articles</h4>';
-      pressLinks.forEach(link => {
-        const a = document.createElement('a');
-        a.href = link.url;
-        a.target = '_blank';
-        a.textContent = link.title;
-        a.style.display = 'block';
-        a.style.margin = '8px 0';
-        a.style.color = '#ffccff';
-        a.style.textDecoration = 'none';
-        container.appendChild(a);
-      });
-    }
-  
-    // Load PDFs for Exhibitions
-    function loadExhibitions(container) {
-      fetch('pdfs/exhibitions/index.json')
-        .then(response => response.json())
-        .then(data => {
-          container.innerHTML = '<h4 style="color: #660066; margin-bottom: 10px;">Exhibitions</h4>';
-          data.forEach(item => {
-            const link = document.createElement('a');
-            link.href = item.pdf;
-            link.target = '_blank';
-            link.textContent = item.title;
-            link.style.display = 'block';
-            link.style.margin = '8px 0';
-            link.style.color = '#ffccff';
-            link.style.textDecoration = 'none';
-            container.appendChild(link);
-          });
-        })
-        .catch(error => {
-          container.innerHTML = '<p>Failed to load exhibitions.</p>';
-          console.error('Error loading exhibitions:', error);
-        });
-    }
-  
-    // Load PDFs for Freelance
-    function loadFreelance(container) {
-      fetch('pdfs/freelance/index.json')
-        .then(response => response.json())
-        .then(data => {
-          container.innerHTML = '<h4 style="color: #660066; margin-bottom: 10px;">Freelance</h4>';
-          data.forEach(item => {
-            const link = document.createElement('a');
-            link.href = item.pdf;
-            link.target = '_blank';
-            link.textContent = item.title;
-            link.style.display = 'block';
-            link.style.margin = '8px 0';
-            link.style.color = '#ffccff';
-            link.style.textDecoration = 'none';
-            container.appendChild(link);
-          });
-        })
-        .catch(error => {
-          container.innerHTML = '<p>Failed to load freelance work.</p>';
-          console.error('Error loading freelance:', error);
-        });
-    }
-  </script>  
+  </script>
 
 </body>
 </html>
+
