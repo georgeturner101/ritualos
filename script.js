@@ -65,17 +65,24 @@ icons.forEach((i, index) => {
   el.classList.add('icon');
   el.innerHTML = `<img src="icons/${i.icon}"><div class="icon-title">${i.name}</div>`;
 
-  // Assign random-ish layout only if no saved positions exist
-  if (!hasSaved) {
-    const cols = Math.floor(window.innerWidth / 120);
-    const spacing = 100;
-    const col = index % cols;
-    const row = Math.floor(index / cols);
-    el.style.position = 'absolute';
-    el.style.left = `${Math.random() * (window.innerWidth - 120)}px`;
-    el.style.top = `${Math.random() * (window.innerHeight - 140)}px`;
-    
-  }
+// Assign default grid layout only if no saved positions exist
+if (!hasSaved) {
+  const iconWidth = 80;
+  const iconHeight = 100;
+  const columnCount = 2;
+  const spacingX = 140;
+  const spacingY = 140;
+  const startX = 40; // distance from the left
+  const startY = 60; // distance from the top
+
+  const col = index % columnCount;
+  const row = Math.floor(index / columnCount);
+
+  el.style.position = 'absolute';
+  el.style.left = `${startX + col * spacingX}px`;
+  el.style.top = `${startY + row * spacingY}px`;
+}
+
 
   const openAndHighlight = () => {
     document.querySelectorAll('.icon').forEach(icon => icon.classList.remove('selected'));

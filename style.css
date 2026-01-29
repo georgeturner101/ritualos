@@ -120,14 +120,13 @@ body, html {
   cursor: pointer;
 }
 
-/* Taskbar */
+/* Taskbar – Windows XP style */
 #taskbar {
   position: fixed;
   bottom: 0;
   width: 100%;
   height: 36px;
-  background: rgba(30, 30, 30, 0.85);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(to top, #2154cf, #3a87f2);
   color: white;
   display: flex;
   align-items: center;
@@ -135,78 +134,102 @@ body, html {
   padding: 0 12px;
   z-index: 3;
   font-size: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 -1px 10px rgba(255, 150, 250, 0.2);
+  border-top: 2px solid #ffffff;
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.3);
 }
 
-#start-button {
-  background: linear-gradient(145deg, #ffc1ec, #ff90cb);
-  border: none;
+/* Taskbar – Windows XP style */
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 36px;
+  background: linear-gradient(to top, #2154cf, #3a87f2);
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 3;
+  font-size: 14px;
+  border-top: 2px solid #ffffff;
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Start button – Frutiger Aero look */
+#start-button {
+  background: linear-gradient(to bottom, #81c784, #388e3c);
+  border: 1px solid #2e7d32;
+  color: #fff;
   font-weight: bold;
-  border-radius: 20px;
+  border-radius: 6px;
   padding: 6px 16px;
   font-size: 14px;
-  box-shadow: 0 3px 12px rgba(255, 120, 200, 0.7);
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  text-shadow: 0 0 5px #fff0fa;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5),
+              0 2px 5px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease-in-out;
 }
 
 #start-button:hover {
-  background: linear-gradient(145deg, #ffd0f0, #ffa2dc);
-  box-shadow: 0 5px 18px rgba(255, 105, 185, 0.9);
+  background: linear-gradient(to bottom, #a5d6a7, #2e7d32);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 }
 
+/* Search bar */
 #search {
   flex: 1;
   margin-left: 10px;
-  color: #eee;
+  color: #e3f2fd;
   font-style: italic;
   padding-left: 10px;
-  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
+/* Center name */
 #taskbar-center {
   flex: 1;
   text-align: center;
   font-size: 13px;
   font-weight: bold;
-  color: #ffc1ec;
-  text-shadow: 0 0 6px #ffcdf2;
+  color: #ffffff;
+  text-shadow: 0 0 3px #1976d2;
 }
 
+/* Audio toggle */
 #audio-toggle {
   margin-right: 10px;
   cursor: pointer;
   font-size: 12px;
   padding: 2px 8px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 6px rgba(255, 180, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
 }
 
+/* Clock */
 #clock {
   min-width: 80px;
   text-align: right;
   padding-left: 10px;
-  text-shadow: 0 0 5px #ffade5;
+  text-shadow: 0 0 3px #000000;
 }
 
-/* Start menu */
+/* Start Menu – Aero style */
 #start-menu {
   position: fixed;
   bottom: 36px;
   left: 10px;
-  background: rgba(255, 180, 240, 0.92);
-  border: 1px solid #ff9edb;
-  padding: 10px;
+  background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+  border: 1px solid #64b5f6;
+  padding: 12px;
   z-index: 4;
-  color: white;
+  color: #0d47a1;
   border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(255, 130, 210, 0.4);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 #start-menu.hidden {
@@ -220,89 +243,105 @@ body, html {
 }
 
 #start-menu li {
-  padding: 5px 10px;
+  padding: 6px 10px;
   cursor: pointer;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  margin-bottom: 4px;
-  box-shadow: 0 0 6px rgba(255, 200, 240, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #0d47a1;
+  text-shadow: 0 1px 1px #ffffff;
+  transition: background 0.2s ease;
 }
 
 #start-menu li:hover {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 8px rgba(255, 200, 240, 0.3);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.4);
 }
 
-/* Windows */
+
+/* Windows – Windows XP / Frutiger Aero style */
 .window {
   position: absolute;
   width: 400px;
   height: 300px;
-  background: linear-gradient(145deg, #ffcef0, #ffc6e9);
-  border: 2px solid #ffa2dc;
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
+  border: 2px solid #5a8fd8;
   display: none;
   flex-direction: column;
   z-index: 5;
-  color: #3a003a;
-  border-radius: 12px;
+  color: #002b55;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 12px 28px rgba(255, 150, 220, 0.45), 0 0 20px rgba(255, 180, 255, 0.3);
-  backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 8px 20px rgba(0, 0, 0, 0.35);
 }
 
+/* Title bar */
 .title-bar {
-  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
-  padding: 8px 12px;
+  background: linear-gradient(to bottom, #5fa6ff, #2f6fd6);
+  padding: 6px 10px;
   display: flex;
   justify-content: space-between;
   font-weight: bold;
   color: white;
   cursor: move;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+  border-bottom: 1px solid #1f4fa3;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
 }
 
+/* Window content */
 .window-content {
   padding: 12px;
   overflow-y: auto;
   flex: 1;
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
 }
 
+/* PDF list container */
 .pdf-list {
   padding: 12px;
   overflow-y: auto;
   flex: 1;
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
 }
 
+/* PDF links */
 .pdf-list a {
   display: block;
-  margin: 4px 0;
-  color: #660066;
+  margin: 6px 0;
+  color: #003c88;
   text-decoration: none;
   font-weight: bold;
-  text-shadow: 0 0 6px rgba(255, 180, 240, 0.5);
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .pdf-list a:hover {
-  color: #ff9edb;
+  background: rgba(100, 160, 255, 0.2);
   text-decoration: underline;
 }
 
+/* Iframe */
 iframe {
   width: 100%;
   height: 100%;
   border: none;
-  box-shadow: 0 0 12px rgba(255, 200, 255, 0.4);
+  background: white;
 }
+
+/* Drag selection box */
 #selection-box {
   position: absolute;
-  border: 1px dashed #aeefff; /* baby blue border */
-  background-color: rgba(150, 240, 255, 0.2); /* soft baby blue fill */
+  border: 1px solid #3399ff;
+  background-color: rgba(120, 180, 255, 0.25);
   pointer-events: none;
   z-index: 3;
   display: none;
-  backdrop-filter: blur(2px);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 
@@ -602,18 +641,17 @@ iframe {
   padding: 0; /* 🔧 removes offset */
 }
 
-#window-tuna .title-bar {
-  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
-  padding: 8px 12px;
+.title-bar {
+  background: linear-gradient(to bottom, #5fa6ff, #2f6fd6);
+  padding: 6px 10px;
   display: flex;
   justify-content: space-between;
   font-weight: bold;
   color: white;
   cursor: move;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
-  width: 100%;
-  box-sizing: border-box;
+  border-bottom: 1px solid #1f4fa3;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
 }
 
 /* 🌊 Tuna Grid */
@@ -754,16 +792,17 @@ iframe {
   z-index: 5;
 }
 
-#window-video .title-bar {
-  background: linear-gradient(145deg, #ffa2dc, #ff78c5);
-  padding: 8px 12px;
+.title-bar {
+  background: linear-gradient(to bottom, #5fa6ff, #2f6fd6);
+  padding: 6px 10px;
   display: flex;
   justify-content: space-between;
   font-weight: bold;
   color: white;
   cursor: move;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(255, 180, 250, 0.3);
+  border-bottom: 1px solid #1f4fa3;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
 }
 
 #video-list {
