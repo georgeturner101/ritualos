@@ -905,6 +905,8 @@ function loadInternetLinks() {
 loadInternetLinks();
 
 const pressLinks = [
+  { title: "PAI_32 – Artist of the Month Interview", url: "https://pai32.com/2026/02/12/george-turner/" },
+  { title: "Salive.Live – Stages of grief Review", url: "https://saliva.live/exhibitions/8a8c7707" },
   { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
   { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
   { title: "Sniffers – George Turner fuses fine arts with synth pop on ‘Lost at Home’", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
