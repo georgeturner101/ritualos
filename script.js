@@ -798,11 +798,53 @@ function renderTunaLeaderboard(scores = []) {
   const container = document.getElementById('tuna-leaderboard');
   if (!container) return;
 
-  container.innerHTML = '<h4 style="margin-bottom: 10px; color: #660066">Leaderboard</h4>' +
-    scores.map((entry, i) => {
-      const bird = birdIcons[i] ? `<img src="${birdIcons[i]}" style="width:16px; vertical-align:middle; margin-right:4px;" />` : '';
-      return `<div style="margin:4px 0; color:#3a003a; font-weight:bold;">${bird}${entry.name} — ${entry.score}</div>`;
-    }).join('');
+  // Clear safely
+  container.innerHTML = '';
+
+  // Title
+  const title = document.createElement('h4');
+  title.style.marginBottom = '10px';
+  title.style.color = '#660066';
+  title.textContent = 'Leaderboard';
+  container.appendChild(title);
+
+  // Rows
+  scores.forEach((entry, i) => {
+    const row = document.createElement('div');
+    row.style.margin = '4px 0';
+    row.style.color = '#3a003a';
+    row.style.fontWeight = 'bold';
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '6px';
+
+    // Medal/bird icon (safe, controlled by you)
+    if (birdIcons[i]) {
+      const img = document.createElement('img');
+      img.src = birdIcons[i];
+      img.alt = '';
+      img.style.width = '16px';
+      img.style.height = '16px';
+      img.style.verticalAlign = 'middle';
+      row.appendChild(img);
+    }
+
+    // Safe text (user input handled via textContent)
+    const safeName =
+      (typeof entry?.name === 'string' ? entry.name : 'Anonymous')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 20);
+
+    const safeScore = Number(entry?.score);
+    const scoreText = Number.isFinite(safeScore) ? safeScore : 0;
+
+    const text = document.createElement('span');
+    text.textContent = `${safeName} — ${scoreText}`;
+    row.appendChild(text);
+
+    container.appendChild(row);
+  });
 }
 
 function restartTunaGame() {
