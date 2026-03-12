@@ -358,18 +358,9 @@ function loadPdfList(jsonPath, container) {
 }
 
 function openMobilePDF(src) {
-  const viewer = document.getElementById('mobile-pdf-viewer');
-  const frame = document.getElementById('mobile-pdf-frame');
-  frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0`;
-  viewer.style.display = 'flex';
+  window.open(src, '_blank');
 }
 
-function closeMobilePDF() {
-  const viewer = document.getElementById('mobile-pdf-viewer');
-  const frame = document.getElementById('mobile-pdf-frame');
-  frame.src = '';
-  viewer.style.display = 'none';
-}
 </script>
 
 </body>
