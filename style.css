@@ -450,10 +450,13 @@ iframe {
 }
 
 #spirit-ghost {
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 48px;
   height: 48px;
   z-index: 9998;
+  display: block;
   pointer-events: none;
   transition: transform 0.2s ease-out;
   filter: drop-shadow(0 0 4px #ffcaff);
