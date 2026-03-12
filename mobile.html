@@ -13,38 +13,17 @@
       overflow: hidden;
       color: white;
       background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 18%, transparent 32%),
-        radial-gradient(circle at 80% 25%, rgba(173, 230, 255, 0.35) 0%, rgba(173, 230, 255, 0.08) 20%, transparent 35%),
-        radial-gradient(circle at 30% 75%, rgba(186,255,201,0.25) 0%, rgba(186,255,201,0.08) 18%, transparent 32%),
-        linear-gradient(180deg, #7fd3ff 0%, #4ca8f0 30%, #2d7ed8 68%, #4fb54f 100%);
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 15% 30%, rgba(255,255,255,0.35) 0 2px, transparent 3px),
-        radial-gradient(circle at 75% 20%, rgba(255,255,255,0.28) 0 2px, transparent 3px),
-        radial-gradient(circle at 60% 70%, rgba(255,255,255,0.22) 0 2px, transparent 3px),
-        radial-gradient(circle at 40% 85%, rgba(255,255,255,0.18) 0 2px, transparent 3px);
-      animation: sparkleDrift 12s linear infinite;
-      opacity: 0.85;
-      z-index: 0;
-    }
-
-    @keyframes sparkleDrift {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-12px); }
-      100% { transform: translateY(0px); }
+        radial-gradient(circle at 20% 18%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 16%, transparent 30%),
+        radial-gradient(circle at 78% 28%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 18%, transparent 32%),
+        radial-gradient(ellipse at 50% 115%, rgba(255,190,220,0.45) 0%, rgba(255,190,220,0.22) 28%, transparent 58%),
+        linear-gradient(180deg, #aee3ff 0%, #7fcfff 38%, #8dc8ff 60%, #f6b6d8 100%);
     }
 
     #mobile-warning {
       position: fixed;
       inset: 0;
-      background: rgba(20, 50, 110, 0.32);
-      backdrop-filter: blur(8px);
+      background: rgba(20, 50, 110, 0.18);
+      backdrop-filter: blur(6px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -53,61 +32,28 @@
     }
 
     .enter-panel {
-      width: 86%;
-      max-width: 320px;
-      background: linear-gradient(to bottom, #f5fbff, #dcebff);
-      border: 2px solid #7aa7e0;
-      border-radius: 18px;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.9),
-        0 10px 30px rgba(0,0,0,0.28);
-      padding: 24px 20px;
-      text-align: center;
-      color: #1d4a8c;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .enter-panel::before {
-      content: "";
-      position: absolute;
-      top: -30%;
-      left: -10%;
-      width: 120%;
-      height: 60%;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.75), rgba(255,255,255,0));
-      transform: rotate(-4deg);
-      pointer-events: none;
-    }
-
-    .enter-panel h1 {
-      margin: 0 0 10px 0;
-      font-size: 1.5em;
-      letter-spacing: 0.02em;
-      text-shadow: 0 1px 0 white;
-    }
-
-    .enter-panel p {
-      margin: 0;
-      font-size: 0.95em;
-      line-height: 1.45;
-      color: #2b5fae;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      border: none;
+      padding: 0;
     }
 
     .enter-panel button {
-      margin-top: 18px;
-      border: 1px solid #2f7b2f;
-      background: linear-gradient(to bottom, #7fd87f, #3da83d);
+      border: 1px solid #d468a8;
+      background: linear-gradient(to bottom, #ffb7dc, #f28cc2);
       color: white;
       font-weight: bold;
-      font-size: 1em;
-      border-radius: 10px;
-      padding: 10px 24px;
+      font-size: 1.1em;
+      border-radius: 14px;
+      padding: 12px 34px;
       cursor: pointer;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.5),
-        0 4px 10px rgba(0,0,0,0.2);
+        inset 0 1px 0 rgba(255,255,255,0.55),
+        0 6px 18px rgba(0,0,0,0.18);
     }
 
     .enter-panel button:active {
@@ -119,9 +65,9 @@
       z-index: 1;
       height: 100%;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 28px 18px;
-      padding: 42px 20px 32px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 34px 30px;
+      padding: 70px 34px 40px;
       justify-items: center;
       align-content: start;
       box-sizing: border-box;
@@ -132,22 +78,22 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      width: 88px;
+      width: 110px;
       text-align: center;
     }
 
     .app-icon img {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 8px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.22));
+      width: 76px;
+      height: 76px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.22));
     }
 
     .app-icon span {
-      font-size: 0.82em;
+      font-size: 0.95em;
       color: white;
       text-shadow: 0 1px 3px rgba(0,0,0,0.75);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .mobile-window {
@@ -271,8 +217,6 @@
 
 <div id="mobile-warning">
   <div class="enter-panel">
-    <h1>RitualOS</h1>
-    <p>Tap below to enter.</p>
     <button onclick="enterMobileSite()">Enter</button>
   </div>
 </div>
