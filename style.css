@@ -950,3 +950,54 @@ iframe {
   font-size: 1em;
 }
 
+/* ===== PRESS WINDOW FIX ===== */
+#window-press {
+  display: none;
+  position: absolute;
+  width: 420px;
+  height: 340px;
+  top: 120px;
+  left: 240px;
+  z-index: 50;
+  background: linear-gradient(to bottom right, #f4f9ff, #d6e9ff) !important;
+  border: 2px solid #5a8fd8 !important;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+#window-press .title-bar {
+  background: linear-gradient(to bottom, #5fa6ff, #2f6fd6) !important;
+  color: white !important;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  cursor: move;
+  border-bottom: 1px solid #1f4fa3;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+#window-press .window-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  background: linear-gradient(145deg, #ffa2dc, #ff78c5) !important;
+  color: #002b55 !important;
+}
+
+#window-press a {
+  display: block;
+  margin: 6px 0;
+  color: #003c88 !important;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#window-press a:hover {
+  background: rgba(100, 160, 255, 0.2);
+  text-decoration: underline;
+}
