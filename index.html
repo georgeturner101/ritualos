@@ -2,35 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RitualOS</title>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KY7YFERX5Q"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  gtag('config', 'G-KY7YFERX5Q');
-</script>
-<!-- SEO Basics -->
-<meta name="description" content="George Turner (Pākehā) is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Exploring queer-ecological narratives, digital art, and more.">
-<meta name="keywords" content="George Turner, artist, musician, queer ecology, New Zealand artist, digital art, VR art, experimental art, ritualos, georgeturner.space">
-<meta name="author" content="George Turner">
-<meta property="og:title" content="George Turner – RitualOS">
-<meta property="og:description" content="Explore the art and music of George Turner. A unique digital experience blending nature, technology, and queer ecological thought.">
-<meta property="og:image" content="https://georgeturner.space/icons/ghost.png"> <!-- or another beautiful icon you want -->
-<meta property="og:url" content="https://georgeturner.space">
-<meta name="twitter:card" content="summary_large_image">
+  <title>George Turner – New Zealand Artist | Digital Art, Film & Queer Ecology</title>
 
+  <!-- SEO Basics -->
+  <meta
+    name="description"
+    content="George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa. Explore digital art, films, exhibitions, queer ecology, and experimental projects through RitualOS."
+  />
+  <meta
+    name="keywords"
+    content="George Turner, George Turner artist, George Turner NZ, New Zealand artist, digital artist NZ, queer ecology artist, Aotearoa artist, RitualOS, digital art, experimental film, ecological art"
+  />
+  <meta name="author" content="George Turner" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="https://georgeturner.space/" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="icons/favicon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="George Turner – RitualOS" />
+  <meta property="og:title" content="George Turner – New Zealand Artist" />
+  <meta
+    property="og:description"
+    content="Explore the art, films, exhibitions, and digital worlds of George Turner through RitualOS."
+  />
+  <meta property="og:image" content="https://georgeturner.space/icons/ghost.png" />
+  <meta property="og:url" content="https://georgeturner.space/" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="George Turner – New Zealand Artist" />
+  <meta
+    name="twitter:description"
+    content="Explore the art, films, exhibitions, and digital worlds of George Turner through RitualOS."
+  />
+  <meta name="twitter:image" content="https://georgeturner.space/icons/ghost.png" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "George Turner",
+    "url": "https://georgeturner.space/",
+    "jobTitle": "Artist",
+    "description": "George Turner is a New Zealand artist and musician working across digital art, film, ecology, and experimental media.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "NZ"
+    },
+    "sameAs": [
+      "https://www.instagram.com/georgeturner___/"
+    ]
+  }
+  </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KY7YFERX5Q"></script>
   <script>
-    // If user is on mobile, redirect to mobile.html
-    if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      window.location.href = "mobile.html";
-    }
-  </script>  
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KY7YFERX5Q');
+  </script>
+
+  <script>
+    (function () {
+      var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var isAlreadyOnMobilePage = window.location.pathname.indexOf('mobile.html') !== -1;
+
+      if (isMobile && !isAlreadyOnMobilePage) {
+        window.location.replace('/mobile.html');
+      }
+    })();
+  </script>
 </head>
+<div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
+  <h1>George Turner – New Zealand Artist</h1>
+  <p>
+    George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa.
+    Their work explores queer ecology, digital art, experimental film, environmental storytelling,
+    and immersive ecological worlds.
+  </p>
+  <p>
+    RitualOS is the online portfolio of George Turner, featuring artworks, exhibitions, films,
+    freelance projects, and digital experiments.
+  </p>
+</div>
 <body>
   <!-- Video background -->
   <video id="bg-video" autoplay loop muted playsinline>
