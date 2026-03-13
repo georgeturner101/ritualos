@@ -211,6 +211,102 @@
       border: none;
       background: white;
     }
+
+    #mobile-spirit-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 58px;
+  height: 58px;
+  z-index: 80;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  display: none;
+  transform: translate3d(40px, 120px, 0);
+  filter:
+    drop-shadow(0 0 6px rgba(255, 220, 245, 0.95))
+    drop-shadow(0 0 16px rgba(180, 230, 255, 0.55));
+  will-change: transform;
+}
+
+.mobile-ghost-trail {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 70;
+  background: radial-gradient(
+    circle,
+    rgba(255,255,255,0.65) 0%,
+    rgba(255,210,240,0.30) 45%,
+    rgba(150,220,255,0.10) 70%,
+    transparent 100%
+  );
+  animation: mobileGhostTrailFade 1.2s ease-out forwards;
+}
+
+@keyframes mobileGhostTrailFade {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.8);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+    filter: blur(5px);
+  }
+}
+
+.mobile-ghost-whisper {
+  position: fixed;
+  z-index: 85;
+  pointer-events: none;
+  max-width: 180px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #24406f;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.75);
+  animation: mobileWhisperFade 5.5s ease forwards;
+}
+
+.mobile-ghost-whisper::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  bottom: -8px;
+  border-width: 8px 7px 0 7px;
+  border-style: solid;
+  border-color: rgba(255,255,255,0.88) transparent transparent transparent;
+}
+
+@keyframes mobileWhisperFade {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+}
   </style>
 </head>
 <body>
@@ -257,6 +353,8 @@
   </div>
   <iframe id="mobile-pdf-frame" src=""></iframe>
 </div>
+
+<img id="mobile-spirit-ghost" src="icons/piwakawaka.png" alt="Pīwakawaka ghost">
 
 <script>
 function enterMobileSite() {
@@ -359,6 +457,267 @@ function loadPdfList(jsonPath, container) {
 
 function openMobilePDF(src) {
   window.open(src, '_blank');
+}
+
+/* =========================
+   MOBILE GHOST
+   gently drifts, avoids taps,
+   desktop blink timing
+   ========================= */
+
+let mobileGhostStarted = false;
+let mobileGhostEl = null;
+
+let mgX = 40;
+let mgY = 120;
+let mgTargetX = 40;
+let mgTargetY = 120;
+
+let mgIdle = false;
+let mgSleeping = false;
+let mgIdleTimer = null;
+let mgBlinkTimer = null;
+let mgWhisperTimer = null;
+let mgWanderTimer = null;
+let mgDriftTimer = null;
+
+const MOBILE_GHOST_SPRITES = {
+  base: 'icons/ghost.png',
+  blink: 'icons/ghost-blink.png',
+  sleep: 'icons/ghost-sleep.png'
+};
+
+const mobileGhostWhispers = [
+  "The forest remembers you.",
+  "There is light between the moss.",
+  "Softness is resistance.",
+  "Time does not pass here.",
+  "Stay. Drift.",
+  "The rain was listening."
+];
+
+// keep your existing enterMobileSite function, but hook ghost into it
+const originalEnterMobileSite = enterMobileSite;
+enterMobileSite = function () {
+  originalEnterMobileSite();
+  initMobileGhost();
+};
+
+function initMobileGhost() {
+  if (mobileGhostStarted) return;
+
+  mobileGhostEl = document.getElementById('mobile-spirit-ghost');
+  if (!mobileGhostEl) return;
+
+  mobileGhostStarted = true;
+  mobileGhostEl.style.display = 'block';
+  mobileGhostEl.src = MOBILE_GHOST_SPRITES.base;
+
+  mgX = window.innerWidth * 0.25;
+  mgY = window.innerHeight * 0.28;
+  mgTargetX = mgX;
+  mgTargetY = mgY;
+
+  animateMobileGhost();
+  blinkMobileGhost();          // same style/timing as desktop
+  resetMobileGhostIdleTimer(); // 40 sec like desktop
+  startMobileGhostWhispers();
+  startMobileGhostDrift();
+
+  document.addEventListener('pointerdown', repelGhostFromPoint, { passive: true });
+  document.addEventListener('touchstart', handleGhostTouchStart, { passive: true });
+
+  window.addEventListener('resize', () => {
+    mgTargetX = clamp(mgTargetX, 8, window.innerWidth - 70);
+    mgTargetY = clamp(mgTargetY, 8, window.innerHeight - 90);
+    mgX = clamp(mgX, 8, window.innerWidth - 70);
+    mgY = clamp(mgY, 8, window.innerHeight - 90);
+  });
+}
+
+function animateMobileGhost() {
+  mgX += (mgTargetX - mgX) * 0.035;
+  mgY += (mgTargetY - mgY) * 0.035;
+
+  if (mobileGhostEl) {
+    mobileGhostEl.style.transform = `translate3d(${mgX}px, ${mgY}px, 0)`;
+    leaveMobileGhostTrail();
+  }
+
+  requestAnimationFrame(animateMobileGhost);
+}
+
+function leaveMobileGhostTrail() {
+  if (Math.random() > 0.18) return;
+
+  const trail = document.createElement('div');
+  trail.className = 'mobile-ghost-trail';
+  trail.style.left = `${mgX + 20}px`;
+  trail.style.top = `${mgY + 20}px`;
+  document.body.appendChild(trail);
+
+  setTimeout(() => {
+    trail.remove();
+  }, 1200);
+}
+
+/* desktop-style blink timing */
+function blinkMobileGhost() {
+  if (mgSleeping || !mobileGhostEl) return;
+
+  mobileGhostEl.src = MOBILE_GHOST_SPRITES.blink;
+
+  setTimeout(() => {
+    if (!mgSleeping && mobileGhostEl) {
+      mobileGhostEl.src = MOBILE_GHOST_SPRITES.base;
+    }
+  }, 200);
+
+  mgBlinkTimer = setTimeout(blinkMobileGhost, 400 + Math.random() * 500);
+}
+
+/* gentle drifting while awake */
+function startMobileGhostDrift() {
+  clearTimeout(mgDriftTimer);
+
+  function driftLoop() {
+    if (!mobileGhostStarted || mgSleeping) return;
+
+    const padding = 20;
+    const maxX = Math.max(padding, window.innerWidth - 90);
+    const maxY = Math.max(100, window.innerHeight - 130);
+
+    const driftAmountX = 40 + Math.random() * 90;
+    const driftAmountY = 30 + Math.random() * 70;
+    const dirX = Math.random() > 0.5 ? 1 : -1;
+    const dirY = Math.random() > 0.5 ? 1 : -1;
+
+    mgTargetX = clamp(mgX + driftAmountX * dirX, padding, maxX);
+    mgTargetY = clamp(mgY + driftAmountY * dirY, 30, maxY);
+
+    mgDriftTimer = setTimeout(driftLoop, 2500 + Math.random() * 2500);
+  }
+
+  driftLoop();
+}
+
+/* move away from user's tap/click */
+function handleGhostTouchStart(e) {
+  const touch = e.touches && e.touches[0];
+  if (!touch) return;
+  moveGhostAwayFromPoint(touch.clientX, touch.clientY);
+}
+
+function repelGhostFromPoint(e) {
+  moveGhostAwayFromPoint(e.clientX, e.clientY);
+}
+
+function moveGhostAwayFromPoint(x, y) {
+  if (!mobileGhostStarted) return;
+
+  const ghostCenterX = mgX + 29;
+  const ghostCenterY = mgY + 29;
+
+  let dx = ghostCenterX - x;
+  let dy = ghostCenterY - y;
+
+  const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+
+  dx /= dist;
+  dy /= dist;
+
+  const repelDistance = 120;
+
+  mgTargetX = clamp(mgX + dx * repelDistance, 8, window.innerWidth - 70);
+  mgTargetY = clamp(mgY + dy * repelDistance, 8, window.innerHeight - 90);
+
+  wakeMobileGhost();
+  resetMobileGhostIdleTimer();
+
+  if (Math.random() > 0.65) {
+    showMobileGhostWhisper();
+  }
+}
+
+/* desktop-style sleep timing */
+function resetMobileGhostIdleTimer() {
+  clearTimeout(mgIdleTimer);
+  mgIdleTimer = setTimeout(triggerMobileGhostSleep, 40000);
+}
+
+function triggerMobileGhostSleep() {
+  mgIdle = true;
+  mgSleeping = true;
+
+  if (mobileGhostEl) {
+    mobileGhostEl.src = MOBILE_GHOST_SPRITES.sleep;
+  }
+
+  clearTimeout(mgDriftTimer);
+  mobileGhostSleepWander();
+}
+
+function mobileGhostSleepWander() {
+  if (!mgIdle || !mgSleeping) return;
+
+  mgTargetX = Math.random() * Math.max(60, window.innerWidth - 90) + 10;
+  mgTargetY = Math.random() * Math.max(120, window.innerHeight - 150) + 20;
+
+  mgWanderTimer = setTimeout(mobileGhostSleepWander, 5000);
+}
+
+function wakeMobileGhost() {
+  mgIdle = false;
+
+  if (mgSleeping) {
+    mgSleeping = false;
+    clearTimeout(mgWanderTimer);
+
+    if (mobileGhostEl) {
+      mobileGhostEl.src = MOBILE_GHOST_SPRITES.base;
+    }
+
+    clearTimeout(mgBlinkTimer);
+    blinkMobileGhost();
+    startMobileGhostDrift();
+  }
+}
+
+function showMobileGhostWhisper() {
+  if (!mobileGhostEl) return;
+
+  const whisper = document.createElement('div');
+  whisper.className = 'mobile-ghost-whisper';
+  whisper.textContent = mobileGhostWhispers[Math.floor(Math.random() * mobileGhostWhispers.length)];
+
+  whisper.style.left = `${clamp(mgX + 20, 10, window.innerWidth - 190)}px`;
+  whisper.style.top = `${clamp(mgY - 18, 10, window.innerHeight - 100)}px`;
+
+  document.body.appendChild(whisper);
+
+  setTimeout(() => {
+    whisper.remove();
+  }, 5500);
+}
+
+function startMobileGhostWhispers() {
+  clearTimeout(mgWhisperTimer);
+
+  function queueWhisper() {
+    const delay = 30000 + Math.random() * 30000;
+    mgWhisperTimer = setTimeout(() => {
+      if (mobileGhostStarted) {
+        showMobileGhostWhisper();
+      }
+      queueWhisper();
+    }, delay);
+  }
+
+  queueWhisper();
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 
 </script>
