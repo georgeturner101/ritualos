@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>RitualOS Mobile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://georgeturner.space/" />
+  <meta name="robots" content="noindex, follow" />
   <style>
     html, body {
       margin: 0;
@@ -12,11 +14,62 @@
       font-family: Verdana, sans-serif;
       overflow: hidden;
       color: white;
+      background: linear-gradient(180deg, #aee3ff 0%, #7fcfff 38%, #8dc8ff 60%, #f6b6d8 100%);
+    }
+
+    body {
+      position: relative;
+    }
+
+    .mobile-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
       background:
         radial-gradient(circle at 20% 18%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 16%, transparent 30%),
         radial-gradient(circle at 78% 28%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 18%, transparent 32%),
         radial-gradient(ellipse at 50% 115%, rgba(255,190,220,0.45) 0%, rgba(255,190,220,0.22) 28%, transparent 58%),
         linear-gradient(180deg, #aee3ff 0%, #7fcfff 38%, #8dc8ff 60%, #f6b6d8 100%);
+    }
+
+    .mobile-bg::before,
+    .mobile-bg::after {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      filter: blur(30px);
+      opacity: 0.7;
+      will-change: transform;
+    }
+
+    .mobile-bg::before {
+      background:
+        radial-gradient(circle at 18% 25%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 22%, transparent 36%),
+        radial-gradient(circle at 76% 28%, rgba(190,240,255,0.28) 0%, rgba(190,240,255,0.10) 18%, transparent 34%),
+        radial-gradient(circle at 56% 78%, rgba(255,190,225,0.30) 0%, rgba(255,190,225,0.10) 20%, transparent 38%);
+      animation: bgFloatOne 22s ease-in-out infinite alternate;
+    }
+
+    .mobile-bg::after {
+      background:
+        radial-gradient(circle at 30% 72%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 20%, transparent 35%),
+        radial-gradient(circle at 72% 70%, rgba(255,220,245,0.18) 0%, rgba(255,220,245,0.05) 18%, transparent 34%),
+        radial-gradient(circle at 52% 18%, rgba(170,230,255,0.16) 0%, rgba(170,230,255,0.05) 18%, transparent 32%);
+      animation: bgFloatTwo 28s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgFloatOne {
+      0% { transform: translate3d(-2%, -1%, 0) scale(1.02); }
+      50% { transform: translate3d(2%, 1.5%, 0) scale(1.05); }
+      100% { transform: translate3d(4%, -2%, 0) scale(1.03); }
+    }
+
+    @keyframes bgFloatTwo {
+      0% { transform: translate3d(1%, 0%, 0) scale(1.04); }
+      50% { transform: translate3d(-3%, 2%, 0) scale(1.08); }
+      100% { transform: translate3d(2%, -1.5%, 0) scale(1.05); }
     }
 
     #mobile-warning {
@@ -65,9 +118,9 @@
       z-index: 1;
       height: 100%;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 34px 30px;
-      padding: 70px 34px 40px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px 18px;
+      padding: 48px 24px 36px;
       justify-items: center;
       align-content: start;
       box-sizing: border-box;
@@ -78,19 +131,27 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      width: 110px;
+      width: 120px;
       text-align: center;
+      min-height: 110px;
+      border-radius: 16px;
+      padding: 8px 4px;
+    }
+
+    .app-icon:active {
+      background: rgba(255,255,255,0.12);
     }
 
     .app-icon img {
-      width: 76px;
-      height: 76px;
-      margin-bottom: 10px;
+      width: 74px;
+      height: 74px;
+      margin-bottom: 8px;
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.22));
+      object-fit: contain;
     }
 
     .app-icon span {
-      font-size: 0.95em;
+      font-size: 0.92em;
       color: white;
       text-shadow: 0 1px 3px rgba(0,0,0,0.75);
       line-height: 1.25;
@@ -126,11 +187,12 @@
       border-bottom: 1px solid #1d4f9c;
       text-shadow: 0 1px 1px rgba(0,0,0,0.35);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      gap: 10px;
     }
 
     .mobile-title-bar button {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border: 1px solid #8eb5f0;
       border-radius: 6px;
       background: linear-gradient(to bottom, #ff8d8d, #d64a4a);
@@ -138,6 +200,7 @@
       font-weight: bold;
       cursor: pointer;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      flex-shrink: 0;
     }
 
     .mobile-window-content {
@@ -213,103 +276,291 @@
     }
 
     #mobile-spirit-ghost {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 58px;
-  height: 58px;
-  z-index: 80;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  display: none;
-  transform: translate3d(40px, 120px, 0);
-  filter:
-    drop-shadow(0 0 6px rgba(255, 220, 245, 0.95))
-    drop-shadow(0 0 16px rgba(180, 230, 255, 0.55));
-  will-change: transform;
-}
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 58px;
+      height: 58px;
+      z-index: 80;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      display: none;
+      transform: translate3d(40px, 120px, 0);
+      filter:
+        drop-shadow(0 0 6px rgba(255, 220, 245, 0.95))
+        drop-shadow(0 0 16px rgba(180, 230, 255, 0.55));
+      will-change: transform;
+    }
 
-.mobile-ghost-trail {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  margin-left: -10px;
-  margin-top: -10px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 70;
-  background: radial-gradient(
-    circle,
-    rgba(255,255,255,0.65) 0%,
-    rgba(255,210,240,0.30) 45%,
-    rgba(150,220,255,0.10) 70%,
-    transparent 100%
-  );
-  animation: mobileGhostTrailFade 1.2s ease-out forwards;
-}
+    .mobile-ghost-trail {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      margin-left: -10px;
+      margin-top: -10px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 70;
+      background: radial-gradient(
+        circle,
+        rgba(255,255,255,0.65) 0%,
+        rgba(255,210,240,0.30) 45%,
+        rgba(150,220,255,0.10) 70%,
+        transparent 100%
+      );
+      animation: mobileGhostTrailFade 1.2s ease-out forwards;
+    }
 
-@keyframes mobileGhostTrailFade {
-  0% {
-    opacity: 0.8;
-    transform: scale(0.8);
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(2.2);
-    filter: blur(5px);
-  }
-}
+    @keyframes mobileGhostTrailFade {
+      0% {
+        opacity: 0.8;
+        transform: scale(0.8);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.2);
+        filter: blur(5px);
+      }
+    }
 
-.mobile-ghost-whisper {
-  position: fixed;
-  z-index: 85;
-  pointer-events: none;
-  max-width: 180px;
-  padding: 8px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  line-height: 1.3;
-  color: #24406f;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(8px);
-  box-shadow:
-    0 6px 20px rgba(0,0,0,0.16),
-    inset 0 1px 0 rgba(255,255,255,0.75);
-  animation: mobileWhisperFade 5.5s ease forwards;
-}
+    .mobile-ghost-whisper {
+      position: fixed;
+      z-index: 85;
+      pointer-events: none;
+      max-width: 180px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      line-height: 1.3;
+      color: #24406f;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(8px);
+      box-shadow:
+        0 6px 20px rgba(0,0,0,0.16),
+        inset 0 1px 0 rgba(255,255,255,0.75);
+      animation: mobileWhisperFade 5.5s ease forwards;
+    }
 
-.mobile-ghost-whisper::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  bottom: -8px;
-  border-width: 8px 7px 0 7px;
-  border-style: solid;
-  border-color: rgba(255,255,255,0.88) transparent transparent transparent;
-}
+    .mobile-ghost-whisper::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      bottom: -8px;
+      border-width: 8px 7px 0 7px;
+      border-style: solid;
+      border-color: rgba(255,255,255,0.88) transparent transparent transparent;
+    }
 
-@keyframes mobileWhisperFade {
-  0% {
-    opacity: 0;
-    transform: translateY(8px) scale(0.96);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  88% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.98);
-  }
-}
+    @keyframes mobileWhisperFade {
+      0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      88% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+      }
+    }
+
+    .mobile-link-list a {
+      display: block;
+      margin: 10px 0;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.35);
+      color: #224a8c;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .mobile-link-list a:active {
+      transform: translateY(1px);
+    }
+
+    .game-intro {
+      margin-bottom: 14px;
+      font-size: 0.9em;
+      color: #35578e;
+    }
+
+    #mobile-birdsweeper-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      margin-top: 10px;
+    }
+
+    .mobile-bird-cell {
+      aspect-ratio: 1 / 1;
+      background: rgba(255, 240, 255, 0.8);
+      border: 1px solid #ffb6f4;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #3a003a;
+      box-shadow: 0 2px 6px rgba(255, 180, 255, 0.2);
+      font-size: 0.95em;
+      user-select: none;
+    }
+
+    .mobile-bird-cell.revealed {
+      background: rgba(255,255,255,0.92);
+    }
+
+    .mobile-bird-cell.bird {
+      background: #ffc6e9;
+    }
+
+    .mobile-bird-found {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.52);
+      text-align: center;
+      display: none;
+    }
+
+    .mobile-bird-found img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    #mobile-tuna-game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #mobile-tuna-grid {
+      display: grid;
+      grid-template-columns: repeat(14, 18px);
+      gap: 2px;
+      width: fit-content;
+      background: rgba(160, 230, 255, 0.25);
+      border: 2px solid rgba(120, 190, 255, 0.7);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 0 18px rgba(170, 240, 255, 0.25);
+    }
+
+    .mobile-tuna-cell {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .mobile-tuna {
+      background: radial-gradient(circle, #ffe2fb 30%, #ff96ec 100%);
+      box-shadow: 0 0 6px #ffc7f9, inset 0 0 4px #ffb0f2;
+    }
+
+    .mobile-tuna-head {
+      background: linear-gradient(135deg, #fff6ff, #fcd3ff);
+      border: 1px solid #ffbdf2;
+      box-shadow: 0 0 10px #ffa8f2, 0 0 6px #ffdaf7 inset;
+    }
+
+    .mobile-tuna-food {
+      background: radial-gradient(circle, #fff3b8 10%, #ffcb66 70%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ffe499, 0 0 6px #ffcc33 inset;
+      border: 1px solid #fff5d1;
+    }
+
+    .mobile-tuna-score {
+      font-weight: bold;
+      color: #3a4f90;
+      font-size: 0.95em;
+    }
+
+    .mobile-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 52px);
+      grid-template-rows: repeat(2, 52px);
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .mobile-controls button {
+      border: 1px solid #8eb5f0;
+      border-radius: 12px;
+      background: linear-gradient(to bottom, #f8fbff, #d7e7ff);
+      color: #2654a0;
+      font-weight: bold;
+      font-size: 1.1em;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .mobile-controls .empty {
+      visibility: hidden;
+    }
+
+    .mobile-game-button {
+      margin-top: 12px;
+      border: 1px solid #d468a8;
+      background: linear-gradient(to bottom, #ffb7dc, #f28cc2);
+      color: white;
+      font-weight: bold;
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+      cursor: pointer;
+    }
+
+    .mobile-game-button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 380px) {
+      .app-grid {
+        padding: 42px 18px 28px;
+        gap: 20px 12px;
+      }
+
+      .app-icon {
+        width: 108px;
+      }
+
+      .app-icon img {
+        width: 68px;
+        height: 68px;
+      }
+
+      #mobile-tuna-grid {
+        grid-template-columns: repeat(14, 16px);
+      }
+
+      .mobile-tuna-cell {
+        width: 16px;
+        height: 16px;
+      }
+    }
   </style>
 </head>
 <body>
+
+<div class="mobile-bg"></div>
 
 <div id="mobile-warning">
   <div class="enter-panel">
@@ -342,6 +593,14 @@
     <img src="icons/press.png" alt="Press">
     <span>Press</span>
   </div>
+  <div class="app-icon" onclick="openWindow('birdsweeper')">
+    <img src="icons/game.png" alt="Birdsweeper">
+    <span>Birdsweeper</span>
+  </div>
+  <div class="app-icon" onclick="openWindow('tuna')">
+    <img src="icons/tuna.png" alt="Tuna">
+    <span>Tuna</span>
+  </div>
 </div>
 
 <div id="mobile-windows-container"></div>
@@ -354,7 +613,7 @@
   <iframe id="mobile-pdf-frame" src=""></iframe>
 </div>
 
-<img id="mobile-spirit-ghost" src="icons/piwakawaka.png" alt="Pīwakawaka ghost">
+<img id="mobile-spirit-ghost" src="icons/ghost.png" alt="Spirit ghost">
 
 <script>
 function enterMobileSite() {
@@ -369,7 +628,7 @@ function openWindow(name) {
   win.className = 'mobile-window';
   win.innerHTML = `
     <div class="mobile-title-bar">
-      ${capitalize(name)}
+      <span>${capitalize(name)}</span>
       <button onclick="closeAllWindows()">X</button>
     </div>
     <div class="mobile-window-content" id="window-content-${name}">Loading...</div>
@@ -380,9 +639,11 @@ function openWindow(name) {
 
 function closeAllWindows() {
   document.getElementById('mobile-windows-container').innerHTML = '';
+  stopMobileTunaGame();
 }
 
 function capitalize(word) {
+  if (word === 'birdsweeper') return 'Birdsweeper';
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
@@ -419,15 +680,19 @@ Since 2017, Turner has exhibited extensively across Aotearoa, developing a disti
 As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.<br><br>
 Also an accomplished musician, Turner has released two EPs (Some Days, Thank You For Your Time) and a full-length debut album, Insect (2019), as well as playing across Aotearoa and Australia. Their sophomore album is scheduled for release in 2025.</p>`;
   } else if (name === 'contact') {
-    content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank">@georgeturner___</a></p>`;
+    content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank">@georgeturner___</a><br>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank">@georgeturner8087</a></p>`;
   } else if (name === 'internet') {
-    content.innerHTML = internetLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
+    content.innerHTML = `<div class="mobile-link-list">${internetLinks.map(link => `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}</a>`).join('')}</div>`;
   } else if (name === 'press') {
-    content.innerHTML = pressLinks.map(link => `<div><a href="${link.url}" target="_blank">${link.title}</a></div>`).join('');
+    content.innerHTML = `<div class="mobile-link-list">${pressLinks.map(link => `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}</a>`).join('')}</div>`;
   } else if (name === 'exhibitions') {
     loadPdfList('pdfs/exhibitions/index.json', content);
   } else if (name === 'freelance') {
     loadPdfList('pdfs/freelance/index.json', content);
+  } else if (name === 'birdsweeper') {
+    renderMobileBirdsweeper(content);
+  } else if (name === 'tuna') {
+    renderMobileTuna(content);
   }
 }
 
@@ -446,6 +711,9 @@ function loadPdfList(jsonPath, container) {
         link.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
         link.style.display = 'block';
         link.style.margin = '8px 0';
+        link.style.padding = '8px 10px';
+        link.style.borderRadius = '10px';
+        link.style.background = 'rgba(255,255,255,0.35)';
         container.appendChild(link);
       });
     })
@@ -457,6 +725,287 @@ function loadPdfList(jsonPath, container) {
 
 function openMobilePDF(src) {
   window.open(src, '_blank');
+}
+
+function closeMobilePDF() {
+  const viewer = document.getElementById('mobile-pdf-viewer');
+  const frame = document.getElementById('mobile-pdf-frame');
+  frame.src = '';
+  viewer.style.display = 'none';
+}
+
+/* =========================
+   MOBILE BIRDSWEEPER
+   ========================= */
+
+const mobileBirdFacts = [
+  {
+    name: 'Kākā',
+    img: 'icons/kaka.png',
+    fact: 'Intelligent parrot with a hooked beak, often seen in native forests.'
+  },
+  {
+    name: 'Tūī',
+    img: 'icons/tui.png',
+    fact: 'Known for iridescent feathers and their mimicry-rich song.'
+  },
+  {
+    name: 'Kererū',
+    img: 'icons/kereru.png',
+    fact: 'Large fruit-eating pigeon vital for forest regeneration.'
+  },
+  {
+    name: 'Kākāpō',
+    img: 'icons/kakapo.png',
+    fact: 'Critically endangered flightless nocturnal parrot.'
+  },
+  {
+    name: 'Tīeke',
+    img: 'icons/tieke.png',
+    fact: 'Rare songbird with a chestnut saddle and strong territorial calls.'
+  }
+];
+
+let mobileBirdGrid = [];
+const mobileBirdRows = 8;
+const mobileBirdCols = 8;
+const mobileBirdCount = 10;
+
+function renderMobileBirdsweeper(container) {
+  container.innerHTML = `
+    <div class="game-intro">Tap tiles to reveal the forest. Find manu, avoid guesswork, and uncover native birds.</div>
+    <div id="mobile-birdsweeper-grid"></div>
+    <div class="mobile-game-button-row">
+      <button class="mobile-game-button" onclick="initMobileBirdsweeper()">Reset Game</button>
+    </div>
+    <div class="mobile-bird-found" id="mobile-bird-found">
+      <img id="mobile-bird-found-img" src="" alt="">
+      <div id="mobile-bird-found-name" style="font-weight:bold; margin-bottom:6px;"></div>
+      <div id="mobile-bird-found-fact"></div>
+    </div>
+  `;
+  initMobileBirdsweeper();
+}
+
+function initMobileBirdsweeper() {
+  const gridEl = document.getElementById('mobile-birdsweeper-grid');
+  const foundEl = document.getElementById('mobile-bird-found');
+  if (!gridEl) return;
+
+  if (foundEl) foundEl.style.display = 'none';
+
+  mobileBirdGrid = [];
+  gridEl.innerHTML = '';
+
+  while (mobileBirdGrid.length < mobileBirdRows * mobileBirdCols) {
+    mobileBirdGrid.push({
+      isBird: false,
+      revealed: false,
+      bird: null,
+      element: null
+    });
+  }
+
+  let birdsPlaced = 0;
+  while (birdsPlaced < mobileBirdCount) {
+    const i = Math.floor(Math.random() * mobileBirdGrid.length);
+    if (!mobileBirdGrid[i].isBird) {
+      const randomBird = mobileBirdFacts[Math.floor(Math.random() * mobileBirdFacts.length)];
+      mobileBirdGrid[i].isBird = true;
+      mobileBirdGrid[i].bird = randomBird;
+      birdsPlaced++;
+    }
+  }
+
+  mobileBirdGrid.forEach((cell, i) => {
+    const cellDiv = document.createElement('div');
+    cellDiv.className = 'mobile-bird-cell';
+    cellDiv.dataset.index = i;
+    cellDiv.addEventListener('click', () => revealMobileBirdCell(i));
+    gridEl.appendChild(cellDiv);
+    cell.element = cellDiv;
+  });
+}
+
+function revealMobileBirdCell(index) {
+  const cell = mobileBirdGrid[index];
+  if (!cell || cell.revealed) return;
+
+  cell.revealed = true;
+  cell.element.classList.add('revealed');
+
+  if (cell.isBird && cell.bird) {
+    cell.element.classList.add('bird');
+    cell.element.innerHTML = `<img src="${cell.bird.img}" alt="${cell.bird.name}" style="width:100%; height:100%; object-fit:contain; border-radius:6px;" />`;
+
+    document.getElementById('mobile-bird-found-img').src = cell.bird.img;
+    document.getElementById('mobile-bird-found-name').textContent = `Species: ${cell.bird.name}`;
+    document.getElementById('mobile-bird-found-fact').textContent = cell.bird.fact;
+    document.getElementById('mobile-bird-found').style.display = 'block';
+    return;
+  }
+
+  const count = getAdjacentMobileBirds(index);
+  if (count > 0) {
+    cell.element.textContent = count;
+  } else {
+    getMobileBirdNeighbors(index).forEach(neighbor => revealMobileBirdCell(neighbor));
+  }
+}
+
+function getAdjacentMobileBirds(index) {
+  return getMobileBirdNeighbors(index).filter(i => mobileBirdGrid[i].isBird).length;
+}
+
+function getMobileBirdNeighbors(index) {
+  const neighbors = [];
+  const row = Math.floor(index / mobileBirdCols);
+  const col = index % mobileBirdCols;
+
+  for (let r = row - 1; r <= row + 1; r++) {
+    for (let c = col - 1; c <= col + 1; c++) {
+      if (r >= 0 && r < mobileBirdRows && c >= 0 && c < mobileBirdCols && !(r === row && c === col)) {
+        neighbors.push(r * mobileBirdCols + c);
+      }
+    }
+  }
+  return neighbors;
+}
+
+/* =========================
+   MOBILE TUNA
+   ========================= */
+
+let mobileTunaInterval = null;
+let mobileTunaDirection = 1;
+let mobileTunaSnake = [];
+let mobileTunaFood = null;
+let mobileTunaScore = 0;
+const mobileTunaGridSize = 14;
+const mobileTunaTotalCells = mobileTunaGridSize * mobileTunaGridSize;
+
+function renderMobileTuna(container) {
+  container.innerHTML = `
+    <div id="mobile-tuna-game">
+      <div class="game-intro">Guide the tuna through the glowing tide. Use the arrows below and don't tangle yourself.</div>
+      <div class="mobile-tuna-score" id="mobile-tuna-score">Score: 0</div>
+      <div id="mobile-tuna-grid"></div>
+      <div class="mobile-controls">
+        <div class="empty"></div>
+        <button onclick="setMobileTunaDirection('up')">↑</button>
+        <div class="empty"></div>
+        <button onclick="setMobileTunaDirection('left')">←</button>
+        <button onclick="setMobileTunaDirection('down')">↓</button>
+        <button onclick="setMobileTunaDirection('right')">→</button>
+      </div>
+      <div class="mobile-game-button-row">
+        <button class="mobile-game-button" onclick="initMobileTunaGame()">Restart Tuna</button>
+      </div>
+    </div>
+  `;
+  initMobileTunaGame();
+}
+
+function initMobileTunaGame() {
+  stopMobileTunaGame();
+
+  const grid = document.getElementById('mobile-tuna-grid');
+  const scoreEl = document.getElementById('mobile-tuna-score');
+  if (!grid || !scoreEl) return;
+
+  grid.innerHTML = '';
+  for (let i = 0; i < mobileTunaTotalCells; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'mobile-tuna-cell';
+    grid.appendChild(cell);
+  }
+
+  mobileTunaSnake = [44, 45, 46];
+  mobileTunaDirection = 1;
+  mobileTunaScore = 0;
+  scoreEl.textContent = 'Score: 0';
+
+  spawnMobileTunaFood();
+  drawMobileTuna();
+
+  mobileTunaInterval = setInterval(moveMobileTuna, 220);
+}
+
+function getMobileTunaCells() {
+  return Array.from(document.querySelectorAll('#mobile-tuna-grid .mobile-tuna-cell'));
+}
+
+function drawMobileTuna() {
+  const cells = getMobileTunaCells();
+  if (!cells.length) return;
+
+  cells.forEach(cell => {
+    cell.className = 'mobile-tuna-cell';
+  });
+
+  mobileTunaSnake.forEach((index, i) => {
+    if (!cells[index]) return;
+    cells[index].classList.add('mobile-tuna');
+    if (i === mobileTunaSnake.length - 1) {
+      cells[index].classList.add('mobile-tuna-head');
+    }
+  });
+
+  if (cells[mobileTunaFood]) {
+    cells[mobileTunaFood].classList.add('mobile-tuna-food');
+  }
+}
+
+function spawnMobileTunaFood() {
+  do {
+    mobileTunaFood = Math.floor(Math.random() * mobileTunaTotalCells);
+  } while (mobileTunaSnake.includes(mobileTunaFood));
+}
+
+function moveMobileTuna() {
+  const head = mobileTunaSnake[mobileTunaSnake.length - 1];
+  const next = head + mobileTunaDirection;
+
+  const hitWall =
+    next < 0 ||
+    next >= mobileTunaTotalCells ||
+    (mobileTunaDirection === 1 && head % mobileTunaGridSize === mobileTunaGridSize - 1) ||
+    (mobileTunaDirection === -1 && head % mobileTunaGridSize === 0) ||
+    mobileTunaSnake.includes(next);
+
+  if (hitWall) {
+    stopMobileTunaGame();
+    const scoreEl = document.getElementById('mobile-tuna-score');
+    if (scoreEl) scoreEl.textContent = `Game Over — Score: ${mobileTunaScore}`;
+    return;
+  }
+
+  mobileTunaSnake.push(next);
+
+  if (next === mobileTunaFood) {
+    mobileTunaScore++;
+    const scoreEl = document.getElementById('mobile-tuna-score');
+    if (scoreEl) scoreEl.textContent = `Score: ${mobileTunaScore}`;
+    spawnMobileTunaFood();
+  } else {
+    mobileTunaSnake.shift();
+  }
+
+  drawMobileTuna();
+}
+
+function setMobileTunaDirection(direction) {
+  if (direction === 'up' && mobileTunaDirection !== mobileTunaGridSize) mobileTunaDirection = -mobileTunaGridSize;
+  if (direction === 'down' && mobileTunaDirection !== -mobileTunaGridSize) mobileTunaDirection = mobileTunaGridSize;
+  if (direction === 'left' && mobileTunaDirection !== 1) mobileTunaDirection = -1;
+  if (direction === 'right' && mobileTunaDirection !== -1) mobileTunaDirection = 1;
+}
+
+function stopMobileTunaGame() {
+  if (mobileTunaInterval) {
+    clearInterval(mobileTunaInterval);
+    mobileTunaInterval = null;
+  }
 }
 
 /* =========================
@@ -496,7 +1045,7 @@ const mobileGhostWhispers = [
   "The rain was listening."
 ];
 
-// keep your existing enterMobileSite function, but hook ghost into it
+
 const originalEnterMobileSite = enterMobileSite;
 enterMobileSite = function () {
   originalEnterMobileSite();
@@ -519,8 +1068,8 @@ function initMobileGhost() {
   mgTargetY = mgY;
 
   animateMobileGhost();
-  blinkMobileGhost();          // same style/timing as desktop
-  resetMobileGhostIdleTimer(); // 40 sec like desktop
+  blinkMobileGhost();
+  resetMobileGhostIdleTimer();
   startMobileGhostWhispers();
   startMobileGhostDrift();
 
@@ -561,7 +1110,7 @@ function leaveMobileGhostTrail() {
   }, 1200);
 }
 
-/* desktop-style blink timing */
+
 function blinkMobileGhost() {
   if (mgSleeping || !mobileGhostEl) return;
 
@@ -576,7 +1125,7 @@ function blinkMobileGhost() {
   mgBlinkTimer = setTimeout(blinkMobileGhost, 400 + Math.random() * 500);
 }
 
-/* gentle drifting while awake */
+
 function startMobileGhostDrift() {
   clearTimeout(mgDriftTimer);
 
@@ -601,7 +1150,7 @@ function startMobileGhostDrift() {
   driftLoop();
 }
 
-/* move away from user's tap/click */
+
 function handleGhostTouchStart(e) {
   const touch = e.touches && e.touches[0];
   if (!touch) return;
@@ -639,7 +1188,7 @@ function moveGhostAwayFromPoint(x, y) {
   }
 }
 
-/* desktop-style sleep timing */
+
 function resetMobileGhostIdleTimer() {
   clearTimeout(mgIdleTimer);
   mgIdleTimer = setTimeout(triggerMobileGhostSleep, 40000);
