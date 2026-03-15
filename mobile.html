@@ -72,46 +72,98 @@
       100% { transform: translate3d(2%, -1.5%, 0) scale(1.05); }
     }
 
-    #mobile-warning {
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 50, 110, 0.18);
-      backdrop-filter: blur(6px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: 24px;
-    }
+ #mobile-warning {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.035) 0%, transparent 30%),
+    linear-gradient(180deg, #050505 0%, #0a0a0a 45%, #030303 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 24px;
+}
 
-    .enter-panel {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: transparent;
-      box-shadow: none;
-      border: none;
-      padding: 0;
-    }
+.enter-panel {
+  position: relative;
+  z-index: 2;
+  width: min(320px, 82vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
 
-    .enter-panel button {
-      border: 1px solid #d468a8;
-      background: linear-gradient(to bottom, #ffb7dc, #f28cc2);
-      color: white;
-      font-weight: bold;
-      font-size: 1.1em;
-      border-radius: 14px;
-      padding: 12px 34px;
-      cursor: pointer;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.25);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.55),
-        0 6px 18px rgba(0,0,0,0.18);
-    }
+.mobile-enter-logo {
+  width: min(220px, 62vw);
+  max-width: 220px;
+  height: auto;
+  display: block;
+  filter:
+    drop-shadow(0 0 8px rgba(255,255,255,0.12))
+    drop-shadow(0 0 20px rgba(210,210,210,0.08));
+  animation: mobileEnterLogoFloat 4s ease-in-out infinite;
+}
 
-    .enter-panel button:active {
-      transform: translateY(1px);
-    }
+.mobile-enter-subtitle {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  color: #bfbfbf;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(255,255,255,0.06);
+}
+
+.enter-panel button {
+  min-width: 160px;
+  height: 44px;
+  padding: 0 26px;
+  border: 1px solid rgba(205, 205, 205, 0.7);
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(30,30,30,0.95) 0%, rgba(10,10,10,0.98) 100%);
+  color: #d6d6d6;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-shadow: 0 0 8px rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.06),
+    0 0 12px rgba(255,255,255,0.03);
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.enter-panel button:hover {
+  background:
+    linear-gradient(180deg, rgba(40,40,40,0.96) 0%, rgba(14,14,14,0.99) 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.08),
+    0 0 16px rgba(255,255,255,0.05);
+}
+
+.enter-panel button:active {
+  transform: translateY(1px);
+}
+
+@keyframes mobileEnterLogoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
 
     .app-grid {
       position: relative;
@@ -564,7 +616,9 @@
 
 <div id="mobile-warning">
   <div class="enter-panel">
-    <button onclick="enterMobileSite()">Enter</button>
+    <img src="icons/georgeturner_logo.png" alt="George Turner" class="mobile-enter-logo">
+    <div class="mobile-enter-subtitle">GEORGE TURNER MOBILE</div>
+    <button onclick="enterMobileSite()">ENTER</button>
   </div>
 </div>
 
