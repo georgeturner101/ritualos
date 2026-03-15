@@ -21,52 +21,122 @@ body, html {
   z-index: 0;
 }
 
+/* =========================
+   BOOT SCREEN
+========================= */
+
 /* Boot screen */
 #boot-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: black;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(60, 110, 255, 0.12) 0%, rgba(0, 0, 0, 0) 38%),
+    linear-gradient(180deg, #050914 0%, #09162f 38%, #05070d 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: sparkleFade 2s ease-in-out infinite;
+  overflow: hidden;
 }
 
-#boot-screen::before {
-  content: 'LOADING...';
-  font-size: 28px;
-  color: #ffb6f4;
+/* inner container */
+
+.boot-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* logo */
+
+.boot-logo {
+  width: 240px;
+  max-width: 70vw;
+  filter:
+    drop-shadow(0 0 14px rgba(255,200,240,0.6))
+    drop-shadow(0 0 24px rgba(170,220,255,0.5));
+  animation: bootLogoFloat 3.5s ease-in-out infinite;
+}
+
+/* loading text */
+
+.boot-loading {
+  font-size: 30px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #ff7bc9;
+
   text-shadow:
-    0 0 10px #ffb6f4,
-    0 0 20px #ffa3e5,
-    0 0 40px #ffd0fa,
-    0 0 60px #ffd0fa;
-  animation: shimmer 1.5s linear infinite;
+    0 0 10px #ff7bc9,
+    0 0 20px #ffa8e6,
+    0 0 35px #ffd1f4;
+
+  display: flex;
+  align-items: center;
 }
 
-@keyframes shimmer {
-  0% {
-    text-shadow: 0 0 10px #ffb6f4, 0 0 20px #ffa3e5, 0 0 40px #ffd0fa, 0 0 60px #ffd0fa;
-  }
-  50% {
-    text-shadow: 0 0 5px #ffd0fa, 0 0 10px #ffdefc, 0 0 20px #ffade5, 0 0 30px #ffc1ec;
-  }
-  100% {
-    text-shadow: 0 0 10px #ffb6f4, 0 0 20px #ffa3e5, 0 0 40px #ffd0fa, 0 0 60px #ffd0fa;
-  }
+/* animated dots */
+
+.boot-dots span {
+  opacity: 0;
+  animation: bootDotBlink 1.5s infinite;
 }
 
-@keyframes sparkleFade {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.85;
-  }
+.boot-dots span:nth-child(1) { animation-delay: 0s; }
+.boot-dots span:nth-child(2) { animation-delay: 0.25s; }
+.boot-dots span:nth-child(3) { animation-delay: 0.5s; }
+
+@keyframes bootDotBlink {
+  0%, 20% { opacity: 0 }
+  40% { opacity: 1 }
+  100% { opacity: 0 }
+}
+
+/* loading bar container */
+
+.boot-bar {
+  width: 260px;
+  height: 16px;
+
+  background: rgba(255,255,255,0.45);
+  border-radius: 12px;
+
+  overflow: hidden;
+
+  box-shadow:
+    inset 0 0 6px rgba(0,0,0,0.15),
+    0 0 12px rgba(160,210,255,0.6);
+}
+
+/* animated bar */
+
+.boot-bar-fill {
+  height: 100%;
+  width: 40%;
+
+  background: linear-gradient(
+    90deg,
+    #9ad8ff,
+    #66c8ff,
+    #9ad8ff
+  );
+
+  border-radius: 12px;
+
+  animation: bootBarMove 2.2s linear infinite;
+}
+
+@keyframes bootBarMove {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(300%) }
+}
+
+/* floating logo */
+
+@keyframes bootLogoFloat {
+  0%,100% { transform: translateY(0px) }
+  50% { transform: translateY(-6px) }
 }
 
 /* Desktop icons */
