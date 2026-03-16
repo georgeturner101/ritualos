@@ -239,14 +239,14 @@ function buildDesktopIcons() {
     el.innerHTML = `<img src="icons/${i.icon}" alt="${i.name}"><div class="icon-title">${i.name}</div>`;
 
     if (!hasSaved) {
-      const columnCount = 2;
+      const maxRowsPerColumn = 5;
       const spacingX = 140;
       const spacingY = 140;
       const startX = 40;
       const startY = 60;
 
-      const col = index % columnCount;
-      const row = Math.floor(index / columnCount);
+      const col = Math.floor(index / maxRowsPerColumn);
+      const row = index % maxRowsPerColumn;
 
       el.style.position = 'absolute';
       el.style.left = `${startX + col * spacingX}px`;
@@ -280,12 +280,10 @@ function loadIconPositions() {
   if (!saved) return;
 
   const positions = JSON.parse(saved);
+  const allIcons = document.querySelectorAll('.icon');
 
-  const icons = document.querySelectorAll('.icon');
-
-  icons.forEach((icon, index) => {
+  allIcons.forEach((icon, index) => {
     const name = icon.querySelector('.icon-title').textContent;
-
     const savedPos = positions.find(p => p.name === name);
 
     if (savedPos) {
@@ -293,16 +291,16 @@ function loadIconPositions() {
       icon.style.left = savedPos.left;
       icon.style.top = savedPos.top;
     } else {
-      // place new icons automatically
-      const columnCount = 2;
+      const maxRowsPerColumn = 5;
       const spacingX = 140;
       const spacingY = 140;
       const startX = 40;
       const startY = 60;
 
-      const col = index % columnCount;
-      const row = Math.floor(index / columnCount);
+      const col = Math.floor(index / maxRowsPerColumn);
+      const row = index % maxRowsPerColumn;
 
+      icon.style.position = 'absolute';
       icon.style.left = `${startX + col * spacingX}px`;
       icon.style.top = `${startY + row * spacingY}px`;
     }
