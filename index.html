@@ -137,6 +137,7 @@
       <li onclick="openWindow('video')">Video</li>
       <li onclick="openWindow('internet')">Internet</li>
       <li onclick="openWindow('press')">Press</li>
+      <li onclick="openWindow('gtpaint')">GT Paint</li>
     </ul>
   </div>
 
@@ -264,6 +265,31 @@
 
   <!-- Spirit Ghost -->
   <img id="spirit-ghost" src="icons/ghost.png" alt="spirit ghost">
+
+    <!-- GT Paint Window -->
+  <div class="window" id="window-gtpaint">
+    <div class="title-bar">GT Paint <button onclick="closeWindow('gtpaint')">X</button></div>
+    <div class="window-content gtpaint-content">
+      <div class="gtpaint-toolbar">
+        <button id="gtpaint-pencil" class="gtpaint-tool active">Pencil</button>
+        <button id="gtpaint-eraser" class="gtpaint-tool">Eraser</button>
+
+        <label for="gtpaint-color">Colour</label>
+        <input type="color" id="gtpaint-color" value="#000000">
+
+        <label for="gtpaint-size">Size</label>
+        <input type="range" id="gtpaint-size" min="1" max="30" value="4">
+        <span id="gtpaint-size-display">4</span>
+
+        <button id="gtpaint-clear">Clear</button>
+        <button id="gtpaint-download">Download PNG</button>
+      </div>
+
+      <div class="gtpaint-canvas-wrap">
+        <canvas id="gtpaint-canvas" width="1000" height="700"></canvas>
+      </div>
+    </div>
+  </div>
 
   <!-- Firebase core + database -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>

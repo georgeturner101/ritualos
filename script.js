@@ -16,7 +16,8 @@ const icons = [
   { name: 'Tuna', icon: 'tuna.png', window: 'tuna' },
   { name: 'Video', icon: 'video.png', window: 'video' },
   { name: 'Internet', icon: 'internet.png', window: 'internet' },
-  { name: 'Press', icon: 'press.png', window: 'press' }
+  { name: 'Press', icon: 'press.png', window: 'press' },
+  { name: 'GT Paint', icon: 'gtpaint.png', window: 'gtpaint' }
 ];
 
 const birdIcons = [
@@ -163,6 +164,10 @@ function openWindow(name, shouldInit = true) {
   if (name === 'game') {
     setTimeout(initBirdsweeper, 50);
   }
+
+  if (name === 'gtpaint') {
+    setTimeout(initGTPaint, 50);
+  }
 }
 
 function closeWindow(name) {
@@ -275,14 +280,31 @@ function loadIconPositions() {
   if (!saved) return;
 
   const positions = JSON.parse(saved);
-  positions.forEach(pos => {
-    const icon = Array.from(document.querySelectorAll('.icon')).find(
-      i => i.querySelector('.icon-title').textContent === pos.name
-    );
-    if (icon) {
+
+  const icons = document.querySelectorAll('.icon');
+
+  icons.forEach((icon, index) => {
+    const name = icon.querySelector('.icon-title').textContent;
+
+    const savedPos = positions.find(p => p.name === name);
+
+    if (savedPos) {
       icon.style.position = 'absolute';
-      icon.style.left = pos.left;
-      icon.style.top = pos.top;
+      icon.style.left = savedPos.left;
+      icon.style.top = savedPos.top;
+    } else {
+      // place new icons automatically
+      const columnCount = 2;
+      const spacingX = 140;
+      const spacingY = 140;
+      const startX = 40;
+      const startY = 60;
+
+      const col = index % columnCount;
+      const row = Math.floor(index / columnCount);
+
+      icon.style.left = `${startX + col * spacingX}px`;
+      icon.style.top = `${startY + row * spacingY}px`;
     }
   });
 }
@@ -1067,4 +1089,132 @@ function restartTunaGame() {
     openWindow('tuna');
     setTimeout(initTunaGame, 100);
   }
+}
+
+// =========================
+// GT PAINT
+// =========================
+
+let gtPaintInitialized = false;
+let gtPaintIsDrawing = false;
+let gtPaintTool = 'pencil';
+let gtPaintColor = '#000000';
+let gtPaintSize = 4;
+
+function initGTPaint() {
+  const canvas = document.getElementById('gtpaint-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const pencilBtn = document.getElementById('gtpaint-pencil');
+  const eraserBtn = document.getElementById('gtpaint-eraser');
+  const colorInput = document.getElementById('gtpaint-color');
+  const sizeInput = document.getElementById('gtpaint-size');
+  const sizeDisplay = document.getElementById('gtpaint-size-display');
+  const clearBtn = document.getElementById('gtpaint-clear');
+  const downloadBtn = document.getElementById('gtpaint-download');
+
+  if (!gtPaintInitialized) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    pencilBtn.addEventListener('click', () => {
+      gtPaintTool = 'pencil';
+      pencilBtn.classList.add('active');
+      eraserBtn.classList.remove('active');
+    });
+
+    eraserBtn.addEventListener('click', () => {
+      gtPaintTool = 'eraser';
+      eraserBtn.classList.add('active');
+      pencilBtn.classList.remove('active');
+    });
+
+    colorInput.addEventListener('input', (e) => {
+      gtPaintColor = e.target.value;
+    });
+
+    sizeInput.addEventListener('input', (e) => {
+      gtPaintSize = parseInt(e.target.value, 10);
+      sizeDisplay.textContent = gtPaintSize;
+    });
+
+    clearBtn.addEventListener('click', () => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'gt-paint-artwork.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    function getCanvasPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    function startDrawing(e) {
+      gtPaintIsDrawing = true;
+      const pos = getCanvasPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+      if (!gtPaintIsDrawing) return;
+
+      const pos = getCanvasPos(e);
+
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = gtPaintSize;
+      ctx.strokeStyle = gtPaintTool === 'eraser' ? '#ffffff' : gtPaintColor;
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      gtPaintIsDrawing = false;
+      ctx.beginPath();
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      startDrawing({
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      draw({
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+    }, { passive: false });
+
+    window.addEventListener('touchend', stopDrawing);
+
+    gtPaintInitialized = true;
+  }
+
+  sizeDisplay.textContent = gtPaintSize;
 }
