@@ -1,38 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Bird Particle Site</title>
-  
-  <!-- Stylish font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bird Art — George Turner</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.min.js"></script>
-  <script src="sketch.js"></script>  
+  <script src="sketch.js"></script>
 </head>
 <body>
+  <div id="overlay"></div>
 
-  <!-- Top-right menu -->
-  <div id="menu">
-    <select id="birdSelect">
-      <option value="tui">Tūī</option>
-      <option value="kaka">Kākā</option>
-      <option value="korimako">Korimako</option>
-      <option value="kokako">Kōkako</option>
-      <option value="riroriro">Riroriro</option>
-      <option value="ruru">Ruru</option>
-      <option value="teike">Teike</option>
-    </select>
+  <div id="ui-shell">
+    <div id="top-bar">
+      <div id="site-title">
+        <span class="title-main">Bird Art</span>
+        <span class="title-sub">Particle Field Archive</span>
+      </div>
+
+      <div id="bird-control">
+        <select id="birdSelect">
+          <option value="tui">Tūī</option>
+          <option value="kaka">Kākā</option>
+          <option value="korimako">Korimako</option>
+          <option value="kokako">Kōkako</option>
+          <option value="riroriro">Riroriro</option>
+          <option value="ruru">Ruru</option>
+          <option value="tieke">Tīeke</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="start-panel">
+      <div id="start-card">
+        <div class="start-label">George Turner</div>
+        <div class="start-heading">Bird Art</div>
+        <div class="start-copy">
+          Select a bird voice and click anywhere to initialise sound.
+        </div>
+      </div>
+    </div>
+
+    <div id="footer-mark">
+      <a href="https://georgeturner.space" target="_blank" rel="noopener noreferrer">
+        Return to GeorgeTurner.space
+      </a>
+    </div>
   </div>
-
-  <!-- Bottom-left icon -->
-  <div id="icon">
-    <a href="https://georgeturner.space" target="_blank">
-      <img src="images/your-icon.png" alt="Visit George Turner Space">
-    </a>
-  </div>
-
+  
 </body>
 </html>
