@@ -81,51 +81,40 @@
     })();
   </script>
 </head>
-<div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
-  <h1>George Turner – New Zealand Artist</h1>
-  <p>
-    George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa.
-    Their work explores queer ecology, digital art, experimental film, environmental storytelling,
-    and immersive ecological worlds.
-  </p>
-  <p>
-    RitualOS is the online portfolio of George Turner, featuring artworks, exhibitions, films,
-    freelance projects, and digital experiments.
-  </p>
-</div>
+
 <body>
   <!-- Video background -->
   <video id="bg-video" autoplay loop muted playsinline>
     <source src="video/church.mp4" type="video/mp4">
   </video>
 
-<!-- Boot screen -->
-<div id="boot-screen">
-  <div class="boot-inner">
-    <img src="icons/georgeturner_logo.png" alt="George Turner" class="boot-logo">
+  <!-- Boot screen -->
+  <div id="boot-screen">
+    <div class="boot-inner">
+      <img src="icons/georgeturner_logo.png" alt="George Turner" class="boot-logo">
 
-    <div class="boot-loading">
-      <span class="boot-loading-text">LOADING</span>
-      <span class="boot-dots">
-        <span>.</span><span>.</span><span>.</span>
-      </span>
-    </div>
-
-    <div class="boot-bar">
-      <div class="boot-bar-track">
-        <div class="boot-bar-fill"></div>
+      <div class="boot-loading">
+        <span class="boot-loading-text">LOADING</span>
+        <span class="boot-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
       </div>
-   
+
+      <div class="boot-bar">
+        <div class="boot-bar-track">
+          <div class="boot-bar-fill"></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Desktop icons -->
   <div id="desktop"></div>
 
-  <!-- Selection Box for drag -->
+  <!-- Selection box -->
   <div id="selection-box"></div>
 
+  <!-- Taskbar -->
   <div id="taskbar">
     <button id="start-button" onclick="toggleStartMenu()">Start</button>
     <div id="search">Search...</div>
@@ -133,7 +122,7 @@
     <div id="taskbar-apps"></div>
     <div id="clock"></div>
     <div id="audio-toggle" onclick="toggleAudio()">🔊</div>
-  </div>    
+  </div>
 
   <!-- Start menu -->
   <div id="start-menu" class="hidden">
@@ -150,7 +139,7 @@
       <li onclick="openWindow('press')">Press</li>
     </ul>
   </div>
-  
+
 
   <!-- Exhibitions Window -->
   <div class="window" id="window-exhibitions">
@@ -164,199 +153,190 @@
     <div class="pdf-list" id="pdfs-freelance"></div>
   </div>
 
-<!-- About Window -->
-<div class="window" id="window-about" style="width: 550px; height: 650px;">
-  <div class="title-bar">About Me <button onclick="closeWindow('about')">X</button></div>
-  <div class="window-content">
-    <div class="about-photo-container">
-      <img src="images/portrait.jpg" alt="Portrait of George Turner" class="about-photo">
-    </div>      
+  <!-- About Window -->
+  <div class="window" id="window-about">
+    <div class="title-bar">About Me <button onclick="closeWindow('about')">X</button></div>
+    <div class="window-content">
+      <div class="about-photo-container">
+        <img src="images/portrait.jpg" alt="Portrait of George Turner" class="about-photo">
+      </div>
 
-    <p><strong>George Turner (Pākehā)</strong> is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.</p>
+      <p><strong>George Turner (Pākehā)</strong> is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.</p>
 
-    <p>Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including <em>Ihi</em> (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and <em>The Battle</em> (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.</p>
+      <p>Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including <em>Ihi</em> (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and <em>The Battle</em> (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.</p>
 
-    <p>As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.</p>
+      <p>As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.</p>
 
-    <p>Also an accomplished musician, Turner has released two EPs (<em>Some Days</em>, <em>Thank You For Your Time</em>) and a full-length debut album, <em>Insect</em> (2019), followed by several tours across Aotearoa and Australia. Their highly anticipated sophomore album is scheduled for release in 2025.</p>
+      <p>Also an accomplished musician, Turner has released two EPs (<em>Some Days</em>, <em>Thank You For Your Time</em>) and a full-length debut album, <em>Insect</em> (2019), followed by several tours across Aotearoa and Australia. Their highly anticipated sophomore album is scheduled for release in 2025.</p>
+    </div>
   </div>
-</div>
 
-
-<!-- Contact Window -->
-<div class="window" id="window-contact">
-  <div class="title-bar">Contact <button onclick="closeWindow('contact')">X</button></div>
-  <div class="window-content">
-    <p>Email: stowaway101@gmail.com</p>
-    <p>Instagram: <a href="https://instagram.com/georgeturner___" target="_blank">@georgeturner___</a></p>
-    <p>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank">@georgeturner8087</a></p>
-    <p>Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq?si=Mam8Lm2DRUawDOoQyc-2wg" target="_blank">George Turner</a></p>
+  <!-- Contact Window -->
+  <div class="window" id="window-contact">
+    <div class="title-bar">Contact <button onclick="closeWindow('contact')">X</button></div>
+    <div class="window-content">
+      <p>Email: stowaway101@gmail.com</p>
+      <p>Instagram: <a href="https://instagram.com/georgeturner___" target="_blank" rel="noopener noreferrer">@georgeturner___</a></p>
+      <p>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank" rel="noopener noreferrer">@georgeturner8087</a></p>
+      <p>Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq?si=Mam8Lm2DRUawDOoQyc-2wg" target="_blank" rel="noopener noreferrer">George Turner</a></p>
+    </div>
   </div>
-</div>
 
   <!-- Music Window -->
   <div class="window" id="window-music">
     <div class="title-bar">Music <button onclick="closeWindow('music')">X</button></div>
     <div class="window-content">
-      <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/0pyvTVrYsT8QXB8EYyJdxF?..." width="100%" height="352"></iframe>
+      <iframe
+        style="border-radius:12px"
+        src="https://open.spotify.com/embed/album/0pyvTVrYsT8QXB8EYyJdxF?..."
+        width="100%"
+        height="352">
+      </iframe>
     </div>
   </div>
 
-  <!-- Game Window -->
-<div class="window" id="window-game">
-  <div class="title-bar">Birdsweeper <button onclick="closeWindow('game')">X</button></div>
-  <div class="window-content">
-    <div id="birdsweeper-grid"></div>
-    <button onclick="resetBirdsweeper()">Reset Game</button>
+  <!-- Birdsweeper Window -->
+  <div class="window" id="window-game">
+    <div class="title-bar">Birdsweeper <button onclick="closeWindow('game')">X</button></div>
+    <div class="window-content">
+      <div id="birdsweeper-grid"></div>
+      <button onclick="resetBirdsweeper()">Reset Game</button>
+    </div>
   </div>
-</div>
 
-<!-- Bird Found Window -->
-<div class="window" id="window-bird-found">
-  <div class="title-bar">You Found a Bird! <button onclick="closeWindow('bird-found')">X</button></div>
-  <div class="window-content bird-popup">
-    <img id="bird-found-img" src="" alt="Bird Found" />
-    <p id="bird-found-name"><strong>Species:</strong></p>
-    <p id="bird-found-fact"></p>
+  <!-- Bird Found Window -->
+  <div class="window" id="window-bird-found">
+    <div class="title-bar">You Found a Bird! <button onclick="closeWindow('bird-found')">X</button></div>
+    <div class="window-content bird-popup">
+      <img id="bird-found-img" src="" alt="Bird Found" />
+      <p id="bird-found-name"><strong>Species:</strong></p>
+      <p id="bird-found-fact"></p>
+    </div>
   </div>
-</div>
 
-<!-- Video Window -->
-<div class="window" id="window-video">
-  <div class="title-bar">Videos <button onclick="closeWindow('video')">X</button></div>
-  <div class="window-content"> <!-- ✅ wrap this -->
-    <div id="video-list"></div>
+  <!-- Video Window -->
+  <div class="window" id="window-video">
+    <div class="title-bar">Videos <button onclick="closeWindow('video')">X</button></div>
+    <div class="window-content">
+      <div id="video-list"></div>
+    </div>
   </div>
-</div>
 
-
-<!-- Tuna Game -->
-<div class="window" id="window-tuna" style="display: none;">
-  <div class="title-bar">Tuna 🐟 <button onclick="closeWindow('tuna')">X</button></div>
-  <div class="window-content">
-    <div id="tuna-grid" style="display: grid; grid-template-columns: repeat(20, 20px); gap: 1px; width: 420px; height: 420px; margin: 10px auto;"></div>
+  <!-- Tuna Window -->
+  <div class="window" id="window-tuna">
+    <div class="title-bar">Tuna 🐟 <button onclick="closeWindow('tuna')">X</button></div>
+    <div class="window-content">
+      <div id="tuna-grid"></div>
+    </div>
   </div>
-</div>
 
-<!-- Internet Window -->
-<div class="window" id="window-internet" style="display: none;">
-  <div class="title-bar">Internet <button onclick="closeWindow('internet')">X</button></div>
-  <div class="window-content" id="internet-links">
-    <!-- Links will be injected here -->
+  <!-- Internet Window -->
+  <div class="window" id="window-internet">
+    <div class="title-bar">Internet <button onclick="closeWindow('internet')">X</button></div>
+    <div class="window-content" id="internet-links"></div>
   </div>
-</div>
 
-<!-- Press Desktop Icon -->
-<div class="desktop-icon" onclick="openWindow('press')">
-  <img src="icons/press.png" alt="Press Icon">
-  <span>Press</span>
-</div>
-
-<!-- Press Window -->
-<div class="window" id="window-press" style="display: none;">
-  <div class="title-bar">Press <button onclick="closeWindow('press')">X</button></div>
-  <div class="window-content" id="press-links">
-    <!-- Press links will be injected here -->
+  <!-- Press Window -->
+  <div class="window" id="window-press">
+    <div class="title-bar">Press <button onclick="closeWindow('press')">X</button></div>
+    <div class="window-content" id="press-links"></div>
   </div>
-</div>
 
+  <!-- Video Player Window -->
+  <div class="window" id="window-video-viewer">
+    <div class="title-bar">Video Player <button onclick="closeWindow('video-viewer')">X</button></div>
+    <video id="video-frame" controls style="width:100%; height:100%; background:black;"></video>
+  </div>
 
-<!-- Video Player Window -->
-<div class="window" id="window-video-viewer" style="display:none;">
-  <div class="title-bar">Video Player <button onclick="closeWindow('video-viewer')">X</button></div>
-  <video id="video-frame" controls style="width:100%; height:100%; background:black;"></video>
-</div>
-
-
-  <!-- PDF Viewer Template -->
-  <div class="window" id="window-pdf-viewer" style="display:none;">
+  <!-- PDF Viewer Window -->
+  <div class="window" id="window-pdf-viewer">
     <div class="title-bar">Viewer <button onclick="closeWindow('pdf-viewer')">X</button></div>
     <iframe id="pdf-frame" src=""></iframe>
   </div>
 
-  <audio id="startup"><source src="audio/startup.mp3" type="audio/mpeg"></audio>
-  <audio id="ambient-sound" loop><source src="audio/forest.mp3" type="audio/mpeg"></audio>
+  <audio id="startup">
+    <source src="audio/startup.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="ambient-sound" loop>
+    <source src="audio/forest.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Spirit Ghost -->
   <img id="spirit-ghost" src="icons/ghost.png" alt="spirit ghost">
 
-<!-- Windows Layout End -->
-<!-- Firebase + Site Scripts Start -->
+  <!-- Firebase core + database -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
 
-<!-- Firebase core + database -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+  <!-- Your own Firebase config -->
+  <script src="firebase-config.js"></script>
 
-<!-- Your own Firebase config -->
-<script src="firebase-config.js"></script>
+  <!-- RitualOS Main Script -->
+  <script src="script.js"></script>
 
-<!-- RitualOS Main Script -->
-<script src="script.js"></script>
+  <!-- SEO text block for search engines -->
+  <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
+    <h1>George Turner – New Zealand Artist and Musician</h1>
 
-<!-- SEO text block for search engines -->
-<div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
-  
-  <h1>George Turner – New Zealand Artist and Musician</h1>
+    <p>
+      George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa.
+      Their work explores queer ecology, environmental storytelling, digital art, experimental film,
+      immersive ecosystems, installation, painting, and speculative digital worlds.
+    </p>
 
-  <p>
-    George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa.
-    Their work explores queer ecology, environmental storytelling, digital art, experimental film,
-    immersive ecosystems, installation, painting, and speculative digital worlds.
-  </p>
+    <p>
+      George Turner is also a musician creating experimental pop and electronic music.
+      Their albums and releases include Insect, Thank You For Your Time, Some Days,
+      Oriental Beach, and Lost At Home.
+    </p>
 
-  <p>
-    George Turner is also a musician creating experimental pop and electronic music.
-    Their albums and releases include Insect, Thank You For Your Time, Some Days,
-    Oriental Beach, and Lost At Home.
-  </p>
+    <p>
+      RitualOS is the interactive website and digital portfolio of George Turner,
+      featuring artworks, exhibitions, films, music projects, and freelance work.
+    </p>
 
-  <p>
-    RitualOS is the interactive website and digital portfolio of George Turner,
-    featuring artworks, exhibitions, films, music projects, and freelance work.
-  </p>
+    <h2>Artist Keywords</h2>
+    <p>
+      George Turner artist, George Turner NZ, George Turner New Zealand artist,
+      George Turner art, George Turner music, George Turner musician,
+      digital artist NZ, experimental artist New Zealand, queer ecology artist,
+      video artist Aotearoa, ecological artist New Zealand.
+    </p>
 
-  <h2>Artist Keywords</h2>
-  <p>
-    George Turner artist, George Turner NZ, George Turner New Zealand artist,
-    George Turner art, George Turner music, George Turner musician,
-    digital artist NZ, experimental artist New Zealand, queer ecology artist,
-    video artist Aotearoa, ecological artist New Zealand.
-  </p>
+    <h2>Selected Artworks</h2>
+    <ul>
+      <li>Out of the Scene, Into the Fever</li>
+      <li>Nikau</li>
+      <li>Ti Kouka</li>
+      <li>Sixteen Trees</li>
+      <li>A Place to Watch the World Rot</li>
+    </ul>
 
-  <h2>Selected Artworks</h2>
-  <ul>
-    <li>Out of the Scene, Into the Fever</li>
-    <li>Nikau</li>
-    <li>Ti Kouka</li>
-    <li>Sixteen Trees</li>
-    <li>A Place to Watch the World Rot</li>
-  </ul>
+    <h2>Selected Exhibitions</h2>
+    <ul>
+      <li>Stages of Grief</li>
+      <li>Remnants</li>
+      <li>Under the Pasture</li>
+      <li>Second Impressions</li>
+      <li>Tangible Remains</li>
+    </ul>
 
-  <h2>Selected Exhibitions</h2>
-  <ul>
-    <li>Stages of Grief</li>
-    <li>Remnants</li>
-    <li>Under the Pasture</li>
-    <li>Second Impressions</li>
-    <li>Tangible Remains</li>
-  </ul>
+    <h2>Music and Albums</h2>
+    <ul>
+      <li>Insect</li>
+      <li>Thank You For Your Time</li>
+      <li>Some Days</li>
+      <li>Oriental Beach</li>
+      <li>Lost At Home</li>
+    </ul>
 
-  <h2>Music and Albums</h2>
-  <ul>
-    <li>Insect</li>
-    <li>Thank You For Your Time</li>
-    <li>Some Days</li>
-    <li>Oriental Beach</li>
-    <li>Lost At Home</li>
-  </ul>
-
-  <p>
-    Explore the artworks, exhibitions, music releases, digital environments,
-    and experimental ecological storytelling of George Turner.
-  </p>
-
-</div>
+    <p>
+      Explore the artworks, exhibitions, music releases, digital environments,
+      and experimental ecological storytelling of George Turner.
+    </p>
+  </div>
 
 </body>
 </html>
