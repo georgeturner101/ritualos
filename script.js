@@ -17,7 +17,8 @@ const icons = [
   { name: 'Video', icon: 'video.png', window: 'video' },
   { name: 'Internet', icon: 'internet.png', window: 'internet' },
   { name: 'Press', icon: 'press.png', window: 'press' },
-  { name: 'GT Paint', icon: 'gtpaint.png', window: 'gtpaint' }
+  { name: 'GT Paint', icon: 'gtpaint.png', window: 'gtpaint' },
+  { name: 'Bird Art', icon: 'birdart.png', window: 'birdart' }
 ];
 
 const birdIcons = [
@@ -148,6 +149,11 @@ function playWindowOpenAnimation(win) {
 }
 
 function openWindow(name, shouldInit = true) {
+  if (name === 'birdart') {
+    window.open('./birdart/index.html', '_blank');
+    return;
+  }
+
   const win = document.getElementById(`window-${name}`);
   if (!win) return;
 

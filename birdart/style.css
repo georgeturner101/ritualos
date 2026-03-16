@@ -1,0 +1,49 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+  cursor: crosshair;
+  font-family: 'Inter', sans-serif;
+}
+
+#menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+#birdSelect {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* FIX - style the options inside the select */
+#birdSelect option {
+  background: #000; /* Black background for the dropdown options */
+  color: white;     /* White text */
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+}
+
+#icon {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+#icon img {
+  width: 32px;
+  height: 32px;
+  filter: invert(1);
+}
