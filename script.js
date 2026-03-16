@@ -1,48 +1,10 @@
-// Boot + Clock + Cursor fix
-window.onload = function () {
-  const boot = document.getElementById('boot-screen');
-  setTimeout(() => boot.style.display = 'none', 3000);
-  const clock = document.getElementById('clock');
-  setInterval(() => {
-    const now = new Date();
-    clock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }, 1000);
-
-  const startup = document.getElementById('startup');
-  const ambient = document.getElementById('ambient-sound');
-  if (startup) startup.play().catch(() => {});
-  if (ambient) ambient.play().catch(() => {});
-
-  document.body.style.cursor = "url('icons/glitter-cursor.png'), auto";
-
-  let topZ = 10;
-
-function bringToFront(win) {
-  topZ++;
-  win.style.zIndex = topZ;
-}
-
-  enableDragging();
-};
+// =========================
+// GLOBAL STATE
+// =========================
 
 let topZ = 10;
-
-function bringToFront(win) {
-  topZ++;
-  win.style.zIndex = topZ;
-}
-
-function toggleStartMenu() {
-  const menu = document.getElementById('start-menu');
-  menu.classList.toggle('hidden');
-}
-
-
-
-function closeWindow(name) {
-  const win = document.getElementById(`window-${name}`);
-  if (win) win.style.display = 'none';
-}
+let tunaGameInterval = null;
+let tunaKeyListener = null;
 
 const icons = [
   { name: 'Exhibitions', icon: 'folder.png', window: 'exhibitions' },
@@ -57,83 +19,193 @@ const icons = [
   { name: 'Press', icon: 'press.png', window: 'press' }
 ];
 
-const savedPositions = localStorage.getItem('iconPositions');
-const hasSaved = !!savedPositions;
+const birdIcons = [
+  'icons/kakapo.png',
+  'icons/kaka.png',
+  'icons/tui.png'
+];
 
-icons.forEach((i, index) => {
-  const el = document.createElement('div');
-  el.classList.add('icon');
-  el.innerHTML = `<img src="icons/${i.icon}"><div class="icon-title">${i.name}</div>`;
+const internetLinks = [
+  { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
+  { title: "George Turner – Lost at Home", url: "https://www.youtube.com/watch?v=r9GqI2HaAJE&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
+  { title: "George Turner – Love", url: "https://www.youtube.com/watch?v=EMAbum6atCM&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
+  { title: "George Turner – Thank You For Your Time (EP)", url: "https://www.youtube.com/watch?v=MUn0ev3RRWs&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
+  { title: "George Turner – Insect (LP)", url: "https://www.youtube.com/watch?v=g7BoxPGBKE0&ab_channel=GeorgeTurner-Topic" },
+  { title: "Bay1 – Bae1", url: "https://www.youtube.com/watch?v=2tn9MAEhTSc&ab_channel=%E3%83%87%E3%83%BC%E3%83%A2%E3%83%B3Astari" },
+  { title: "FCKCPS ft. George Turner – Block Queen", url: "https://www.youtube.com/watch?v=lLBya7p94Uo&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
+  { title: "Avito – Pancakes", url: "https://www.youtube.com/watch?v=C9ixKJKszq4&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
+  { title: "Exhibition – Free of Charge", url: "https://freeofcharge.space/" },
+  { title: "Exhibition – Depot Artspace", url: "https://depot.org.nz/event/towards-equilibrium/" },
+  { title: "Exhibition – Bowen Gallery", url: "https://bowengalleries.nz/george-turner-second-impressions/" },
+  { title: "Exhibition – Astor Bristed", url: "https://www.astorbristed.co.nz/exhibitions/29-george-turner/" },
+  { title: "Exhibition – Webb's", url: "https://auctions.webbs.co.nz/lot-details/index/catalog/718/lot/211832/GEORGE-TURNER-The-River-Bank" }
+];
 
-// Assign default grid layout only if no saved positions exist
-if (!hasSaved) {
-  const iconWidth = 80;
-  const iconHeight = 100;
-  const columnCount = 2;
-  const spacingX = 140;
-  const spacingY = 140;
-  const startX = 40; // distance from the left
-  const startY = 60; // distance from the top
+const pressLinks = [
+  { title: "PAI_32 – Artist of the Month Interview", url: "https://pai32.com/2026/02/12/george-turner/" },
+  { title: "Salive.Live – Stages of grief Review", url: "https://saliva.live/exhibitions/8a8c7707" },
+  { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
+  { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
+  { title: "Sniffers – George Turner fuses fine arts with synth pop on ‘Lost at Home’", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
+  { title: "Sniffers – George Turner grounds themselves with debut album, ‘Insect’", url: "https://www.sniffers.co.nz/article/george-turner-grounds-debut-album-insect" },
+  { title: "Sniffers – George Turner plants their Roots", url: "https://sniffers.co.nz/article/george-turner-plants-roots-kauri" },
+  { title: "Under the Radar – New Single", url: "https://www.undertheradar.co.nz/news/12211/Listen-George-Turner--Age-of-Aquarius.utr" },
+  { title: "Massive Magazine – Artist Profile", url: "https://www.massivemagazine.org.nz/articles/ntqehy32wf0jufy44xsvam2bwlv49s" }
+];
 
-  const col = index % columnCount;
-  const row = Math.floor(index / columnCount);
+// =========================
+// BOOT / INIT
+// =========================
 
-  el.style.position = 'absolute';
-  el.style.left = `${startX + col * spacingX}px`;
-  el.style.top = `${startY + row * spacingY}px`;
+window.onload = function () {
+  const boot = document.getElementById('boot-screen');
+  if (boot) {
+    setTimeout(() => {
+      boot.style.display = 'none';
+    }, 3000);
+  }
+
+  const clock = document.getElementById('clock');
+  if (clock) {
+    const updateClock = () => {
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+    updateClock();
+    setInterval(updateClock, 1000);
+  }
+
+  const startup = document.getElementById('startup');
+  const ambient = document.getElementById('ambient-sound');
+  if (startup) startup.play().catch(() => {});
+  if (ambient) ambient.play().catch(() => {});
+
+  document.body.style.cursor = "url('icons/glitter-cursor.png'), auto";
+
+  buildDesktopIcons();
+  buildTaskbarApps();
+  loadIconPositions();
+  makeIconsDraggable();
+  enableDragging();
+
+  listPDFs('exhibitions', 'pdfs-exhibitions');
+  listPDFs('freelance', 'pdfs-freelance');
+  listVideos('video-list');
+  loadInternetLinks();
+  loadPressLinks();
+
+  initDesktopSelection();
+  initGlobalWindowFocus();
+  initSparkles();
+  initGhost();
+};
+
+// =========================
+// WINDOW HELPERS
+// =========================
+
+function bringToFront(win) {
+  if (!win) return;
+  topZ++;
+  win.style.zIndex = topZ;
 }
 
+function centerWindow(win) {
+  if (!win) return;
 
-  const openAndHighlight = () => {
-    document.querySelectorAll('.icon').forEach(icon => icon.classList.remove('selected'));
-    el.classList.add('selected');
-    openWindow(i.window);
-  };
+  const prevDisplay = win.style.display;
+  const computed = getComputedStyle(win);
 
-  el.querySelector('img').onclick = openAndHighlight;
-  el.querySelector('.icon-title').onclick = openAndHighlight;
+  if (computed.display === 'none') {
+    win.style.visibility = 'hidden';
+    win.style.display = 'flex';
+  }
 
-  desktop.appendChild(el);
+  const width = win.offsetWidth || 430;
+  const height = win.offsetHeight || 320;
+
+  const left = Math.max((window.innerWidth - width) / 2, 20);
+  const top = Math.max((window.innerHeight - height) / 2 - 20, 20);
+
+  win.style.left = `${left}px`;
+  win.style.top = `${top}px`;
+
+  if (win.style.visibility === 'hidden') {
+    win.style.visibility = '';
+    win.style.display = prevDisplay || 'none';
+  }
+}
+
+function playWindowOpenAnimation(win) {
+  if (!win) return;
+  win.classList.remove('window-opening');
+  void win.offsetWidth;
+  win.classList.add('window-opening');
+}
+
+function openWindow(name, shouldInit = true) {
+  const win = document.getElementById(`window-${name}`);
+  if (!win) return;
+
+  win.style.display = 'flex';
+  centerWindow(win);
+  playWindowOpenAnimation(win);
+  bringToFront(win);
+  updateAppStates();
+
+  if (name === 'tuna' && shouldInit) {
+    setTimeout(initTunaGame, 100);
+  }
+
+  if (name === 'game') {
+    setTimeout(initBirdsweeper, 50);
+  }
+}
+
+function closeWindow(name) {
+  const win = document.getElementById(`window-${name}`);
+  if (!win) return;
+
+  win.style.display = 'none';
+  updateAppStates();
+}
+
+function updateAppStates() {
+  document.querySelectorAll('.taskbar-app').forEach(app => {
+    const win = document.getElementById(`window-${app.dataset.window}`);
+    if (win && getComputedStyle(win).display !== 'none') {
+      app.classList.add('active');
+    } else {
+      app.classList.remove('active');
+    }
+  });
+}
+
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.window').forEach(win => {
+    if (getComputedStyle(win).display !== 'none' && !win.classList.contains('tuna-popup')) {
+      centerWindow(win);
+    }
+  });
 });
 
-loadIconPositions();
-makeIconsDraggable();
+// =========================
+// START MENU / AUDIO
+// =========================
 
-
-function listPDFs(folder, containerId) {
-  fetch(`pdfs/${folder}/index.json`)
-    .then(res => res.json())
-    .then(files => {
-      const cont = document.getElementById(containerId);
-      cont.innerHTML = '';
-      files.forEach(name => {
-        const link = document.createElement('a');
-        link.href = "#";
-        link.textContent = name;
-        link.onclick = (e) => {
-          e.preventDefault();
-          openPDF(`pdfs/${folder}/${name}`);
-        };
-        cont.appendChild(link);
-      });
-    });
-}
-
-function openPDF(src) {
-  const frame = document.getElementById('pdf-frame');
-  const viewer = document.getElementById('window-pdf-viewer');
-  frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0`;
-  viewer.style.display = 'flex';
-  viewer.style.zIndex = Date.now();
-  viewer.style.width = '80vw';
-  viewer.style.height = '90vh';
-  viewer.style.left = '10vw';
-  viewer.style.top = '5vh';
+function toggleStartMenu() {
+  const menu = document.getElementById('start-menu');
+  if (menu) menu.classList.toggle('hidden');
 }
 
 function toggleAudio() {
   const ambient = document.getElementById('ambient-sound');
   const button = document.getElementById('audio-toggle');
+  if (!ambient || !button) return;
+
   if (!ambient.paused) {
     ambient.pause();
     button.textContent = '🔇';
@@ -143,25 +215,282 @@ function toggleAudio() {
   }
 }
 
+// =========================
+// DESKTOP ICONS
+// =========================
+
+function buildDesktopIcons() {
+  const desktop = document.getElementById('desktop');
+  if (!desktop) return;
+
+  desktop.innerHTML = '';
+
+  const savedPositions = localStorage.getItem('iconPositions');
+  const hasSaved = !!savedPositions;
+
+  icons.forEach((i, index) => {
+    const el = document.createElement('div');
+    el.classList.add('icon');
+    el.innerHTML = `<img src="icons/${i.icon}" alt="${i.name}"><div class="icon-title">${i.name}</div>`;
+
+    if (!hasSaved) {
+      const columnCount = 2;
+      const spacingX = 140;
+      const spacingY = 140;
+      const startX = 40;
+      const startY = 60;
+
+      const col = index % columnCount;
+      const row = Math.floor(index / columnCount);
+
+      el.style.position = 'absolute';
+      el.style.left = `${startX + col * spacingX}px`;
+      el.style.top = `${startY + row * spacingY}px`;
+    }
+
+    const openAndHighlight = () => {
+      document.querySelectorAll('.icon').forEach(icon => icon.classList.remove('selected'));
+      el.classList.add('selected');
+      openWindow(i.window);
+    };
+
+    el.querySelector('img').addEventListener('click', openAndHighlight);
+    el.querySelector('.icon-title').addEventListener('click', openAndHighlight);
+
+    desktop.appendChild(el);
+  });
+}
+
+function saveIconPositions() {
+  const positions = Array.from(document.querySelectorAll('.icon')).map(icon => ({
+    name: icon.querySelector('.icon-title').textContent,
+    left: icon.style.left,
+    top: icon.style.top
+  }));
+  localStorage.setItem('iconPositions', JSON.stringify(positions));
+}
+
+function loadIconPositions() {
+  const saved = localStorage.getItem('iconPositions');
+  if (!saved) return;
+
+  const positions = JSON.parse(saved);
+  positions.forEach(pos => {
+    const icon = Array.from(document.querySelectorAll('.icon')).find(
+      i => i.querySelector('.icon-title').textContent === pos.name
+    );
+    if (icon) {
+      icon.style.position = 'absolute';
+      icon.style.left = pos.left;
+      icon.style.top = pos.top;
+    }
+  });
+}
+
+function makeIconsDraggable() {
+  const desktop = document.getElementById('desktop');
+  if (!desktop) return;
+
+  let isDragging = false;
+  let currentIcon = null;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  desktop.querySelectorAll('.icon').forEach(icon => {
+    icon.style.position = 'absolute';
+
+    icon.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      if (!icon.contains(e.target)) return;
+
+      currentIcon = icon;
+      offsetX = e.clientX - icon.offsetLeft;
+      offsetY = e.clientY - icon.offsetTop;
+      isDragging = true;
+
+      icon.style.zIndex = '10000';
+      icon.classList.add('dragging');
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging || !currentIcon) return;
+    currentIcon.style.left = `${e.clientX - offsetX}px`;
+    currentIcon.style.top = `${e.clientY - offsetY}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging || !currentIcon) return;
+
+    isDragging = false;
+    currentIcon.classList.remove('dragging');
+    currentIcon.style.zIndex = '';
+    saveIconPositions();
+    currentIcon = null;
+  });
+}
+
+// =========================
+// TASKBAR APPS
+// =========================
+
+function buildTaskbarApps() {
+  const taskbarApps = document.getElementById('taskbar-apps');
+  if (!taskbarApps) return;
+
+  taskbarApps.innerHTML = '';
+
+  icons.forEach(i => {
+    const app = document.createElement('div');
+    app.classList.add('taskbar-app');
+    app.style.backgroundImage = `url(icons/${i.icon})`;
+    app.dataset.window = i.window;
+
+    app.onclick = () => {
+      openWindow(i.window);
+    };
+
+    taskbarApps.appendChild(app);
+  });
+}
+
+// =========================
+// PDF / VIDEO / LINKS
+// =========================
+
+function listPDFs(folder, containerId) {
+  fetch(`pdfs/${folder}/index.json`)
+    .then(res => res.json())
+    .then(files => {
+      const cont = document.getElementById(containerId);
+      if (!cont) return;
+
+      cont.innerHTML = '';
+      files.forEach(name => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = name;
+        link.onclick = (e) => {
+          e.preventDefault();
+          openPDF(`pdfs/${folder}/${name}`);
+        };
+        cont.appendChild(link);
+      });
+    })
+    .catch(err => console.error(err));
+}
+
+function openPDF(src) {
+  const frame = document.getElementById('pdf-frame');
+  const viewer = document.getElementById('window-pdf-viewer');
+  if (!frame || !viewer) return;
+
+  frame.src = `${src}#toolbar=0&navpanes=0&scrollbar=0`;
+  viewer.style.width = '80vw';
+  viewer.style.height = '90vh';
+  viewer.style.display = 'flex';
+  centerWindow(viewer);
+  playWindowOpenAnimation(viewer);
+  bringToFront(viewer);
+  updateAppStates();
+}
+
+function listVideos(containerId) {
+  fetch('videos/index.json')
+    .then(res => res.json())
+    .then(files => {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = '';
+      files.forEach(filename => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = filename;
+        link.onclick = (e) => {
+          e.preventDefault();
+          openVideoPlayer(`videos/${filename}`);
+        };
+        container.appendChild(link);
+      });
+    })
+    .catch(err => console.error(err));
+}
+
+function openVideoPlayer(src) {
+  const videoFrame = document.getElementById('video-frame');
+  const viewer = document.getElementById('window-video-viewer');
+  if (!videoFrame || !viewer) return;
+
+  videoFrame.src = src;
+  viewer.style.width = '80vw';
+  viewer.style.height = '70vh';
+  viewer.style.display = 'flex';
+  centerWindow(viewer);
+  playWindowOpenAnimation(viewer);
+  bringToFront(viewer);
+  updateAppStates();
+}
+
+function loadInternetLinks() {
+  const container = document.getElementById('internet-links');
+  if (!container) return;
+
+  container.innerHTML = '';
+  internetLinks.forEach(link => {
+    const a = document.createElement('a');
+    a.href = link.url;
+    a.textContent = link.title;
+    a.target = '_blank';
+    a.className = 'internet-link';
+    container.appendChild(a);
+  });
+}
+
+function loadPressLinks() {
+  const container = document.getElementById('press-links');
+  if (!container) return;
+
+  container.innerHTML = '';
+  pressLinks.forEach(link => {
+    const a = document.createElement('a');
+    a.href = link.url;
+    a.textContent = link.title;
+    a.target = '_blank';
+    a.className = 'internet-link';
+    container.appendChild(a);
+  });
+}
+
+// =========================
+// DRAGGING WINDOWS
+// =========================
+
 function enableDragging() {
   document.querySelectorAll('.window').forEach(win => {
     const titleBar = win.querySelector('.title-bar');
+    if (!titleBar || titleBar.dataset.dragBound === 'true') return;
+
+    titleBar.dataset.dragBound = 'true';
+
     let isDragging = false;
     let offsetX = 0;
     let offsetY = 0;
 
     titleBar.addEventListener('mousedown', e => {
+      if (e.target.closest('button')) return;
+
       isDragging = true;
       offsetX = e.clientX - win.offsetLeft;
       offsetY = e.clientY - win.offsetTop;
-      win.style.zIndex = Date.now();
+      bringToFront(win);
     });
 
     document.addEventListener('mousemove', e => {
-      if (isDragging) {
-        win.style.left = `${e.clientX - offsetX}px`;
-        win.style.top = `${e.clientY - offsetY}px`;
-      }
+      if (!isDragging) return;
+      win.style.left = `${e.clientX - offsetX}px`;
+      win.style.top = `${e.clientY - offsetY}px`;
     });
 
     document.addEventListener('mouseup', () => {
@@ -170,17 +499,32 @@ function enableDragging() {
   });
 }
 
-listPDFs('exhibitions', 'pdfs-exhibitions');
-listPDFs('freelance', 'pdfs-freelance');
+function initGlobalWindowFocus() {
+  document.addEventListener('mousedown', (e) => {
+    const win = e.target.closest('.window');
+    if (win) {
+      bringToFront(win);
+    }
+  });
+}
 
-// Pink drag-select box
-let isSelecting = false;
-let startX, startY;
-const selectionBox = document.getElementById('selection-box');
+// =========================
+// DESKTOP DRAG SELECT
+// =========================
 
-document.getElementById('desktop').addEventListener('mousedown', (e) => {
-  const isBlankSpace = e.target === document.getElementById('desktop');
-  if (isBlankSpace) {
+function initDesktopSelection() {
+  const desktop = document.getElementById('desktop');
+  const selectionBox = document.getElementById('selection-box');
+  if (!desktop || !selectionBox) return;
+
+  let isSelecting = false;
+  let startX = 0;
+  let startY = 0;
+
+  desktop.addEventListener('mousedown', (e) => {
+    const isBlankSpace = e.target === desktop;
+    if (!isBlankSpace) return;
+
     isSelecting = true;
     startX = e.pageX;
     startY = e.pageY;
@@ -190,11 +534,11 @@ document.getElementById('desktop').addEventListener('mousedown', (e) => {
     selectionBox.style.width = '0px';
     selectionBox.style.height = '0px';
     selectionBox.style.display = 'block';
-  }
-});
+  });
 
-document.addEventListener('mousemove', (e) => {
-  if (isSelecting) {
+  document.addEventListener('mousemove', (e) => {
+    if (!isSelecting) return;
+
     const currentX = e.pageX;
     const currentY = e.pageY;
 
@@ -207,288 +551,170 @@ document.addEventListener('mousemove', (e) => {
     selectionBox.style.top = `${rectY}px`;
     selectionBox.style.width = `${rectWidth}px`;
     selectionBox.style.height = `${rectHeight}px`;
-  }
-});
-
-document.addEventListener('mouseup', () => {
-  if (isSelecting) {
-    isSelecting = false;
-    selectionBox.style.display = 'none';
-  }
-});
-
-const taskbarApps = document.getElementById('taskbar-apps');
-
-// Add taskbar app icons
-icons.forEach(i => {
-  const app = document.createElement('div');
-  app.classList.add('taskbar-app');
-  app.style.backgroundImage = `url(icons/${i.icon})`;
-  app.onclick = () => {
-    const win = document.getElementById(`window-${i.window}`);
-    if (win.style.display === 'none' || !win.style.display) {
-      win.style.display = 'flex';
-    }
-    bringToFront(win); // ✅ updated line
-    updateAppStates();
-  };   
-  app.dataset.window = i.window;
-  taskbarApps.appendChild(app);
-});
-
-function updateAppStates() {
-  document.querySelectorAll('.taskbar-app').forEach(app => {
-    const win = document.getElementById(`window-${app.dataset.window}`);
-    if (win && win.style.display !== 'none') {
-      app.classList.add('active');
-    } else {
-      app.classList.remove('active');
-    }
-  });
-}
-
-// Call updateAppStates when opening or closing windows
-function openWindow(name) {
-  const win = document.getElementById(`window-${name}`);
-  if (win) {
-    win.style.display = 'flex';
-    win.style.zIndex = Date.now();
-    updateAppStates();
-  }
-}
-
-function closeWindow(name) {
-  const win = document.getElementById(`window-${name}`);
-  if (win) {
-    win.style.display = 'none';
-    updateAppStates();
-  }
-}
-
-// Bring any window to the front on click — even if created later
-document.addEventListener('mousedown', (e) => {
-  const win = e.target.closest('.window');
-  if (win) {
-    bringToFront(win);
-  }
-});
-
-document.addEventListener('mousemove', (e) => {
-  const sparkle = document.createElement('div');
-  sparkle.className = Math.random() > 0.5 ? 'sparkle star' : 'sparkle';
-  sparkle.style.left = `${e.pageX}px`;
-  sparkle.style.top = `${e.pageY}px`;
-  document.body.appendChild(sparkle);
-
-  setTimeout(() => {
-    sparkle.remove();
-  }, 1000);
-});
-
-document.addEventListener('click', (e) => {
-  const particles = 25; // Increase burst size
-  for (let i = 0; i < particles; i++) {
-    const sparkle = document.createElement('div');
-    sparkle.className = Math.random() > 0.4 ? 'sparkle star' : 'sparkle';
-    sparkle.style.left = `${e.pageX}px`;
-    sparkle.style.top = `${e.pageY}px`;
-
-    const angle = Math.random() * 2 * Math.PI;
-    const radius = 30 + Math.random() * 20;
-    const offsetX = Math.cos(angle) * radius;
-    const offsetY = Math.sin(angle) * radius;
-
-    sparkle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1)`;
-
-    document.body.appendChild(sparkle);
-    setTimeout(() => sparkle.remove(), 1500); // longer life
-  }
-});
-
-const ghost = document.getElementById('spirit-ghost');
-
-let ghostX = window.innerWidth / 2;
-let ghostY = window.innerHeight / 2;
-let targetX = ghostX;
-let targetY = ghostY;
-let isIdle = false;
-let idleTimer;
-let isSleeping = false;
-let blinkTimer;
-
-// Animate ghost following or wandering
-function updateGhostPosition() {
-  ghostX += (targetX - ghostX) * 0.05;
-  ghostY += (targetY - ghostY) * 0.05;
-  ghost.style.transform = `translate(${ghostX}px, ${ghostY}px)`;
-  leaveGhostTrail(); // 👈 this line
-  requestAnimationFrame(updateGhostPosition);
-}
-updateGhostPosition();
-
-function leaveGhostTrail() {
-  const trail = document.createElement('div');
-  trail.className = 'ghost-trail';
-  trail.style.left = `${ghostX + 8}px`;
-  trail.style.top = `${ghostY + 8}px`;
-  document.body.appendChild(trail);
-
-  setTimeout(() => {
-    trail.remove();
-  }, 1200);
-}
-
-// Blink animation every ~0.5s
-function blink() {
-  if (isSleeping) return;
-  ghost.src = 'icons/ghost-blink.png';
-  setTimeout(() => {
-    if (!isSleeping) ghost.src = 'icons/ghost.png';
-  }, 200);
-  blinkTimer = setTimeout(blink, 400 + Math.random() * 500);
-}
-blink();
-
-// Sleep if idle too long
-function triggerSleep() {
-  isIdle = true;
-  isSleeping = true;
-  ghost.src = 'icons/ghost-sleep.png';
-  wander(); // optional: have it float around a bit while sleeping
-}
-
-// Wander movement when idle
-function wander() {
-  if (!isIdle || !isSleeping) return;
-  targetX = Math.random() * window.innerWidth;
-  targetY = Math.random() * window.innerHeight;
-  setTimeout(wander, 5000);
-}
-
-// Reset everything on user activity
-function resetIdleTimer() {
-  isIdle = false;
-  if (isSleeping) {
-    ghost.src = 'icons/ghost.png';
-    isSleeping = false;
-    clearTimeout(blinkTimer);
-    blink(); // restart blinking when waking up
-  }  
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(triggerSleep, 40000); // 40 sec
-}
-document.addEventListener('mousemove', (e) => {
-  targetX = e.clientX + 16;
-  targetY = e.clientY + 16;
-  resetIdleTimer();
-});
-resetIdleTimer();
-
-const whispers = [
-  "The forest remembers you.",
-  "Press Start. Begin again.",
-  "You left the gate open.",
-  "There is light between the moss.",
-  "Softness is resistance.",
-  "Your data carries memory.",
-  "Time does not pass here.",
-  "The rain was listening.",
-  "Stay. Drift.",
-];
-
-function showWhisper() {
-  const msg = whispers[Math.floor(Math.random() * whispers.length)];
-  const whisper = document.createElement('div');
-  whisper.className = 'ghost-whisper';
-  whisper.textContent = msg;
-
-  whisper.style.left = `${ghostX + 40}px`;
-  whisper.style.top = `${ghostY - 20}px`;
-  document.body.appendChild(whisper);
-
-  setTimeout(() => {
-    whisper.remove();
-    scheduleNextWhisper();
-  }, 6000);
-}
-
-function scheduleNextWhisper() {
-  const delay = 30000 + Math.random() * 30000; // 30–60 sec
-  setTimeout(showWhisper, delay);
-}
-
-scheduleNextWhisper();
-
-function saveIconPositions() {
-  const positions = Array.from(document.querySelectorAll('.icon')).map(icon => {
-    return {
-      name: icon.querySelector('.icon-title').textContent,
-      left: icon.style.left,
-      top: icon.style.top
-    };
-  });
-  localStorage.setItem('iconPositions', JSON.stringify(positions));
-}
-
-function loadIconPositions() {
-  const saved = localStorage.getItem('iconPositions');
-  if (!saved) return;
-  const positions = JSON.parse(saved);
-  positions.forEach(pos => {
-    const icon = Array.from(document.querySelectorAll('.icon')).find(i => i.querySelector('.icon-title').textContent === pos.name);
-    if (icon) {
-      icon.style.position = 'absolute';
-      icon.style.left = pos.left;
-      icon.style.top = pos.top;
-    }
-  });
-}
-
-function makeIconsDraggable() {
-  const desktop = document.getElementById('desktop');
-  let isDragging = false;
-  let currentIcon = null;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  desktop.querySelectorAll('.icon').forEach(icon => {
-    icon.style.position = 'absolute';
-
-    icon.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return; // Left-click only
-      if (!icon.contains(e.target)) return;
-
-      currentIcon = icon;
-      offsetX = e.clientX - icon.offsetLeft;
-      offsetY = e.clientY - icon.offsetTop;
-      isDragging = true;
-      icon.style.zIndex = 10000;
-      icon.classList.add('dragging');
-
-      // Prevent accidental text selection
-      e.preventDefault();
-    });
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging || !currentIcon) return;
-    currentIcon.style.left = `${e.clientX - offsetX}px`;
-    currentIcon.style.top = `${e.clientY - offsetY}px`;
   });
 
   document.addEventListener('mouseup', () => {
-    if (isDragging && currentIcon) {
-      isDragging = false;
-      currentIcon.classList.remove('dragging');
-      currentIcon.style.zIndex = '';
-      saveIconPositions();
-      currentIcon = null;
+    if (!isSelecting) return;
+    isSelecting = false;
+    selectionBox.style.display = 'none';
+  });
+}
+
+// =========================
+// SPARKLES
+// =========================
+
+function initSparkles() {
+  document.addEventListener('mousemove', (e) => {
+    const sparkle = document.createElement('div');
+    sparkle.className = Math.random() > 0.5 ? 'sparkle star' : 'sparkle';
+    sparkle.style.left = `${e.pageX}px`;
+    sparkle.style.top = `${e.pageY}px`;
+    document.body.appendChild(sparkle);
+
+    setTimeout(() => sparkle.remove(), 1000);
+  });
+
+  document.addEventListener('click', (e) => {
+    const particles = 25;
+
+    for (let i = 0; i < particles; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = Math.random() > 0.4 ? 'sparkle star' : 'sparkle';
+      sparkle.style.left = `${e.pageX}px`;
+      sparkle.style.top = `${e.pageY}px`;
+
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = 30 + Math.random() * 20;
+      const offsetX = Math.cos(angle) * radius;
+      const offsetY = Math.sin(angle) * radius;
+
+      sparkle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1)`;
+
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1500);
     }
   });
 }
-// BIRDSWEEPER FULL JS (Drop-in Replacement)
 
-// Game settings
+// =========================
+// GHOST
+// =========================
+
+function initGhost() {
+  const ghost = document.getElementById('spirit-ghost');
+  if (!ghost) return;
+
+  let ghostX = window.innerWidth / 2;
+  let ghostY = window.innerHeight / 2;
+  let targetX = ghostX;
+  let targetY = ghostY;
+  let isIdle = false;
+  let idleTimer;
+  let isSleeping = false;
+  let blinkTimer;
+
+  const whispers = [
+    "The forest remembers you.",
+    "Press Start. Begin again.",
+    "You left the gate open.",
+    "There is light between the moss.",
+    "Softness is resistance.",
+    "Your data carries memory.",
+    "Time does not pass here.",
+    "The rain was listening.",
+    "Stay. Drift."
+  ];
+
+  function leaveGhostTrail() {
+    const trail = document.createElement('div');
+    trail.className = 'ghost-trail';
+    trail.style.left = `${ghostX + 8}px`;
+    trail.style.top = `${ghostY + 8}px`;
+    document.body.appendChild(trail);
+
+    setTimeout(() => trail.remove(), 1200);
+  }
+
+  function updateGhostPosition() {
+    ghostX += (targetX - ghostX) * 0.05;
+    ghostY += (targetY - ghostY) * 0.05;
+    ghost.style.transform = `translate(${ghostX}px, ${ghostY}px)`;
+    leaveGhostTrail();
+    requestAnimationFrame(updateGhostPosition);
+  }
+
+  function blink() {
+    if (isSleeping) return;
+    ghost.src = 'icons/ghost-blink.png';
+    setTimeout(() => {
+      if (!isSleeping) ghost.src = 'icons/ghost.png';
+    }, 200);
+    blinkTimer = setTimeout(blink, 400 + Math.random() * 500);
+  }
+
+  function wander() {
+    if (!isIdle || !isSleeping) return;
+    targetX = Math.random() * window.innerWidth;
+    targetY = Math.random() * window.innerHeight;
+    setTimeout(wander, 5000);
+  }
+
+  function triggerSleep() {
+    isIdle = true;
+    isSleeping = true;
+    ghost.src = 'icons/ghost-sleep.png';
+    wander();
+  }
+
+  function resetIdleTimer() {
+    isIdle = false;
+    if (isSleeping) {
+      ghost.src = 'icons/ghost.png';
+      isSleeping = false;
+      clearTimeout(blinkTimer);
+      blink();
+    }
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(triggerSleep, 40000);
+  }
+
+  function showWhisper() {
+    const msg = whispers[Math.floor(Math.random() * whispers.length)];
+    const whisper = document.createElement('div');
+    whisper.className = 'ghost-whisper';
+    whisper.textContent = msg;
+    whisper.style.left = `${ghostX + 40}px`;
+    whisper.style.top = `${ghostY - 20}px`;
+    document.body.appendChild(whisper);
+
+    setTimeout(() => {
+      whisper.remove();
+      scheduleNextWhisper();
+    }, 6000);
+  }
+
+  function scheduleNextWhisper() {
+    const delay = 30000 + Math.random() * 30000;
+    setTimeout(showWhisper, delay);
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    targetX = e.clientX + 16;
+    targetY = e.clientY + 16;
+    resetIdleTimer();
+  });
+
+  updateGhostPosition();
+  blink();
+  resetIdleTimer();
+  scheduleNextWhisper();
+}
+
+// =========================
+// BIRDSWEEPER
+// =========================
+
 const rows = 8;
 const cols = 8;
 const birdCount = 10;
@@ -524,6 +750,8 @@ const birdFacts = [
 
 function initBirdsweeper() {
   const gameBoard = document.getElementById('birdsweeper-grid');
+  if (!gameBoard) return;
+
   gameBoard.innerHTML = '';
   grid = [];
 
@@ -560,7 +788,8 @@ function initBirdsweeper() {
 
 function revealCell(index) {
   const cell = grid[index];
-  if (cell.revealed) return;
+  if (!cell || cell.revealed) return;
+
   cell.revealed = true;
   cell.element.classList.add('revealed');
 
@@ -576,7 +805,6 @@ function revealCell(index) {
     return;
   }
 
-  // Reveal number of nearby birds
   const count = getAdjacentBirds(index);
   if (count > 0) {
     cell.element.textContent = count;
@@ -608,27 +836,9 @@ function resetBirdsweeper() {
   initBirdsweeper();
 }
 
-let tunaGameInterval = null;
-let tunaKeyListener = null;
-
-const birdIcons = [
-  'icons/kakapo.png',
-  'icons/kaka.png',
-  'icons/tui.png'
-];
-
-function openWindow(name) {
-  const win = document.getElementById(`window-${name}`);
-  if (win) {
-    win.style.display = 'flex';
-    win.style.zIndex = Date.now();
-    updateAppStates();
-
-    if (name === 'tuna') {
-      setTimeout(initTunaGame, 100);
-    }
-  }
-}
+// =========================
+// TUNA
+// =========================
 
 function initTunaGame() {
   const container = document.getElementById('tuna-grid');
@@ -638,13 +848,13 @@ function initTunaGame() {
 
   const gridSize = 20;
   const totalCells = gridSize * gridSize;
-  const grid = [];
+  const cellEls = [];
 
   for (let i = 0; i < totalCells; i++) {
     const cell = document.createElement('div');
     cell.className = 'tuna-cell';
     container.appendChild(cell);
-    grid.push(cell);
+    cellEls.push(cell);
   }
 
   let snake = [210, 211, 212];
@@ -656,18 +866,20 @@ function initTunaGame() {
   if (tunaKeyListener) document.removeEventListener('keydown', tunaKeyListener);
 
   function drawSnake() {
-    grid.forEach(cell => cell.classList.remove('tuna', 'tuna-head'));
+    cellEls.forEach(cell => cell.classList.remove('tuna', 'tuna-head', 'tuna-food'));
     snake.forEach((i, idx) => {
-      grid[i].classList.add('tuna');
-      if (idx === snake.length - 1) grid[i].classList.add('tuna-head');
+      cellEls[i].classList.add('tuna');
+      if (idx === snake.length - 1) cellEls[i].classList.add('tuna-head');
     });
+    if (food !== null) {
+      cellEls[food].classList.add('tuna-food');
+    }
   }
 
   function spawnFood() {
     do {
       food = Math.floor(Math.random() * totalCells);
     } while (snake.includes(food));
-    grid[food].classList.add('tuna-food');
   }
 
   function move() {
@@ -689,14 +901,14 @@ function initTunaGame() {
     }
 
     snake.push(next);
+
     if (next === food) {
       score++;
-      grid[food].classList.remove('tuna-food');
       spawnFood();
     } else {
-      const tail = snake.shift();
-      grid[tail].classList.remove('tuna');
+      snake.shift();
     }
+
     drawSnake();
   }
 
@@ -719,17 +931,16 @@ function showTunaGameOver(score) {
 
   const popup = document.createElement('div');
   popup.className = 'window tuna-popup';
-  popup.style.zIndex = 9999;
   popup.style.display = 'flex';
 
   popup.innerHTML = `
     <div class="title-bar">
-      Oh no! 🐟
+      <span>Oh no! 🐟</span>
       <button onclick="this.closest('.window').remove()">X</button>
     </div>
     <div class="window-content">
       <p><strong>The tuna got tangled...</strong></p>
-      <p>Your score: <span style="color:#ffa3e5">${score}</span></p>
+      <p>Your score: <span style="color:#d94db0">${score}</span></p>
       <input id="tuna-name" type="text" placeholder="Your name" />
       <button id="submit-tuna-score">Submit</button>
       <div id="tuna-leaderboard" style="margin-top:20px;"></div>
@@ -738,11 +949,16 @@ function showTunaGameOver(score) {
   `;
 
   document.body.appendChild(popup);
+  centerWindow(popup);
+  playWindowOpenAnimation(popup);
+  bringToFront(popup);
 
-  // ✅ Attach event listener after popup is inserted
-  document.getElementById('submit-tuna-score').onclick = () => {
-    submitTunaScore(score);
-  };
+  const submitButton = document.getElementById('submit-tuna-score');
+  if (submitButton) {
+    submitButton.onclick = () => {
+      submitTunaScore(score);
+    };
+  }
 
   loadScoresFromFirebase();
   enableDragging();
@@ -751,9 +967,7 @@ function showTunaGameOver(score) {
 function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
   const name = input?.value?.trim() || 'Anonymous';
-  const numericScore = Number(score); // 🔥 Force into true number
-
-  console.log("Submitting score:", numericScore, typeof numericScore); // Debugging
+  const numericScore = Number(score);
 
   saveScoreToFirebase(name, numericScore);
 
@@ -765,14 +979,13 @@ function saveScoreToFirebase(name, score) {
   const scoresRef = database.ref('scores');
 
   const newScore = {
-    name: name,
-    score: score,
+    name,
+    score,
     timestamp: Date.now()
   };
 
   scoresRef.push(newScore)
     .then(() => {
-      console.log("Score saved successfully!");
       loadScoresFromFirebase();
     })
     .catch((error) => {
@@ -789,7 +1002,7 @@ function loadScoresFromFirebase() {
       scores.push(childSnapshot.val());
     });
 
-    scores.reverse(); // Firebase sends ascending, so reverse
+    scores.reverse();
     renderTunaLeaderboard(scores);
   });
 }
@@ -798,17 +1011,17 @@ function renderTunaLeaderboard(scores = []) {
   const container = document.getElementById('tuna-leaderboard');
   if (!container) return;
 
-  // Clear safely
+  
   container.innerHTML = '';
 
-  // Title
+
   const title = document.createElement('h4');
   title.style.marginBottom = '10px';
   title.style.color = '#660066';
   title.textContent = 'Leaderboard';
   container.appendChild(title);
 
-  // Rows
+
   scores.forEach((entry, i) => {
     const row = document.createElement('div');
     row.style.margin = '4px 0';
@@ -818,7 +1031,7 @@ function renderTunaLeaderboard(scores = []) {
     row.style.alignItems = 'center';
     row.style.gap = '6px';
 
-    // Medal/bird icon (safe, controlled by you)
+
     if (birdIcons[i]) {
       const img = document.createElement('img');
       img.src = birdIcons[i];
@@ -829,12 +1042,10 @@ function renderTunaLeaderboard(scores = []) {
       row.appendChild(img);
     }
 
-    // Safe text (user input handled via textContent)
-    const safeName =
-      (typeof entry?.name === 'string' ? entry.name : 'Anonymous')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 20);
+    const safeName = (typeof entry?.name === 'string' ? entry.name : 'Anonymous')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 20);
 
     const safeScore = Number(entry?.score);
     const scoreText = Number.isFinite(safeScore) ? safeScore : 0;
@@ -848,128 +1059,12 @@ function renderTunaLeaderboard(scores = []) {
 }
 
 function restartTunaGame() {
+  const existingPopup = document.querySelector('.tuna-popup');
+  if (existingPopup) existingPopup.remove();
+
   const win = document.getElementById('window-tuna');
-  if (win) win.remove();
-
-  setTimeout(() => {
-    const tunaWin = document.createElement('div');
-    tunaWin.id = 'window-tuna';
-    tunaWin.className = 'window';
-    tunaWin.style.display = 'flex';
-    tunaWin.innerHTML = `
-      <div class="title-bar">Tuna 🐟 <button onclick="closeWindow('tuna')">X</button></div>
-      <div class="window-content">
-        <div id="tuna-grid" style="display:grid; grid-template-columns:repeat(20, 20px); gap:1px; width:420px; height:420px; margin:10px auto;"></div>
-      </div>
-    `;
-    document.body.appendChild(tunaWin);
-    openWindow('tuna');
-  }, 200);
-}
-
-
-
-function listVideos(containerId) {
-  fetch('videos/index.json')
-    .then(res => res.json())
-    .then(files => {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      files.forEach(filename => {
-        const link = document.createElement('a');
-        link.href = "#";
-        link.textContent = filename;
-        link.onclick = (e) => {
-          e.preventDefault();
-          openVideoPlayer(`videos/${filename}`);
-        };
-        container.appendChild(link);
-      });
-    });
-}
-
-function openVideoPlayer(src) {
-  const videoFrame = document.getElementById('video-frame');
-  const viewer = document.getElementById('window-video-viewer');
-  videoFrame.src = src;
-  viewer.style.display = 'flex';
-  viewer.style.zIndex = Date.now();
-  viewer.style.width = '80vw';
-  viewer.style.height = '70vh';
-  viewer.style.left = '10vw';
-  viewer.style.top = '10vh';
-}
-
-listVideos('video-list'); // 👈 this must run after page load
-
-function openWindow(name, shouldInit = true) {
-  const win = document.getElementById(`window-${name}`);
   if (win) {
-    win.style.display = 'flex';
-    win.style.zIndex = Date.now();
-    updateAppStates();
-
-    if (name === 'tuna' && shouldInit) {
-      setTimeout(initTunaGame, 100);
-    }
+    openWindow('tuna');
+    setTimeout(initTunaGame, 100);
   }
 }
-
-const internetLinks = [
-  { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
-  { title: "George Turner – Lost at Home", url: "https://www.youtube.com/watch?v=r9GqI2HaAJE&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-  { title: "George Turner – Love", url: "https://www.youtube.com/watch?v=EMAbum6atCM&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-  { title: "George Turner – Thank You For Your Time (EP)", url: "https://www.youtube.com/watch?v=MUn0ev3RRWs&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-  { title: "George Turner – Insect (LP)", url: "https://www.youtube.com/watch?v=g7BoxPGBKE0&ab_channel=GeorgeTurner-Topic" },
-  { title: "Bay1 – Bae1", url: "https://www.youtube.com/watch?v=2tn9MAEhTSc&ab_channel=%E3%83%87%E3%83%BC%E3%83%A2%E3%83%B3Astari" },
-  { title: "FCKCPS ft. George Turner – Block Queen", url: "https://www.youtube.com/watch?v=lLBya7p94Uo&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-  { title: "Avito – Pancakes", url: "https://www.youtube.com/watch?v=C9ixKJKszq4&ab_channel=GeorgeTurner%28GeorgeTurner%29" },
-  { title: "Exhibition – Free of Charge", url: "https://freeofcharge.space/" },
-  { title: "Exhibition – Depot Artspace", url: "https://depot.org.nz/event/towards-equilibrium/" },
-  { title: "Exhibition – Bowen Gallery", url: "https://bowengalleries.nz/george-turner-second-impressions/" },
-  { title: "Exhibition – Astor Bristed", url: "https://www.astorbristed.co.nz/exhibitions/29-george-turner/" },
-  { title: "Exhibition – Webb's", url: "https://auctions.webbs.co.nz/lot-details/index/catalog/718/lot/211832/GEORGE-TURNER-The-River-Bank" },  
-];
-
-function loadInternetLinks() {
-  const container = document.getElementById('internet-links');
-  container.innerHTML = '';
-  internetLinks.forEach(link => {
-    const a = document.createElement('a');
-    a.href = link.url;
-    a.textContent = link.title;
-    a.target = '_blank';
-    a.className = 'internet-link';
-    container.appendChild(a);
-  });
-}
-
-loadInternetLinks();
-
-const pressLinks = [
-  { title: "PAI_32 – Artist of the Month Interview", url: "https://pai32.com/2026/02/12/george-turner/" },
-  { title: "Salive.Live – Stages of grief Review", url: "https://saliva.live/exhibitions/8a8c7707" },
-  { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
-  { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
-  { title: "Sniffers – George Turner fuses fine arts with synth pop on ‘Lost at Home’", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
-  { title: "Sniffers – George Turner grounds themselves with debut album, ‘Insect’", url: "https://www.sniffers.co.nz/article/george-turner-grounds-debut-album-insect" },
-  { title: "Sniffers – George Turner plants their Roots", url: "https://sniffers.co.nz/article/george-turner-plants-roots-kauri" },
-  { title: "Under the Radar – New Single", url: "https://www.undertheradar.co.nz/news/12211/Listen-George-Turner--Age-of-Aquarius.utr" },
-  { title: "Massive Magazine – Artist Profile", url: "https://www.massivemagazine.org.nz/articles/ntqehy32wf0jufy44xsvam2bwlv49s" },
-];
-
-function loadPressLinks() {
-  const container = document.getElementById('press-links');
-  container.innerHTML = '';
-  pressLinks.forEach(link => {
-    const a = document.createElement('a');
-    a.href = link.url;
-    a.textContent = link.title;
-    a.target = '_blank';
-    a.className = 'internet-link';
-    container.appendChild(a);
-  });
-}
-
-loadPressLinks();
-
