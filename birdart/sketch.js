@@ -1,11 +1,13 @@
 /* =========================
-   BIRD ART — OPTIMISED / REACTIVE VERSION
+   BIRD ART — LIVING MORPH VERSION
    ========================= */
 
 let N = 4200;
 let centerX, centerY, D;
 let started = false;
 let currentBird = "tui";
+let targetBird = "tui";
+let morphAmount = 1.0;
 
 let fft, birdSound;
 let globalEnergy = 0;
@@ -23,6 +25,7 @@ const LOUD_EMA_ALPHA = 0.05;
 // typed arrays
 let posX, posY, velX, velY, accX, accY, sizeA, nOX, nOY, flicker, rBias;
 let zPos, zVel, zAcc, zHome, zSeed, rFrac;
+let orbitBias, driftSeed;
 
 let soulSettings = {};
 let colorSettings = {};
@@ -55,9 +58,14 @@ function setup() {
   const selectMenu = document.getElementById('birdSelect');
   if (selectMenu) {
     currentBird = selectMenu.value || "tui";
+    targetBird = currentBird;
+
     selectMenu.addEventListener('change', function () {
-      currentBird = this.value;
-      if (started) playBirdSound(currentBird);
+      targetBird = this.value;
+
+      if (started) {
+        playBirdSound(targetBird);
+      }
     });
   }
 
@@ -72,15 +80,29 @@ function draw() {
     return;
   }
 
+  // smooth bird morph
+  if (currentBird !== targetBird) {
+    morphAmount = lerp(morphAmount, 1, 0.035);
+    if (morphAmount > 0.995) {
+      currentBird = targetBird;
+      morphAmount = 1.0;
+    }
+  }
+
+  const setA = soulSettings[currentBird] || soulSettings.tui;
+  const setB = soulSettings[targetBird] || soulSettings.tui;
+  const set = blendProfiles(setA, setB, morphAmount);
+
+  const colA = colorSettings[currentBird] || colorSettings.tui;
+  const colB = colorSettings[targetBird] || colorSettings.tui;
+
   const spec = fft.analyze();
 
   const bass = clamp(fft.getEnergy(20, 160), 0, 255);
   const mid = clamp(fft.getEnergy(160, 2000), 0, 255);
   const treble = clamp(fft.getEnergy(2000, 8000), 0, 255);
 
-  const set = soulSettings[currentBird] || soulSettings.tui;
-  const col = colorSettings[currentBird] || colorSettings.tui;
-
+  
   const eq = set.focus;
   const f1 = clamp(fft.getEnergy(eq[0].lo, eq[0].hi), 0, 255) * eq[0].w;
   const f2 = clamp(fft.getEnergy(eq[1].lo, eq[1].hi), 0, 255) * eq[1].w;
@@ -101,56 +123,69 @@ function draw() {
 
   const total = (bass + mid + treble) / 3;
   const prevGlobal = globalEnergy;
-  globalEnergy = lerp(globalEnergy, total, 0.25);
+  globalEnergy = lerp(globalEnergy, total, 0.22);
   loudnessEMA = lerp(loudnessEMA, total, LOUD_EMA_ALPHA);
 
   const fluxNorm = flux / 800.0;
   const focusJump = Math.max(0, focusRaw - sFocus) * 0.8;
 
-  if (fluxNorm > 0.9 || (total - prevGlobal) > 18 || focusJump > 12) {
+  if (fluxNorm > 0.9 || (total - prevGlobal) > 16 || focusJump > 10) {
     onset = 1.0;
     pulseField = 1.0;
   }
 
-  onset *= 0.9;
-  pulseField *= 0.92;
+  onset *= 0.92;
+  pulseField *= 0.95;
 
   const reactGain = clamp(160 / (loudnessEMA + 10), 0.7, 2.2);
-  const focusGate = smoothstep(0.18, 0.45, sFocus / 255);
-  const onsetBoost = 1.0 + onset * 0.75;
+  const focusGate = smoothstep(0.16, 0.45, sFocus / 255);
+  const onsetBoost = 1.0 + onset * 0.65;
 
-  const B = pow2(map01(sBass) * reactGain) * clamp(0.7 + 0.9 * focusGate, 0.7, 1.6) * onsetBoost;
-  const M = pow2(map01(sMid) * reactGain) * clamp(0.7 + 0.9 * focusGate, 0.7, 1.6) * onsetBoost;
-  const T = pow2(map01(sTreble) * reactGain) * clamp(0.7 + 0.9 * focusGate, 0.7, 1.7) * (1.0 + onset * 0.9);
+  const B = pow2(map01(sBass) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.65) * onsetBoost;
+  const M = pow2(map01(sMid) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.65) * onsetBoost;
+  const T = pow2(map01(sTreble) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.75) * (1.0 + onset * 0.85);
 
-  t += 0.0048;
-  thetaSpin += 0.0013 * (0.55 + 0.30 * map01(sMid) + 0.25 * map01(sTreble));
+  t += 0.0045;
+  thetaSpin += 0.0012 * (0.45 + 0.38 * map01(sMid) + 0.3 * map01(sTreble));
 
-  set.phiB += set.rotSpeed * 0.36;
-  set.phiM += set.rotSpeed * 0.62;
-  set.phiT += set.rotSpeed * 0.96;
-  set.phiV += set.rotSpeed * set.veinPhase;
+  // phase evolution is continuous
+  setA.phiB += setA.rotSpeed * 0.36;
+  setA.phiM += setA.rotSpeed * 0.62;
+  setA.phiT += setA.rotSpeed * 0.96;
+  setA.phiV += setA.rotSpeed * setA.veinPhase;
 
-  const R0 = D * (0.32 + 0.18 * B * set.bassInflate) * (1.0 + onset * 0.16 * focusGate);
-  const band = Math.max(D * 0.22, (D * 0.12) + M * (D * 0.20));
+  setB.phiB += setB.rotSpeed * 0.36;
+  setB.phiM += setB.rotSpeed * 0.62;
+  setB.phiT += setB.rotSpeed * 0.96;
+  setB.phiV += setB.rotSpeed * setB.veinPhase;
 
-  const kSpring = set.spring;
-  const twirlK = set.twirl * (0.1 + 1.0 * M);
-  const waveK = set.wave * (0.08 + 0.9 * B);
-  const swirlK = 0.40 + set.swirl * 0.7;
-  const flareK = (sTreble > 55 ? (T * set.trebleFlare * 0.95 * focusGate) : 0);
-  const chaosK = ((globalEnergy > 210 ? set.chaos : 0) + onset * set.chaos * 0.55) * 0.75 * focusGate;
-  const stretchK = set.stretchGain * (0.22 + 0.9 * T);
+  set.phiB = lerp(setA.phiB, setB.phiB, morphAmount);
+  set.phiM = lerp(setA.phiM, setB.phiM, morphAmount);
+  set.phiT = lerp(setA.phiT, setB.phiT, morphAmount);
+  set.phiV = lerp(setA.phiV, setB.phiV, morphAmount);
 
-  const RMIN = D * 0.18;
-  const RMAX = D * 0.46;
+  const R0 = D * (0.29 + 0.15 * B * set.bassInflate) * (1.0 + onset * 0.12 * focusGate);
 
-  const brightnessBase = 135 + map01(globalEnergy) * 170 + onset * 90;
-  const sizeBase = 0.95 + map01(globalEnergy) * 1.6 + onset * 0.7;
+  // thicker body, less surface sticking
+  const band = Math.max(D * 0.30, (D * 0.16) + M * (D * 0.20));
 
-  const maxDepth = band * 0.75 + R0 * 0.40;
+  const kSpring = set.spring * 0.86;
+  const twirlK = set.twirl * (0.32 + 1.2 * M);
+  const waveK = set.wave * (0.16 + 1.0 * B);
+  const swirlK = 0.52 + set.swirl * 0.95;
+  const flareK = (sTreble > 55 ? (T * set.trebleFlare * 0.85 * focusGate) : 0);
+  const chaosK = ((globalEnergy > 210 ? set.chaos : 0) + onset * set.chaos * 0.45) * 0.62 * focusGate;
+  const stretchK = set.stretchGain * (0.18 + 0.85 * T);
 
-  softRecenter(0.01);
+  const RMIN = D * 0.16;
+  const RMAX = D * 0.47;
+
+  const brightnessBase = 132 + map01(globalEnergy) * 165 + onset * 70;
+  const sizeBase = 1.0 + map01(globalEnergy) * 1.45 + onset * 0.45;
+
+  const maxDepth = band * 0.85 + R0 * 0.44;
+
+  softRecenter(0.006);
 
   blendMode(ADD);
   noStroke();
@@ -168,19 +203,20 @@ function draw() {
 
     let theta = Math.atan2(dy, dx);
     const phiOff = (nOX[i] * 0.1234567) % 1 * TWO_PI;
-    const th = theta + thetaSpin + 0.35 * phiOff;
+    const th = theta + thetaSpin + 0.4 * phiOff;
 
-    const bloom = set.ampB * 0.8 * B * Math.cos(set.petB * th + set.phiB);
-    const ripple = set.ampM * 0.8 * M * Math.cos(set.petM * th + set.phiM);
-    const spike = set.ampT * 0.7 * T * Math.cos(set.petT * th + set.phiT);
-    const fold = set.foldAmt * 0.8 * Math.cos(2 * th + set.phiM * 0.5) * (0.3 + 0.7 * M);
-    const harm2 = set.geomH2 * 0.6 * M * Math.cos((set.petM * 2) * th + set.phiM * 0.7);
-    const harm4 = set.geomH4 * 0.5 * T * Math.cos(4.0 * th + set.phiT * 0.9);
+    // smoother geometry - less hard snapping
+    const bloom = set.ampB * 0.62 * B * Math.cos(set.petB * th + set.phiB);
+    const ripple = set.ampM * 0.72 * M * Math.cos(set.petM * th + set.phiM);
+    const spike = set.ampT * 0.55 * T * Math.cos(set.petT * th + set.phiT);
+    const fold = set.foldAmt * 0.55 * Math.cos(2 * th + set.phiM * 0.5) * (0.22 + 0.65 * M);
+    const harm2 = set.geomH2 * 0.45 * M * Math.cos((set.petM * 2) * th + set.phiM * 0.7);
+    const harm4 = set.geomH4 * 0.32 * T * Math.cos(4.0 * th + set.phiT * 0.9);
     const Rsurf = R0 + bloom + ripple + spike + fold + harm2 + harm4;
 
     let veinRad = 0;
     let veinTan = 0;
-    const K = set.veins | 0;
+    const K = Math.max(3, set.veins | 0);
     const sharp = set.veinSharp;
     const phase = set.phiV;
     const baseK = TWO_PI / K;
@@ -198,22 +234,25 @@ function draw() {
     veinRad /= K;
     veinTan /= K;
 
-    let R3 = Rsurf - (band * 0.62 * rFrac[i]) + rBias[i] * 0.5;
+    // stronger interior bias; only peaks push surfaceward
+    const peakSurfacePush = onset * 0.16 + T * 0.10;
+    let R3 = Rsurf - (band * (0.78 - peakSurfacePush) * rFrac[i]) + rBias[i] * 0.35;
     R3 = clamp(R3, RMIN * 0.92, RMAX);
 
-    const zAmp = (band * 0.60) * (0.6 + 0.6 * M + 0.3 * B);
-    const zVeinBias = (veinRad - 0.5) * band * 0.10;
+    const zAmp = (band * 0.62) * (0.65 + 0.55 * M + 0.22 * B);
+    const zVeinBias = (veinRad - 0.5) * band * 0.08;
     const zPref = zHome[i] * zAmp + zVeinBias;
 
-    zAcc[i] += (zPref - zPos[i]) * 0.020;
-    const zN = (noise(zSeed[i] + t * 0.6, nOY[i] * 0.17 - t * 0.4) - 0.5);
-    zAcc[i] += zN * swirlK * 0.45;
+    zAcc[i] += (zPref - zPos[i]) * 0.016;
+
+    const zN = (noise(zSeed[i] + t * 0.55, nOY[i] * 0.17 - t * 0.36) - 0.5);
+    zAcc[i] += zN * swirlK * 0.42;
 
     if (flareK > 0 && (i & 63) === 0) {
-      zAcc[i] += (Math.random() - 0.5) * flareK * 0.6;
+      zAcc[i] += (Math.random() - 0.5) * flareK * 0.42;
     }
 
-    zVel[i] = clampMag(zVel[i] + zAcc[i], 5.0);
+    zVel[i] = clampMag(zVel[i] + zAcc[i], 4.6);
     zVel[i] *= set.drag;
     zPos[i] += zVel[i];
 
@@ -229,9 +268,9 @@ function draw() {
 
     const rTarget = Math.sqrt(Math.max(R3 * R3 - zPos[i] * zPos[i], 1.0));
 
-    const delta = (rTarget - r) / (band * 0.5);
+    const delta = (rTarget - r) / (band * 0.75);
     const soft = Math.tanh(delta);
-    const dynK = kSpring * (0.95 + 0.55 * Math.min(1, Math.abs(delta)));
+    const dynK = kSpring * (0.85 + 0.35 * Math.min(1, Math.abs(delta)));
 
     accX[i] += ux * (soft * dynK * band);
     accY[i] += uy * (soft * dynK * band);
@@ -239,73 +278,78 @@ function draw() {
     const tx = -uy;
     const ty = ux;
 
-    const wave = waveK * Math.sin(set.petM * th + t * 2.0 + nOX[i] * 0.01);
-    const angDiff = (noise(nOX[i] * 0.9 + t * 0.7, nOY[i] * 0.8 - t * 0.5) - 0.5) * (0.35 + 0.65 * M);
+    const wave = waveK * Math.sin(set.petM * th + t * 1.8 + nOX[i] * 0.01);
+    const angDiff = (noise(nOX[i] * 0.82 + t * 0.55, nOY[i] * 0.76 - t * 0.42) - 0.5) * (0.28 + 0.75 * M);
 
-    const veinTanK = (0.6 + 1.2 * M) * set.veinTanGain;
-    const veinRadK = (0.3 + 0.9 * B) * set.veinRadGain;
+    const veinTanK = (0.7 + 1.4 * M) * set.veinTanGain;
+    const veinRadK = (0.22 + 0.65 * B) * set.veinRadGain;
 
-    accX[i] += tx * (twirlK + wave + angDiff * 0.45 + veinTan * veinTanK);
-    accY[i] += ty * (twirlK + wave + angDiff * 0.45 + veinTan * veinTanK);
+    // stronger orbital travel around the orb
+    const orbitalFlow = orbitBias[i] * (0.55 + 1.4 * M + 0.55 * T);
+    const spinDrift = Math.sin(t * 0.8 + driftSeed[i]) * 0.22;
+
+    accX[i] += tx * (twirlK + wave + angDiff * 0.35 + veinTan * veinTanK + orbitalFlow + spinDrift);
+    accY[i] += ty * (twirlK + wave + angDiff * 0.35 + veinTan * veinTanK + orbitalFlow + spinDrift);
 
     accX[i] += ux * (veinRad * veinRadK);
     accY[i] += uy * (veinRad * veinRadK);
 
     const dR_dTheta =
-      -set.ampB * 0.8 * B * set.petB * Math.sin(set.petB * th + set.phiB) +
-      -set.ampM * 0.8 * M * set.petM * Math.sin(set.petM * th + set.phiM) +
-      -set.ampT * 0.7 * T * set.petT * Math.sin(set.petT * th + set.phiT) +
-      -2.0 * set.foldAmt * 0.8 * Math.sin(2 * th + set.phiM * 0.5) * (0.3 + 0.7 * M);
+      -set.ampB * 0.62 * B * set.petB * Math.sin(set.petB * th + set.phiB) +
+      -set.ampM * 0.72 * M * set.petM * Math.sin(set.petM * th + set.phiM) +
+      -set.ampT * 0.55 * T * set.petT * Math.sin(set.petT * th + set.phiT) +
+      -2.0 * set.foldAmt * 0.55 * Math.sin(2 * th + set.phiM * 0.5) * (0.22 + 0.65 * M);
 
-    accX[i] += tx * dR_dTheta * (set.tangentGain * 0.014);
-    accY[i] += ty * dR_dTheta * (set.tangentGain * 0.014);
+    accX[i] += tx * dR_dTheta * (set.tangentGain * 0.009);
+    accY[i] += ty * dR_dTheta * (set.tangentGain * 0.009);
 
-    const c = curlNoise(nOX[i] * 0.015 + t * 0.3, nOY[i] * 0.015 - t * 0.25);
-    accX[i] += c.x * (0.4 + 0.9 * (0.6 * M + 0.4 * T));
-    accY[i] += c.y * (0.4 + 0.9 * (0.6 * M + 0.4 * T));
+    const c = curlNoise(nOX[i] * 0.012 + t * 0.26, nOY[i] * 0.012 - t * 0.22);
+    accX[i] += c.x * (0.55 + 1.2 * (0.5 * M + 0.5 * T));
+    accY[i] += c.y * (0.55 + 1.2 * (0.5 * M + 0.5 * T));
 
-    accX[i] += ux * stretchK * 0.45 * Math.cos(set.petT * th + set.phiT);
-    accY[i] += uy * stretchK * 0.45 * Math.cos(set.petT * th + set.phiT);
+    accX[i] += ux * stretchK * 0.30 * Math.cos(set.petT * th + set.phiT);
+    accY[i] += uy * stretchK * 0.30 * Math.cos(set.petT * th + set.phiT);
 
-    accX[i] += ux * (B * set.bassBreath * 0.5);
-    accY[i] += uy * (B * set.bassBreath * 0.5);
+    accX[i] += ux * (B * set.bassBreath * 0.34);
+    accY[i] += uy * (B * set.bassBreath * 0.34);
 
     if (flareK > 0 && (i & 31) === 0) {
-      const ra = (phiOff + t * 7.0) % TWO_PI;
-      accX[i] += Math.cos(ra) * flareK * 0.85;
-      accY[i] += Math.sin(ra) * flareK * 0.85;
+      const ra = (phiOff + t * 6.2) % TWO_PI;
+      accX[i] += Math.cos(ra) * flareK * 0.58;
+      accY[i] += Math.sin(ra) * flareK * 0.58;
     }
 
     if (chaosK > 0 && (i & 63) === 0) {
-      const ra = (phiOff * 1.7 + t * 5.0) % TWO_PI;
-      accX[i] += Math.cos(ra) * chaosK * 0.7;
-      accY[i] += Math.sin(ra) * chaosK * 0.7;
+      const ra = (phiOff * 1.7 + t * 4.1) % TWO_PI;
+      accX[i] += Math.cos(ra) * chaosK * 0.46;
+      accY[i] += Math.sin(ra) * chaosK * 0.46;
     }
 
-    const pulseWave = pulseField * 16 * Math.sin((r * 0.022) - t * 10.0 + phiOff);
-    accX[i] += ux * pulseWave * 0.04;
-    accY[i] += uy * pulseWave * 0.04;
+    const pulseWave = pulseField * 12 * Math.sin((r * 0.02) - t * 8.4 + phiOff);
+    accX[i] += ux * pulseWave * 0.03;
+    accY[i] += uy * pulseWave * 0.03;
 
+    // softer containment so less shell-sticking
     if (r > RMAX) {
       const over = r - RMAX;
-      const pullBack = 0.07 * over;
+      const pullBack = 0.045 * over;
       accX[i] -= ux * pullBack;
       accY[i] -= uy * pullBack;
-      velX[i] *= 0.93;
-      velY[i] *= 0.93;
-      rFrac[i] = Math.min(1, rFrac[i] + 0.0006);
-    } else if (r < RMIN * 0.85) {
-      const inward = (RMIN * 0.85 - r);
-      const pushOut = 0.06 * inward;
+      velX[i] *= 0.95;
+      velY[i] *= 0.95;
+      rFrac[i] = Math.min(1, rFrac[i] + 0.00035);
+    } else if (r < RMIN * 0.8) {
+      const inward = (RMIN * 0.8 - r);
+      const pushOut = 0.042 * inward;
       accX[i] += ux * pushOut;
       accY[i] += uy * pushOut;
-      rFrac[i] = Math.max(0, rFrac[i] - 0.0003);
+      rFrac[i] = Math.max(0, rFrac[i] - 0.00015);
     } else {
-      rFrac[i] = clamp(rFrac[i] + (Math.random() - 0.5) * 0.0002, 0, 1);
+      rFrac[i] = clamp(rFrac[i] + (Math.random() - 0.5) * 0.00012, 0, 1);
     }
 
-    velX[i] = clampMag(velX[i] + accX[i], 6.0);
-    velY[i] = clampMag(velY[i] + accY[i], 6.0);
+    velX[i] = clampMag(velX[i] + accX[i], 5.7);
+    velY[i] = clampMag(velY[i] + accY[i], 5.7);
     velX[i] *= set.drag;
     velY[i] *= set.drag;
     posX[i] += velX[i];
@@ -314,35 +358,43 @@ function draw() {
     const dPlanar = Math.min(Math.hypot(posX[i] - centerX, posY[i] - centerY), D * 0.5);
     const lerpAmt = 1.0 - (dPlanar / (D * 0.5));
 
-    let rCol = lerp(red(col.start), red(col.end), lerpAmt);
-    let gCol = lerp(green(col.start), green(col.end), lerpAmt);
-    let bCol = lerp(blue(col.start), blue(col.end), lerpAmt);
+    let rColA = lerp(red(colA.start), red(colA.end), lerpAmt);
+    let gColA = lerp(green(colA.start), green(colA.end), lerpAmt);
+    let bColA = lerp(blue(colA.start), blue(colA.end), lerpAmt);
+
+    let rColB = lerp(red(colB.start), red(colB.end), lerpAmt);
+    let gColB = lerp(green(colB.start), green(colB.end), lerpAmt);
+    let bColB = lerp(blue(colB.start), blue(colB.end), lerpAmt);
+
+    let rCol = lerp(rColA, rColB, morphAmount);
+    let gCol = lerp(gColA, gColB, morphAmount);
+    let bCol = lerp(bColA, bColB, morphAmount);
 
     if (set.colorFlicker && sMid > 160 && (i & 31) === 0) {
       flicker[i] = 0.4 + Math.random() * 0.6;
     }
 
-    flicker[i] *= 0.95;
+    flicker[i] *= 0.96;
     if (flicker[i] < 0.5) flicker[i] = 0.5;
 
     const zNorm = clamp(zPos[i] / (maxDepth + 1e-3), -1, 1);
-    const frontBoost = 0.80 + 0.40 * (zNorm * 0.5 + 0.5);
-    const interiorBoost = 0.9 + 0.2 * (1.0 - rFrac[i]);
+    const frontBoost = 0.82 + 0.36 * (zNorm * 0.5 + 0.5);
+    const interiorBoost = 0.96 + 0.16 * (1.0 - rFrac[i]);
 
-    const hotBoost = onset * 0.38 + T * 0.22;
-    const rr = lerp(rCol, 255, (flicker[i] - 0.5) * 0.6 + hotBoost * 0.15) * frontBoost * interiorBoost;
-    const gg = lerp(gCol, 255, (flicker[i] - 0.5) * 0.6 + hotBoost * 0.12) * frontBoost * interiorBoost;
-    const bb = lerp(bCol, 255, (flicker[i] - 0.5) * 0.6 + hotBoost * 0.18) * frontBoost * interiorBoost;
+    const hotBoost = onset * 0.34 + T * 0.18;
+    const rr = lerp(rCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.12) * frontBoost * interiorBoost;
+    const gg = lerp(gCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.10) * frontBoost * interiorBoost;
+    const bb = lerp(bCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.14) * frontBoost * interiorBoost;
 
-    const highlightBoost = 1.0 + onset * 0.5 + T * 0.35;
-    const brightness = brightnessBase * (0.86 + 0.28 * (zNorm * 0.5 + 0.5)) * interiorBoost * highlightBoost;
+    const highlightBoost = 1.0 + onset * 0.42 + T * 0.22;
+    const brightness = brightnessBase * (0.88 + 0.24 * (zNorm * 0.5 + 0.5)) * interiorBoost * highlightBoost;
 
     const sz =
       sizeA[i] *
       sizeBase *
-      (0.86 + 0.32 * (zNorm * 0.5 + 0.5)) *
-      (0.95 + 0.1 * (1.0 - rFrac[i])) *
-      (1.0 + onset * 0.35);
+      (0.88 + 0.26 * (zNorm * 0.5 + 0.5)) *
+      (0.97 + 0.08 * (1.0 - rFrac[i])) *
+      (1.0 + onset * 0.22);
 
     fill(clamp(rr, 0, 255), clamp(gg, 0, 255), clamp(bb, 0, 255), brightness);
     ellipse(posX[i], posY[i], sz, sz);
@@ -369,6 +421,15 @@ function mousePressed() {
    ========================= */
 
 function playBirdSound(name) {
+  // start morph toward new bird immediately
+  if (targetBird !== name) {
+    currentBird = targetBird;
+    targetBird = name;
+    morphAmount = 0.0;
+  } else if (currentBird !== targetBird) {
+    morphAmount = 0.0;
+  }
+
   try {
     if (birdSound && birdSound.isPlaying()) birdSound.stop();
   } catch (e) {}
@@ -401,13 +462,13 @@ function setAdaptiveParticleCount() {
   const area = windowWidth * windowHeight;
 
   if (area > 1800000) {
-    N = 5200;
+    N = 5000;
   } else if (area > 1200000) {
-    N = 4400;
+    N = 4300;
   } else if (area > 800000) {
-    N = 3600;
+    N = 3500;
   } else {
-    N = 2800;
+    N = 2700;
   }
 }
 
@@ -431,11 +492,14 @@ function initParticles() {
   zSeed = new Float32Array(N);
   rFrac = new Float32Array(N);
 
-  const Rseed = D * 0.34;
+  orbitBias = new Float32Array(N);
+  driftSeed = new Float32Array(N);
+
+  const Rseed = D * 0.28;
 
   for (let i = 0; i < N; i++) {
     const ang = Math.random() * TWO_PI;
-    const jitter = (Math.random() * 2 - 1) * (D * 0.03);
+    const jitter = (Math.random() * 2 - 1) * (D * 0.05);
     const r = Rseed + jitter;
 
     posX[i] = centerX + Math.cos(ang) * r;
@@ -446,19 +510,23 @@ function initParticles() {
     accX[i] = 0;
     accY[i] = 0;
 
-    sizeA[i] = 0.95 + Math.random() * 1.2;
+    sizeA[i] = 0.95 + Math.random() * 1.25;
     nOX[i] = Math.random() * 1000;
     nOY[i] = Math.random() * 1000;
     flicker[i] = 0.5;
 
-    rFrac[i] = Math.pow(Math.random(), 0.6);
-    rBias[i] = (Math.random() * 2 - 1) * (D * 0.02);
+    // much stronger inner-body distribution
+    rFrac[i] = Math.pow(Math.random(), 0.42);
+    rBias[i] = (Math.random() * 2 - 1) * (D * 0.012);
 
     zHome[i] = (Math.random() * 2 - 1);
-    zPos[i] = zHome[i] * (D * 0.08);
+    zPos[i] = zHome[i] * (D * 0.10);
     zVel[i] = 0;
     zAcc[i] = 0;
     zSeed[i] = Math.random() * 1000;
+
+    orbitBias[i] = (Math.random() > 0.5 ? 1 : -1) * (0.15 + Math.random() * 0.95);
+    driftSeed[i] = Math.random() * TWO_PI;
   }
 
   prevSpec = new Uint8Array(fft.analyze().length);
@@ -479,17 +547,17 @@ function windowResized() {
 
 function drawIdleGlow() {
   noStroke();
-  fill(255, 255, 255, 16);
-  ellipse(centerX, centerY, D * 0.22, D * 0.22);
+  fill(255, 255, 255, 14);
+  ellipse(centerX, centerY, D * 0.24, D * 0.24);
 
-  fill(255, 255, 255, 8);
-  ellipse(centerX, centerY, D * 0.34, D * 0.34);
+  fill(255, 255, 255, 6);
+  ellipse(centerX, centerY, D * 0.38, D * 0.38);
 }
 
 function autoTunePerformance() {
   const fpsNow = frameRate();
 
-  if (fpsNow < 42 && N > 2600) {
+  if (fpsNow < 42 && N > 2500) {
     N = Math.floor(N * 0.9);
     initParticles();
   }
@@ -509,16 +577,16 @@ function setupSoulSettings() {
       trebleFlare: 2.8,
       swirl: 0.18,
       chaos: 1.0,
-      drag: 0.93,
+      drag: 0.938,
       colorFlicker: true,
       petB: 6, petM: 12, petT: 24,
       ampB: 90, ampM: 52, ampT: 36,
       rotSpeed: 0.004,
-      spring: 0.13,
+      spring: 0.128,
       tangentGain: 1.0,
       bassInflate: 0.82,
       foldAmt: 16,
-      twirl: 0.95,
+      twirl: 1.15,
       wave: 1.0,
       stretchGain: 0.85,
       geomH2: 14,
@@ -526,7 +594,7 @@ function setupSoulSettings() {
       veins: 6,
       veinSharp: 2.6,
       veinTanGain: 0.9,
-      veinRadGain: 0.6,
+      veinRadGain: 0.55,
       veinPhase: 0.8
     }),
 
@@ -536,24 +604,24 @@ function setupSoulSettings() {
       trebleFlare: 4.4,
       swirl: 0.12,
       chaos: 2.7,
-      drag: 0.92,
+      drag: 0.934,
       colorFlicker: false,
       petB: 4, petM: 9, petT: 20,
       ampB: 112, ampM: 44, ampT: 62,
       rotSpeed: 0.006,
-      spring: 0.14,
+      spring: 0.135,
       tangentGain: 1.2,
       bassInflate: 0.96,
       foldAmt: 14,
-      twirl: 1.12,
+      twirl: 1.28,
       wave: 0.85,
       stretchGain: 1.0,
       geomH2: 10,
       geomH4: 12,
       veins: 5,
       veinSharp: 3.2,
-      veinTanGain: 1.1,
-      veinRadGain: 0.9,
+      veinTanGain: 1.08,
+      veinRadGain: 0.82,
       veinPhase: 1.2
     }),
 
@@ -563,16 +631,16 @@ function setupSoulSettings() {
       trebleFlare: 1.0,
       swirl: 0.45,
       chaos: 0.6,
-      drag: 0.945,
+      drag: 0.944,
       colorFlicker: false,
       petB: 8, petM: 14, petT: 20,
       ampB: 80, ampM: 40, ampT: 22,
       rotSpeed: 0.0025,
-      spring: 0.12,
+      spring: 0.118,
       tangentGain: 0.85,
       bassInflate: 0.60,
       foldAmt: 20,
-      twirl: 0.55,
+      twirl: 0.82,
       wave: 0.75,
       stretchGain: 0.6,
       geomH2: 18,
@@ -580,7 +648,7 @@ function setupSoulSettings() {
       veins: 7,
       veinSharp: 2.2,
       veinTanGain: 0.75,
-      veinRadGain: 0.5,
+      veinRadGain: 0.45,
       veinPhase: 0.4
     }),
 
@@ -590,16 +658,16 @@ function setupSoulSettings() {
       trebleFlare: 2.2,
       swirl: 0.14,
       chaos: 1.9,
-      drag: 0.93,
+      drag: 0.935,
       colorFlicker: false,
       petB: 6, petM: 16, petT: 26,
       ampB: 70, ampM: 60, ampT: 34,
       rotSpeed: 0.005,
-      spring: 0.135,
+      spring: 0.132,
       tangentGain: 1.0,
       bassInflate: 0.58,
       foldAmt: 16,
-      twirl: 1.08,
+      twirl: 1.34,
       wave: 1.18,
       stretchGain: 0.82,
       geomH2: 12,
@@ -607,7 +675,7 @@ function setupSoulSettings() {
       veins: 8,
       veinSharp: 2.8,
       veinTanGain: 1.0,
-      veinRadGain: 0.55,
+      veinRadGain: 0.48,
       veinPhase: 0.9
     }),
 
@@ -617,16 +685,16 @@ function setupSoulSettings() {
       trebleFlare: 1.8,
       swirl: 0.18,
       chaos: 1.0,
-      drag: 0.93,
+      drag: 0.936,
       colorFlicker: false,
       petB: 5, petM: 12, petT: 22,
       ampB: 82, ampM: 50, ampT: 28,
       rotSpeed: 0.004,
-      spring: 0.13,
+      spring: 0.128,
       tangentGain: 0.95,
       bassInflate: 0.68,
       foldAmt: 18,
-      twirl: 0.90,
+      twirl: 1.02,
       wave: 0.95,
       stretchGain: 0.7,
       geomH2: 12,
@@ -634,7 +702,7 @@ function setupSoulSettings() {
       veins: 6,
       veinSharp: 2.4,
       veinTanGain: 0.85,
-      veinRadGain: 0.55,
+      veinRadGain: 0.5,
       veinPhase: 0.7
     }),
 
@@ -644,16 +712,16 @@ function setupSoulSettings() {
       trebleFlare: 1.4,
       swirl: 0.10,
       chaos: 1.0,
-      drag: 0.94,
+      drag: 0.944,
       colorFlicker: false,
       petB: 4, petM: 10, petT: 18,
       ampB: 90, ampM: 34, ampT: 24,
       rotSpeed: 0.002,
-      spring: 0.12,
+      spring: 0.118,
       tangentGain: 0.8,
       bassInflate: 0.82,
       foldAmt: 12,
-      twirl: 0.60,
+      twirl: 0.75,
       wave: 0.70,
       stretchGain: 0.5,
       geomH2: 10,
@@ -661,7 +729,7 @@ function setupSoulSettings() {
       veins: 5,
       veinSharp: 2.0,
       veinTanGain: 0.7,
-      veinRadGain: 0.45,
+      veinRadGain: 0.42,
       veinPhase: 0.3
     }),
 
@@ -671,16 +739,16 @@ function setupSoulSettings() {
       trebleFlare: 2.3,
       swirl: 0.18,
       chaos: 1.5,
-      drag: 0.93,
+      drag: 0.936,
       colorFlicker: true,
       petB: 6, petM: 15, petT: 24,
       ampB: 82, ampM: 58, ampT: 32,
       rotSpeed: 0.0045,
-      spring: 0.13,
+      spring: 0.128,
       tangentGain: 1.1,
       bassInflate: 0.66,
       foldAmt: 16,
-      twirl: 1.0,
+      twirl: 1.18,
       wave: 1.06,
       stretchGain: 0.9,
       geomH2: 14,
@@ -688,7 +756,7 @@ function setupSoulSettings() {
       veins: 7,
       veinSharp: 3.0,
       veinTanGain: 1.05,
-      veinRadGain: 0.65,
+      veinRadGain: 0.58,
       veinPhase: 1.0
     })
   };
@@ -709,6 +777,54 @@ function setupColorSettings() {
 /* =========================
    HELPERS
    ========================= */
+
+function blendProfiles(a, b, amt) {
+  return {
+    focus: [
+      {
+        lo: lerp(a.focus[0].lo, b.focus[0].lo, amt),
+        hi: lerp(a.focus[0].hi, b.focus[0].hi, amt),
+        w: lerp(a.focus[0].w, b.focus[0].w, amt)
+      },
+      {
+        lo: lerp(a.focus[1].lo, b.focus[1].lo, amt),
+        hi: lerp(a.focus[1].hi, b.focus[1].hi, amt),
+        w: lerp(a.focus[1].w, b.focus[1].w, amt)
+      }
+    ],
+    bassBreath: lerp(a.bassBreath, b.bassBreath, amt),
+    trebleFlare: lerp(a.trebleFlare, b.trebleFlare, amt),
+    swirl: lerp(a.swirl, b.swirl, amt),
+    chaos: lerp(a.chaos, b.chaos, amt),
+    drag: lerp(a.drag, b.drag, amt),
+    colorFlicker: amt < 0.5 ? a.colorFlicker : b.colorFlicker,
+    petB: lerp(a.petB, b.petB, amt),
+    petM: lerp(a.petM, b.petM, amt),
+    petT: lerp(a.petT, b.petT, amt),
+    ampB: lerp(a.ampB, b.ampB, amt),
+    ampM: lerp(a.ampM, b.ampM, amt),
+    ampT: lerp(a.ampT, b.ampT, amt),
+    rotSpeed: lerp(a.rotSpeed, b.rotSpeed, amt),
+    spring: lerp(a.spring, b.spring, amt),
+    tangentGain: lerp(a.tangentGain, b.tangentGain, amt),
+    bassInflate: lerp(a.bassInflate, b.bassInflate, amt),
+    foldAmt: lerp(a.foldAmt, b.foldAmt, amt),
+    twirl: lerp(a.twirl, b.twirl, amt),
+    wave: lerp(a.wave, b.wave, amt),
+    stretchGain: lerp(a.stretchGain, b.stretchGain, amt),
+    geomH2: lerp(a.geomH2, b.geomH2, amt),
+    geomH4: lerp(a.geomH4, b.geomH4, amt),
+    veins: lerp(a.veins, b.veins, amt),
+    veinSharp: lerp(a.veinSharp, b.veinSharp, amt),
+    veinTanGain: lerp(a.veinTanGain, b.veinTanGain, amt),
+    veinRadGain: lerp(a.veinRadGain, b.veinRadGain, amt),
+    veinPhase: lerp(a.veinPhase, b.veinPhase, amt),
+    phiB: lerp(a.phiB, b.phiB, amt),
+    phiM: lerp(a.phiM, b.phiM, amt),
+    phiT: lerp(a.phiT, b.phiT, amt),
+    phiV: lerp(a.phiV, b.phiV, amt)
+  };
+}
 
 function clamp(x, a, b) {
   return x < a ? a : (x > b ? b : x);
