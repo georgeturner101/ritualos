@@ -991,59 +991,98 @@ iframe {
 }
 
 /* =========================
-   GT PAINT
+   GT PAINT — CLEAN COLOURFUL WINDOW
    ========================= */
 
 #window-gtpaint {
-  width: 900px;
-  height: 680px;
+  width: 980px;
+  height: 760px;
 }
 
 .gtpaint-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   padding: 0;
   overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.45), transparent 20%),
+    linear-gradient(135deg, #ffd7f5 0%, #dff4ff 52%, #fff2bd 100%);
+}
+
+#window-gtpaint .title-bar {
+  background: linear-gradient(to bottom, #ff9be7 0%, #7dd7ff 52%, #5ca9ff 100%);
 }
 
 .gtpaint-toolbar {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.55));
+  border-bottom: 1px solid rgba(210, 120, 190, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  flex-shrink: 0;
+}
+
+.gtpaint-toolbar-row {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  background: linear-gradient(to bottom, #ffeaf6 0%, #ffd7ea 100%);
-  border-bottom: 1px solid #efadd0;
-  color: #184a8c;
-  font-weight: bold;
-  font-size: 12px;
 }
 
-.gtpaint-toolbar button {
-  background: linear-gradient(to bottom, #ffffff 0%, #f6cfe8 100%);
-  border: 1px solid #d889b7;
-  border-radius: 7px;
-  padding: 6px 10px;
-  cursor: pointer;
-  color: #8a2b64;
+.gtpaint-toolbar label {
+  font-size: 11px;
   font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7e3d88;
+}
+
+.gtpaint-toolbar button,
+.gtpaint-tool {
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(184, 110, 174, 0.6);
+  background: linear-gradient(to bottom, #ffffff 0%, #ffd7f2 55%, #d7f4ff 100%);
+  color: #7c2d68;
   font-family: 'Verdana', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 2px 6px rgba(170, 120, 200, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
 }
 
-.gtpaint-toolbar button:hover {
-  background: linear-gradient(to bottom, #ffffff 0%, #f2bddf 100%);
+.gtpaint-toolbar button:hover,
+.gtpaint-tool:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 4px 10px rgba(170, 120, 200, 0.24);
 }
 
-.gtpaint-toolbar button.active {
-  background: linear-gradient(to bottom, #ffb8df 0%, #ef8fc8 100%);
+.gtpaint-toolbar button:active,
+.gtpaint-tool:active {
+  transform: translateY(1px);
+}
+
+.gtpaint-tool.active {
+  background: linear-gradient(to bottom, #ffb7ee 0%, #ff8ee0 55%, #7ad8ff 100%);
   color: white;
-  border-color: #c85ba0;
+  border-color: rgba(133, 60, 126, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 0 10px rgba(255, 130, 220, 0.35);
 }
 
 .gtpaint-toolbar input[type="color"] {
-  width: 42px;
-  height: 30px;
+  width: 44px;
+  height: 32px;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1053,31 +1092,45 @@ iframe {
   cursor: pointer;
 }
 
-#gtpaint-size-display {
-  min-width: 20px;
-  display: inline-block;
+#gtpaint-size-display,
+#gtpaint-font-size-display {
+  min-width: 26px;
   text-align: center;
-  color: #8a2b64;
+  font-size: 12px;
+  font-weight: bold;
+  color: #7c2d68;
 }
 
 .gtpaint-canvas-wrap {
   flex: 1;
+  min-height: 0;
   overflow: auto;
-  padding: 14px;
+  padding: 18px;
+  box-sizing: border-box;
   background:
-    linear-gradient(45deg, rgba(255,255,255,0.35) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255,255,255,0.35) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.35) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.35) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.42), transparent 22%),
+    radial-gradient(circle at 80% 25%, rgba(255,255,255,0.28), transparent 20%),
+    linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.15) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.15) 75%),
+    linear-gradient(180deg, #bdeeff 0%, #ffe6fa 55%, #fff7ca 100%);
+  background-size: auto, auto, 20px 20px, 20px 20px, 20px 20px, 20px 20px, auto;
+  background-position: 0 0, 0 0, 0 0, 0 10px, 10px -10px, -10px 0px, 0 0;
 }
 
 #gtpaint-canvas {
   display: block;
-  background: #ffffff;
-  border: 2px solid #d88ab8;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-  cursor: crosshair;
+  width: 860px;
+  height: 520px;
+  max-width: 100%;
   margin: 0 auto;
+  background: #ffffff;
+  border: 3px solid rgba(255,255,255,0.7);
+  border-radius: 10px;
+  box-shadow:
+    0 8px 18px rgba(0,0,0,0.16),
+    0 0 0 2px rgba(215, 138, 184, 0.45);
+  cursor: crosshair;
+  
 }

@@ -267,30 +267,50 @@
   <!-- Spirit Ghost -->
   <img id="spirit-ghost" src="icons/ghost.png" alt="spirit ghost">
 
-    <!-- GT Paint Window -->
-  <div class="window" id="window-gtpaint">
-    <div class="title-bar">GT Paint <button onclick="closeWindow('gtpaint')">X</button></div>
-    <div class="window-content gtpaint-content">
-      <div class="gtpaint-toolbar">
+<!-- GT Paint Window -->
+<div class="window" id="window-gtpaint">
+  <div class="title-bar">GT Paint <button onclick="closeWindow('gtpaint')">X</button></div>
+  <div class="window-content gtpaint-content">
+
+    <div class="gtpaint-toolbar">
+      <div class="gtpaint-toolbar-row">
         <button id="gtpaint-pencil" class="gtpaint-tool active">Pencil</button>
         <button id="gtpaint-eraser" class="gtpaint-tool">Eraser</button>
+        <button id="gtpaint-spray" class="gtpaint-tool">Spray</button>
+        <button id="gtpaint-glow" class="gtpaint-tool">Glow</button>
+        <button id="gtpaint-tube" class="gtpaint-tool">Tube</button>
+        <button id="gtpaint-ribbon" class="gtpaint-tool">Ribbon</button>
+        <button id="gtpaint-glitter" class="gtpaint-tool">Glitter</button>
+        <button id="gtpaint-type" class="gtpaint-tool">Type</button>
+      </div>
 
+      <div class="gtpaint-toolbar-row">
         <label for="gtpaint-color">Colour</label>
-        <input type="color" id="gtpaint-color" value="#000000">
+        <input type="color" id="gtpaint-color" value="#ff4fd8">
 
-        <label for="gtpaint-size">Size</label>
-        <input type="range" id="gtpaint-size" min="1" max="30" value="4">
-        <span id="gtpaint-size-display">4</span>
+        <label for="gtpaint-size">Brush</label>
+        <input type="range" id="gtpaint-size" min="1" max="90" value="14">
+        <span id="gtpaint-size-display">14</span>
 
+        <label for="gtpaint-font-size">Text</label>
+        <input type="range" id="gtpaint-font-size" min="12" max="140" value="42">
+        <span id="gtpaint-font-size-display">42</span>
+      </div>
+
+      <div class="gtpaint-toolbar-row">
+        <button id="gtpaint-fill">Fill</button>
+        <button id="gtpaint-undo">Undo</button>
+        <button id="gtpaint-redo">Redo</button>
         <button id="gtpaint-clear">Clear</button>
         <button id="gtpaint-download">Download PNG</button>
       </div>
+    </div>
 
-      <div class="gtpaint-canvas-wrap">
-        <canvas id="gtpaint-canvas" width="1000" height="700"></canvas>
-      </div>
+    <div class="gtpaint-canvas-wrap">
+      <canvas id="gtpaint-canvas" width="860" height="520"></canvas>
     </div>
   </div>
+</div>
 
   <!-- Firebase core + database -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>

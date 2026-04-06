@@ -1096,14 +1096,19 @@ function restartTunaGame() {
 }
 
 // =========================
-// GT PAINT
+// GT PAINT — CLEAN WINDOW VERSION
 // =========================
 
 let gtPaintInitialized = false;
 let gtPaintIsDrawing = false;
 let gtPaintTool = 'pencil';
-let gtPaintColor = '#000000';
-let gtPaintSize = 4;
+let gtPaintColor = '#ff4fd8';
+let gtPaintSize = 14;
+let gtPaintFontSize = 42;
+
+let gtPaintUndoStack = [];
+let gtPaintRedoStack = [];
+const GT_PAINT_HISTORY_LIMIT = 30;
 
 function initGTPaint() {
   const canvas = document.getElementById('gtpaint-canvas');
@@ -1112,48 +1117,72 @@ function initGTPaint() {
   const ctx = canvas.getContext('2d');
   const pencilBtn = document.getElementById('gtpaint-pencil');
   const eraserBtn = document.getElementById('gtpaint-eraser');
+  const sprayBtn = document.getElementById('gtpaint-spray');
+  const glowBtn = document.getElementById('gtpaint-glow');
+  const tubeBtn = document.getElementById('gtpaint-tube');
+  const ribbonBtn = document.getElementById('gtpaint-ribbon');
+  const glitterBtn = document.getElementById('gtpaint-glitter');
+  const typeBtn = document.getElementById('gtpaint-type');
+
   const colorInput = document.getElementById('gtpaint-color');
   const sizeInput = document.getElementById('gtpaint-size');
   const sizeDisplay = document.getElementById('gtpaint-size-display');
+
+  const fontSizeInput = document.getElementById('gtpaint-font-size');
+  const fontSizeDisplay = document.getElementById('gtpaint-font-size-display');
+
+  const fillBtn = document.getElementById('gtpaint-fill');
+  const undoBtn = document.getElementById('gtpaint-undo');
+  const redoBtn = document.getElementById('gtpaint-redo');
   const clearBtn = document.getElementById('gtpaint-clear');
   const downloadBtn = document.getElementById('gtpaint-download');
 
   if (!gtPaintInitialized) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    saveGTPaintState();
 
-    pencilBtn.addEventListener('click', () => {
-      gtPaintTool = 'pencil';
-      pencilBtn.classList.add('active');
-      eraserBtn.classList.remove('active');
-    });
+    function setTool(tool) {
+      gtPaintTool = tool;
+      document.querySelectorAll('#window-gtpaint .gtpaint-tool').forEach(btn => btn.classList.remove('active'));
 
-    eraserBtn.addEventListener('click', () => {
-      gtPaintTool = 'eraser';
-      eraserBtn.classList.add('active');
-      pencilBtn.classList.remove('active');
-    });
+      if (tool === 'pencil') pencilBtn.classList.add('active');
+      if (tool === 'eraser') eraserBtn.classList.add('active');
+      if (tool === 'spray') sprayBtn.classList.add('active');
+      if (tool === 'glow') glowBtn.classList.add('active');
+      if (tool === 'tube') tubeBtn.classList.add('active');
+      if (tool === 'ribbon') ribbonBtn.classList.add('active');
+      if (tool === 'glitter') glitterBtn.classList.add('active');
+      if (tool === 'type') typeBtn.classList.add('active');
 
-    colorInput.addEventListener('input', (e) => {
-      gtPaintColor = e.target.value;
-    });
+      canvas.style.cursor = tool === 'type' ? 'text' : 'crosshair';
+    }
 
-    sizeInput.addEventListener('input', (e) => {
-      gtPaintSize = parseInt(e.target.value, 10);
-      sizeDisplay.textContent = gtPaintSize;
-    });
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '');
+      const bigint = parseInt(clean, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
 
-    clearBtn.addEventListener('click', () => {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    });
+    function lightenColor(hex, amount = 0.35) {
+      const { r, g, b } = hexToRgb(hex);
+      const lr = Math.round(r + (255 - r) * amount);
+      const lg = Math.round(g + (255 - g) * amount);
+      const lb = Math.round(b + (255 - b) * amount);
+      return `rgb(${lr}, ${lg}, ${lb})`;
+    }
 
-    downloadBtn.addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = 'gt-paint-artwork.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
+    function darkenColor(hex, amount = 0.25) {
+      const { r, g, b } = hexToRgb(hex);
+      const dr = Math.round(r * (1 - amount));
+      const dg = Math.round(g * (1 - amount));
+      const db = Math.round(b * (1 - amount));
+      return `rgb(${dr}, ${dg}, ${db})`;
+    }
 
     function getCanvasPos(e) {
       const rect = canvas.getBoundingClientRect();
@@ -1166,11 +1195,253 @@ function initGTPaint() {
       };
     }
 
-    function startDrawing(e) {
-      gtPaintIsDrawing = true;
-      const pos = getCanvasPos(e);
+    function saveGTPaintState() {
+      try {
+        const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        gtPaintUndoStack.push(snapshot);
+
+        if (gtPaintUndoStack.length > GT_PAINT_HISTORY_LIMIT) {
+          gtPaintUndoStack.shift();
+        }
+
+        gtPaintRedoStack = [];
+      } catch (err) {
+        console.error('GT Paint history save error:', err);
+      }
+    }
+
+    function restoreGTPaintState(stackFrom, stackTo) {
+      if (stackFrom.length <= 1) return;
+
+      const current = stackFrom.pop();
+      stackTo.push(current);
+
+      const previous = stackFrom[stackFrom.length - 1];
+      if (previous) {
+        ctx.putImageData(previous, 0, 0);
+      }
+    }
+
+    function restoreRedoState() {
+      if (!gtPaintRedoStack.length) return;
+
+      const redoState = gtPaintRedoStack.pop();
+      gtPaintUndoStack.push(redoState);
+      ctx.putImageData(redoState, 0, 0);
+    }
+
+    function drawPencil(from, to) {
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = gtPaintSize;
+      ctx.strokeStyle = gtPaintColor;
+      ctx.globalAlpha = 1;
       ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawEraser(from, to) {
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = gtPaintSize * 1.2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawSpray(pos) {
+      ctx.save();
+      const density = Math.max(12, Math.floor(gtPaintSize * 2.6));
+      const radius = gtPaintSize * 1.45;
+      const { r, g, b } = hexToRgb(gtPaintColor);
+
+      for (let i = 0; i < density; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * radius;
+        const x = pos.x + Math.cos(angle) * dist;
+        const y = pos.y + Math.sin(angle) * dist;
+        const dot = Math.random() * (gtPaintSize * 0.18) + 0.7;
+
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.08 + Math.random() * 0.22})`;
+        ctx.beginPath();
+        ctx.arc(x, y, dot, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawGlow(pos) {
+      ctx.save();
+      const { r, g, b } = hexToRgb(gtPaintColor);
+
+      const grad = ctx.createRadialGradient(
+        pos.x, pos.y, 0,
+        pos.x, pos.y, gtPaintSize * 2.4
+      );
+
+      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.28)`);
+      grad.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.16)`);
+      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, gtPaintSize * 2.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawTube(from, to) {
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+      const nx = Math.cos(angle + Math.PI / 2);
+      const ny = Math.sin(angle + Math.PI / 2);
+      const radius = gtPaintSize * 0.62;
+
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.strokeStyle = darkenColor(gtPaintColor, 0.28);
+      ctx.lineWidth = radius * 2.2;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+
+      const grad = ctx.createLinearGradient(
+        from.x - nx * radius,
+        from.y - ny * radius,
+        from.x + nx * radius,
+        from.y + ny * radius
+      );
+      grad.addColorStop(0, darkenColor(gtPaintColor, 0.34));
+      grad.addColorStop(0.22, gtPaintColor);
+      grad.addColorStop(0.5, lightenColor(gtPaintColor, 0.55));
+      grad.addColorStop(0.72, gtPaintColor);
+      grad.addColorStop(1, darkenColor(gtPaintColor, 0.25));
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = radius * 1.9;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.34)';
+      ctx.lineWidth = Math.max(1.5, radius * 0.42);
+      ctx.beginPath();
+      ctx.moveTo(from.x - nx * radius * 0.28, from.y - ny * radius * 0.28);
+      ctx.lineTo(to.x - nx * radius * 0.28, to.y - ny * radius * 0.28);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawRibbon(from, to) {
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+      const nx = Math.cos(angle + Math.PI / 2);
+      const ny = Math.sin(angle + Math.PI / 2);
+      const width = gtPaintSize * 0.9;
+
+      ctx.save();
+
+      const grad = ctx.createLinearGradient(
+        from.x - nx * width,
+        from.y - ny * width,
+        from.x + nx * width,
+        from.y + ny * width
+      );
+      grad.addColorStop(0, lightenColor(gtPaintColor, 0.45));
+      grad.addColorStop(0.35, gtPaintColor);
+      grad.addColorStop(0.65, darkenColor(gtPaintColor, 0.22));
+      grad.addColorStop(1, lightenColor(gtPaintColor, 0.2));
+
+      ctx.strokeStyle = grad;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = width;
+      ctx.globalAlpha = 0.82;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawGlitter(pos) {
+      ctx.save();
+
+      for (let i = 0; i < Math.max(4, Math.floor(gtPaintSize / 3)); i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * gtPaintSize * 1.6;
+        const x = pos.x + Math.cos(angle) * dist;
+        const y = pos.y + Math.sin(angle) * dist;
+        const size = Math.random() * 5 + 2;
+
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.85)' : gtPaintColor;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y - size);
+        ctx.lineTo(x + size * 0.35, y - size * 0.35);
+        ctx.lineTo(x + size, y);
+        ctx.lineTo(x + size * 0.35, y + size * 0.35);
+        ctx.lineTo(x, y + size);
+        ctx.lineTo(x - size * 0.35, y + size * 0.35);
+        ctx.lineTo(x - size, y);
+        ctx.lineTo(x - size * 0.35, y - size * 0.35);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function placeType(pos) {
+      const text = prompt('Enter your text:');
+      if (!text) return;
+
+      saveGTPaintState();
+
+      ctx.save();
+      ctx.fillStyle = gtPaintColor;
+      ctx.font = `bold ${gtPaintFontSize}px Inter, Verdana, sans-serif`;
+      ctx.textBaseline = 'top';
+      ctx.shadowColor = 'rgba(255,255,255,0.25)';
+      ctx.shadowBlur = 8;
+      ctx.fillText(text, pos.x, pos.y);
+      ctx.restore();
+    }
+
+    let lastPos = null;
+
+    function startDrawing(e) {
+      const pos = getCanvasPos(e);
+
+      if (gtPaintTool === 'type') {
+        placeType(pos);
+        return;
+      }
+
+      gtPaintIsDrawing = true;
+      lastPos = pos;
+      saveGTPaintState();
+
+      if (gtPaintTool === 'spray') drawSpray(pos);
+      if (gtPaintTool === 'glow') drawGlow(pos);
+      if (gtPaintTool === 'glitter') drawGlitter(pos);
+      if (gtPaintTool === 'pencil') drawPencil(pos, pos);
+      if (gtPaintTool === 'eraser') drawEraser(pos, pos);
     }
 
     function draw(e) {
@@ -1178,19 +1449,79 @@ function initGTPaint() {
 
       const pos = getCanvasPos(e);
 
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = gtPaintSize;
-      ctx.strokeStyle = gtPaintTool === 'eraser' ? '#ffffff' : gtPaintColor;
+      if (gtPaintTool === 'pencil') {
+        drawPencil(lastPos, pos);
+      } else if (gtPaintTool === 'eraser') {
+        drawEraser(lastPos, pos);
+      } else if (gtPaintTool === 'spray') {
+        drawSpray(pos);
+      } else if (gtPaintTool === 'glow') {
+        drawGlow(pos);
+      } else if (gtPaintTool === 'tube') {
+        drawTube(lastPos, pos);
+      } else if (gtPaintTool === 'ribbon') {
+        drawRibbon(lastPos, pos);
+      } else if (gtPaintTool === 'glitter') {
+        drawGlitter(pos);
+      }
 
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
+      lastPos = pos;
     }
 
     function stopDrawing() {
       gtPaintIsDrawing = false;
-      ctx.beginPath();
+      lastPos = null;
     }
+
+    pencilBtn.addEventListener('click', () => setTool('pencil'));
+    eraserBtn.addEventListener('click', () => setTool('eraser'));
+    sprayBtn.addEventListener('click', () => setTool('spray'));
+    glowBtn.addEventListener('click', () => setTool('glow'));
+    tubeBtn.addEventListener('click', () => setTool('tube'));
+    ribbonBtn.addEventListener('click', () => setTool('ribbon'));
+    glitterBtn.addEventListener('click', () => setTool('glitter'));
+    typeBtn.addEventListener('click', () => setTool('type'));
+
+    colorInput.addEventListener('input', (e) => {
+      gtPaintColor = e.target.value;
+    });
+
+    sizeInput.addEventListener('input', (e) => {
+      gtPaintSize = parseInt(e.target.value, 10);
+      sizeDisplay.textContent = gtPaintSize;
+    });
+
+    fontSizeInput.addEventListener('input', (e) => {
+      gtPaintFontSize = parseInt(e.target.value, 10);
+      fontSizeDisplay.textContent = gtPaintFontSize;
+    });
+
+    fillBtn.addEventListener('click', () => {
+      saveGTPaintState();
+      ctx.fillStyle = gtPaintColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    undoBtn.addEventListener('click', () => {
+      restoreGTPaintState(gtPaintUndoStack, gtPaintRedoStack);
+    });
+
+    redoBtn.addEventListener('click', () => {
+      restoreRedoState();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      saveGTPaintState();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'gt-paint-artwork.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
 
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
@@ -1217,8 +1548,27 @@ function initGTPaint() {
 
     window.addEventListener('touchend', stopDrawing);
 
+    window.addEventListener('keydown', (e) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const mod = isMac ? e.metaKey : e.ctrlKey;
+
+      if (!mod) return;
+
+      if (e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        restoreGTPaintState(gtPaintUndoStack, gtPaintRedoStack);
+      }
+
+      if ((e.key.toLowerCase() === 'y') || (e.key.toLowerCase() === 'z' && e.shiftKey)) {
+        e.preventDefault();
+        restoreRedoState();
+      }
+    });
+
+    setTool('pencil');
     gtPaintInitialized = true;
   }
 
-  sizeDisplay.textContent = gtPaintSize;
+  document.getElementById('gtpaint-size-display').textContent = gtPaintSize;
+  document.getElementById('gtpaint-font-size-display').textContent = gtPaintFontSize;
 }
