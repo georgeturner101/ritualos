@@ -5,8 +5,31 @@
   <title>RitualOS Mobile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="canonical" href="https://georgeturner.space/" />
-  
+
+  <!-- Shared with the desktop site — same --aero-*/--xp-blue-*/--text-navy
+       tokens and gel-material recipes, so mobile can't drift from the main
+       site's look again the way the old hand-copied :root here did. Most
+       of these files' selectors (.window, #start-menu, .gtpaint-*, etc.)
+       simply don't match anything in this page's DOM. -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="aero.css" />
+
   <style>
+    :root {
+      /* mobile-only decorative background — a slow-drifting night sky,
+         its own family (not chrome) — deep indigo up top through to a
+         soft violet horizon glow, same aurora mint/violet family as the
+         desktop's own night sky (aero.css's --aero-aurora-*) — plus a
+         couple of bird/tuna cell tints not exposed as shared tokens */
+      --night-sky-1: #050b1a;
+      --night-sky-2: #0d1830;
+      --night-sky-3: #1c2c58;
+      --night-horizon: #3a2f6b;
+
+      --bird-cell-border: #f0a9d9;
+      --bird-cell-fill: #ffcbe9;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -14,7 +37,7 @@
       font-family: Verdana, sans-serif;
       overflow: hidden;
       color: white;
-      background: linear-gradient(180deg, #aee3ff 0%, #7fcfff 38%, #8dc8ff 60%, #f6b6d8 100%);
+      background: linear-gradient(180deg, var(--night-sky-1) 0%, var(--night-sky-2) 45%, var(--night-sky-3) 75%, var(--night-horizon) 100%);
     }
 
     body {
@@ -27,36 +50,34 @@
       overflow: hidden;
       z-index: 0;
       pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 18%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 16%, transparent 30%),
-        radial-gradient(circle at 78% 28%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 18%, transparent 32%),
-        radial-gradient(ellipse at 50% 115%, rgba(255,190,220,0.45) 0%, rgba(255,190,220,0.22) 28%, transparent 58%),
-        linear-gradient(180deg, #aee3ff 0%, #7fcfff 38%, #8dc8ff 60%, #f6b6d8 100%);
+      background: linear-gradient(180deg, var(--night-sky-1) 0%, var(--night-sky-2) 45%, var(--night-sky-3) 75%, var(--night-horizon) 100%);
     }
 
+    /* soft ambient colour blobs — same slow drift as before, just
+       recoloured from day's white/pink highlights to cool aurora glimmers */
     .mobile-bg::before,
     .mobile-bg::after {
       content: "";
       position: absolute;
       inset: -20%;
       filter: blur(30px);
-      opacity: 0.7;
+      opacity: 0.55;
       will-change: transform;
     }
 
     .mobile-bg::before {
       background:
-        radial-gradient(circle at 18% 25%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 22%, transparent 36%),
-        radial-gradient(circle at 76% 28%, rgba(190,240,255,0.28) 0%, rgba(190,240,255,0.10) 18%, transparent 34%),
-        radial-gradient(circle at 56% 78%, rgba(255,190,225,0.30) 0%, rgba(255,190,225,0.10) 20%, transparent 38%);
+        radial-gradient(circle at 18% 25%, rgba(150,220,255,0.14) 0%, rgba(150,220,255,0.04) 22%, transparent 36%),
+        radial-gradient(circle at 76% 60%, rgba(150,255,210,0.10) 0%, rgba(150,255,210,0.03) 18%, transparent 34%),
+        radial-gradient(circle at 56% 85%, rgba(200,160,255,0.16) 0%, rgba(200,160,255,0.05) 20%, transparent 38%);
       animation: bgFloatOne 22s ease-in-out infinite alternate;
     }
 
     .mobile-bg::after {
       background:
-        radial-gradient(circle at 30% 72%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 20%, transparent 35%),
-        radial-gradient(circle at 72% 70%, rgba(255,220,245,0.18) 0%, rgba(255,220,245,0.05) 18%, transparent 34%),
-        radial-gradient(circle at 52% 18%, rgba(170,230,255,0.16) 0%, rgba(170,230,255,0.05) 18%, transparent 32%);
+        radial-gradient(circle at 30% 72%, rgba(180,200,255,0.10) 0%, rgba(180,200,255,0.03) 20%, transparent 35%),
+        radial-gradient(circle at 72% 30%, rgba(210,170,255,0.10) 0%, rgba(210,170,255,0.03) 18%, transparent 34%),
+        radial-gradient(circle at 52% 18%, rgba(140,200,255,0.10) 0%, rgba(140,200,255,0.03) 18%, transparent 32%);
       animation: bgFloatTwo 28s ease-in-out infinite alternate;
     }
 
@@ -70,6 +91,91 @@
       0% { transform: translate3d(1%, 0%, 0) scale(1.04); }
       50% { transform: translate3d(-3%, 2%, 0) scale(1.08); }
       100% { transform: translate3d(2%, -1.5%, 0) scale(1.05); }
+    }
+
+    /* stars — a fixed dot field that drifts almost imperceptibly (a
+       120s traversal) with a slow, gentle twinkle so it reads as a living
+       sky rather than a static image */
+    .mobile-stars {
+      position: absolute;
+      inset: -15%;
+      background-repeat: no-repeat;
+      background-image:
+        radial-gradient(1.5px 1.5px at 8% 12%, white, transparent),
+        radial-gradient(1px 1px at 18% 22%, white, transparent),
+        radial-gradient(2px 2px at 28% 8%, white, transparent),
+        radial-gradient(1px 1px at 36% 30%, white, transparent),
+        radial-gradient(1.5px 1.5px at 46% 15%, white, transparent),
+        radial-gradient(1px 1px at 54% 26%, white, transparent),
+        radial-gradient(2px 2px at 62% 10%, white, transparent),
+        radial-gradient(1px 1px at 70% 34%, white, transparent),
+        radial-gradient(1.5px 1.5px at 78% 18%, white, transparent),
+        radial-gradient(1px 1px at 86% 28%, white, transparent),
+        radial-gradient(2px 2px at 92% 12%, white, transparent),
+        radial-gradient(1.5px 1.5px at 14% 42%, white, transparent),
+        radial-gradient(1px 1px at 24% 50%, white, transparent),
+        radial-gradient(1.5px 1.5px at 34% 46%, white, transparent),
+        radial-gradient(1px 1px at 44% 55%, white, transparent),
+        radial-gradient(2px 2px at 52% 44%, white, transparent),
+        radial-gradient(1px 1px at 60% 52%, white, transparent),
+        radial-gradient(1.5px 1.5px at 68% 47%, white, transparent),
+        radial-gradient(1px 1px at 76% 58%, white, transparent),
+        radial-gradient(1.5px 1.5px at 84% 44%, white, transparent),
+        radial-gradient(1px 1px at 91% 53%, white, transparent),
+        radial-gradient(1.5px 1.5px at 6% 65%, white, transparent),
+        radial-gradient(1px 1px at 20% 68%, white, transparent),
+        radial-gradient(1.5px 1.5px at 40% 66%, white, transparent),
+        radial-gradient(1px 1px at 64% 66%, white, transparent),
+        radial-gradient(1.5px 1.5px at 88% 68%, white, transparent);
+      animation: mobileStarsDrift 120s ease-in-out infinite alternate, mobileStarsTwinkle 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes mobileStarsDrift {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-2.5%, 1.5%, 0); }
+    }
+
+    @keyframes mobileStarsTwinkle {
+      0%, 100% { opacity: 0.75; }
+      50% { opacity: 1; }
+    }
+
+    /* a faint aurora ribbon, same recipe/spirit as the desktop night
+       sky's aurora — mint-to-violet, blurred, drifting very slowly */
+    .mobile-aurora {
+      position: absolute;
+      top: -12%;
+      left: -15%;
+      right: -15%;
+      height: 45%;
+      background: linear-gradient(100deg, transparent 0%, rgba(140,255,210,0.12) 25%, transparent 45%, rgba(190,150,255,0.14) 65%, transparent 90%);
+      filter: blur(36px);
+      opacity: 0.6;
+      animation: mobileAuroraDrift 46s ease-in-out infinite alternate;
+    }
+
+    @keyframes mobileAuroraDrift {
+      0% { transform: translateX(-3%) translateY(0); }
+      100% { transform: translateX(3%) translateY(-2%); }
+    }
+
+    .mobile-moon {
+      position: absolute;
+      top: 3%;
+      right: 7%;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 36% 32%, #fffef4 0%, #fdf6d8 45%, #e7dcac 100%);
+      box-shadow:
+        0 0 26px 8px rgba(255,250,220,0.32),
+        0 0 60px 22px rgba(255,250,220,0.12);
+      animation: mobileMoonDrift 60s ease-in-out infinite alternate;
+    }
+
+    @keyframes mobileMoonDrift {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-4%, 2%, 0); }
     }
 
  #mobile-warning {
@@ -176,6 +282,8 @@
       justify-items: center;
       align-content: start;
       box-sizing: border-box;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .app-icon {
@@ -215,20 +323,29 @@
       left: 4%;
       width: 92%;
       height: 88%;
-      background: linear-gradient(145deg, #fff0fc, #ffdff4);
-      border: 2px solid #6f99d6;
-      border-radius: 14px;
+      background: linear-gradient(
+        160deg,
+        color-mix(in srgb, transparent 8%, var(--aero-aqua)) 0%,
+        color-mix(in srgb, transparent 18%, var(--xp-blue-light)) 45%,
+        color-mix(in srgb, transparent 28%, var(--xp-blue-dark)) 100%
+      );
+      backdrop-filter: blur(16px);
+      border: 1.5px solid color-mix(in srgb, white 65%, var(--aero-aqua));
+      border-radius: 18px;
       overflow: hidden;
       z-index: 100;
       display: flex;
       flex-direction: column;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.8),
-        0 12px 30px rgba(0,0,0,0.3);
+        inset 0 1px 0 rgba(255,255,255,0.5),
+        0 0 26px color-mix(in srgb, var(--aero-aqua) 40%, transparent),
+        0 12px 30px rgba(0,10,25,0.4);
     }
 
     .mobile-title-bar {
-      background: linear-gradient(to bottom, #5ea2ff, #2f6fd6);
+      min-height: 34px;
+      box-sizing: border-box;
+      background: linear-gradient(160deg, color-mix(in srgb, white 30%, var(--aero-aqua)) 0%, var(--aero-aqua) 55%, color-mix(in srgb, var(--aero-aqua) 60%, var(--xp-blue-dark)) 100%);
       color: white;
       padding: 10px 12px;
       font-weight: bold;
@@ -236,95 +353,56 @@
       justify-content: space-between;
       align-items: center;
       font-size: 1em;
-      border-bottom: 1px solid #1d4f9c;
       text-shadow: 0 1px 1px rgba(0,0,0,0.35);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
       gap: 10px;
     }
 
+    /* Close button keeps a larger touch target than desktop's 22px —
+       intentional, for mobile tap ergonomics — same red gel-orb recipe
+       as the desktop exit orbs, just round and a little bigger */
     .mobile-title-bar button {
-      width: 28px;
-      height: 28px;
-      border: 1px solid #8eb5f0;
-      border-radius: 6px;
-      background: linear-gradient(to bottom, #ff8d8d, #d64a4a);
+      width: 30px;
+      height: 30px;
+      border: 1.5px solid rgba(255,255,255,0.65);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, var(--danger-red-hover-light), var(--danger-red-light) 45%, var(--danger-red-dark) 100%);
       color: white;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 6px rgba(0,10,25,0.3);
       flex-shrink: 0;
     }
 
     .mobile-window-content {
       flex: 1;
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       font-size: 0.95em;
-      color: #163d72;
-      background: linear-gradient(145deg, #fff0fc, #ffdff4);
+      color: var(--text-navy);
+      background: linear-gradient(
+        160deg,
+        rgba(255,255,255,0.95) 0%,
+        color-mix(in srgb, white 60%, var(--xp-blue-light)) 55%,
+        color-mix(in srgb, white 38%, var(--xp-blue-light)) 100%
+      );
     }
 
     .mobile-window-content a {
-      color: #0000ee;
+      color: var(--text-navy);
       text-decoration: none;
       font-weight: bold;
     }
 
     .mobile-window-content a:hover {
-      color: #551a8b;
+      color: color-mix(in srgb, var(--text-navy) 70%, var(--xp-blue-mid));
       text-decoration: underline;
     }
 
     .mobile-window-content p {
       line-height: 1.5;
       margin-top: 0;
-    }
-
-    #mobile-pdf-viewer {
-      display: none;
-      position: fixed;
-      top: 3%;
-      left: 3%;
-      width: 94%;
-      height: 92%;
-      background: linear-gradient(145deg, #fff0fc, #ffdff4);
-      border: 2px solid #6f99d6;
-      border-radius: 14px;
-      z-index: 9999;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.8),
-        0 12px 30px rgba(0,0,0,0.35);
-    }
-
-    #mobile-pdf-viewer .pdf-topbar {
-      background: linear-gradient(to bottom, #5ea2ff, #2f6fd6);
-      color: white;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.35);
-    }
-
-    #mobile-pdf-viewer .pdf-topbar button {
-      width: 26px;
-      height: 26px;
-      border: 1px solid #8eb5f0;
-      border-radius: 6px;
-      background: linear-gradient(to bottom, #ff8d8d, #d64a4a);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #mobile-pdf-frame {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background: white;
     }
 
     #mobile-spirit-ghost {
@@ -357,8 +435,8 @@
       background: radial-gradient(
         circle,
         rgba(255,255,255,0.65) 0%,
-        rgba(255,210,240,0.30) 45%,
-        rgba(150,220,255,0.10) 70%,
+        rgba(255,204,255,0.30) 45%,
+        rgba(192,234,255,0.10) 70%,
         transparent 100%
       );
       animation: mobileGhostTrailFade 1.2s ease-out forwards;
@@ -386,7 +464,7 @@
       border-radius: 16px;
       font-size: 12px;
       line-height: 1.3;
-      color: #24406f;
+      color: var(--text-navy);
       background: rgba(255,255,255,0.88);
       backdrop-filter: blur(8px);
       box-shadow:
@@ -424,24 +502,73 @@
     }
 
     .mobile-link-list a {
+      position: relative;
       display: block;
-      margin: 10px 0;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.35);
-      color: #224a8c;
+      margin: 8px 0;
+      padding: 11px 14px;
+      border-radius: 999px;
+      background: linear-gradient(
+        160deg,
+        rgba(255,255,255,0.97) 0%,
+        color-mix(in srgb, white 62%, var(--xp-blue-light)) 55%,
+        color-mix(in srgb, white 35%, var(--xp-blue-light)) 100%
+      );
+      border: 1.5px solid rgba(255,255,255,0.75);
+      box-shadow:
+        inset 0 -3px 6px color-mix(in srgb, var(--xp-blue-mid) 25%, transparent),
+        inset 0 2px 0 rgba(255,255,255,0.85),
+        0 4px 12px color-mix(in srgb, var(--aero-aqua) 30%, transparent);
+      color: var(--text-navy);
       text-decoration: none;
       font-weight: bold;
+      transition: transform 0.12s ease;
     }
 
     .mobile-link-list a:active {
-      transform: translateY(1px);
+      transform: translateY(1px) scale(0.985);
+    }
+
+    .mobile-link-list a.now-playing {
+      background: linear-gradient(160deg, rgba(255,255,255,0.98) 0%, color-mix(in srgb, white 35%, var(--start-green-light)) 100%);
+      color: var(--start-green-dark);
     }
 
     .game-intro {
       margin-bottom: 14px;
       font-size: 0.9em;
-      color: #35578e;
+      color: var(--text-navy);
+    }
+
+    .mobile-paint-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .mobile-paint-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.65);
+      box-shadow: 0 2px 6px rgba(0,10,25,0.25);
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .mobile-paint-swatch.active {
+      border-color: var(--aero-aqua);
+      box-shadow: 0 0 0 2px color-mix(in srgb, white 40%, var(--aero-aqua)), 0 2px 6px rgba(0,10,25,0.25);
+    }
+
+    .mobile-paint-canvas {
+      display: block;
+      width: 100%;
+      border-radius: 12px;
+      border: 1.5px solid color-mix(in srgb, white 55%, var(--aero-aqua));
+      box-shadow: inset 0 2px 6px rgba(0,20,40,0.15);
+      touch-action: none;
+      background: #ffffff;
     }
 
     #mobile-birdsweeper-grid {
@@ -454,13 +581,13 @@
     .mobile-bird-cell {
       aspect-ratio: 1 / 1;
       background: rgba(255, 240, 255, 0.8);
-      border: 1px solid #ffb6f4;
+      border: 1px solid var(--bird-cell-border);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      color: #3a003a;
+      color: var(--text-plum);
       box-shadow: 0 2px 6px rgba(255, 180, 255, 0.2);
       font-size: 0.95em;
       user-select: none;
@@ -471,7 +598,7 @@
     }
 
     .mobile-bird-cell.bird {
-      background: #ffc6e9;
+      background: var(--bird-cell-fill);
     }
 
     .mobile-bird-found {
@@ -517,26 +644,26 @@
     }
 
     .mobile-tuna {
-      background: radial-gradient(circle, #ffe2fb 30%, #ff96ec 100%);
-      box-shadow: 0 0 6px #ffc7f9, inset 0 0 4px #ffb0f2;
+      background: radial-gradient(circle, var(--tuna-pink-light) 30%, var(--tuna-pink-dark) 100%);
+      box-shadow: 0 0 6px var(--tuna-glow-a), inset 0 0 4px var(--tuna-glow-b);
     }
 
     .mobile-tuna-head {
-      background: linear-gradient(135deg, #fff6ff, #fcd3ff);
-      border: 1px solid #ffbdf2;
-      box-shadow: 0 0 10px #ffa8f2, 0 0 6px #ffdaf7 inset;
+      background: linear-gradient(135deg, var(--tuna-head-light), var(--tuna-head-dark));
+      border: 1px solid var(--tuna-head-border);
+      box-shadow: 0 0 10px var(--tuna-head-glow-a), 0 0 6px var(--tuna-head-glow-b) inset;
     }
 
     .mobile-tuna-food {
-      background: radial-gradient(circle, #fff3b8 10%, #ffcb66 70%);
+      background: radial-gradient(circle, var(--gold-light) 10%, var(--gold-mid) 70%);
       border-radius: 50%;
-      box-shadow: 0 0 10px #ffe499, 0 0 6px #ffcc33 inset;
-      border: 1px solid #fff5d1;
+      box-shadow: 0 0 10px var(--gold-glow), 0 0 6px var(--gold-dark) inset;
+      border: 1px solid var(--gold-pale);
     }
 
     .mobile-tuna-score {
       font-weight: bold;
-      color: #3a4f90;
+      color: var(--text-navy);
       font-size: 0.95em;
     }
 
@@ -551,13 +678,13 @@
     }
 
     .mobile-controls button {
-      border: 1px solid #8eb5f0;
+      border: 1.5px solid color-mix(in srgb, white 55%, var(--aero-aqua));
       border-radius: 12px;
-      background: linear-gradient(to bottom, #f8fbff, #d7e7ff);
-      color: #2654a0;
+      background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.55), color-mix(in srgb, transparent 40%, var(--aero-aqua)) 55%, color-mix(in srgb, transparent 62%, var(--xp-blue-dark)) 100%);
+      color: white;
       font-weight: bold;
       font-size: 1.1em;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), 0 0 10px var(--aero-glow-aqua);
     }
 
     .mobile-controls .empty {
@@ -566,8 +693,8 @@
 
     .mobile-game-button {
       margin-top: 12px;
-      border: 1px solid #d468a8;
-      background: linear-gradient(to bottom, #ffb7dc, #f28cc2);
+      border: 1px solid var(--tuna-button-border);
+      background: linear-gradient(to bottom, var(--tuna-button-light), var(--tuna-button-dark));
       color: white;
       font-weight: bold;
       border-radius: 12px;
@@ -608,11 +735,26 @@
         height: 16px;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mobile-bg::before,
+      .mobile-bg::after,
+      .mobile-stars,
+      .mobile-aurora,
+      .mobile-moon,
+      .mobile-enter-logo {
+        animation: none !important;
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="mobile-bg"></div>
+<div class="mobile-bg">
+  <div class="mobile-stars"></div>
+  <div class="mobile-aurora"></div>
+  <div class="mobile-moon"></div>
+</div>
 
 <div id="mobile-warning">
   <div class="enter-panel">
@@ -622,68 +764,68 @@
   </div>
 </div>
 
-<div class="app-grid" id="main-site" style="display:none;">
-  <div class="app-icon" onclick="openWindow('exhibitions')">
-    <img src="icons/folder.png" alt="Exhibitions">
-    <span>Exhibitions</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('freelance')">
-    <img src="icons/drive.png" alt="Freelance">
-    <span>Freelance</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('contact')">
-    <img src="icons/phone.png" alt="Contact">
-    <span>Contact</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('about')">
-    <img src="icons/book.png" alt="About Me">
-    <span>About Me</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('internet')">
-    <img src="icons/internet.png" alt="Internet">
-    <span>Internet</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('press')">
-    <img src="icons/press.png" alt="Press">
-    <span>Press</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('birdsweeper')">
-    <img src="icons/game.png" alt="Birdsweeper">
-    <span>Birdsweeper</span>
-  </div>
-  <div class="app-icon" onclick="openWindow('tuna')">
-    <img src="icons/tuna.png" alt="Tuna">
-    <span>Tuna</span>
-  </div>
-</div>
+<div class="app-grid" id="main-site" style="display:none;"></div>
 
 <div id="mobile-windows-container"></div>
 
-<div id="mobile-pdf-viewer">
-  <div class="pdf-topbar">
-    <span>PDF Viewer</span>
-    <button onclick="closeMobilePDF()">X</button>
-  </div>
-  <iframe id="mobile-pdf-frame" src=""></iframe>
-</div>
-
-<img id="mobile-spirit-ghost" src="icons/ghost.png" alt="Spirit ghost">
+<img id="mobile-spirit-ghost" src="icons/ghost.png" alt="" aria-hidden="true">
 
 <script>
+// Same name/icon/key set as the desktop `icons` array (script.js) — kept
+// as a single source of truth here too, so this grid can't quietly drift
+// out of sync with the desktop app list again.
+const mobileApps = [
+  { name: 'Exhibitions', icon: 'folder.png', key: 'exhibitions' },
+  { name: 'Freelance', icon: 'drive.png', key: 'freelance' },
+  { name: 'About Me', icon: 'book.png', key: 'about' },
+  { name: 'Music', icon: 'headphones.png', key: 'music' },
+  { name: 'Contact', icon: 'phone.png', key: 'contact' },
+  { name: 'Birdsweeper', icon: 'game.png', key: 'birdsweeper' },
+  { name: 'Tuna', icon: 'tuna.png', key: 'tuna' },
+  { name: 'Video', icon: 'video.png', key: 'video' },
+  { name: 'Internet', icon: 'internet.png', key: 'internet' },
+  { name: 'Press', icon: 'press.png', key: 'press' },
+  { name: 'Paint', icon: 'gtpaint.png', key: 'paint' },
+  { name: 'Bird Call', icon: 'birdart.png', key: 'birdcall' }
+];
+
+function buildMobileAppGrid() {
+  const grid = document.getElementById('main-site');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  mobileApps.forEach(app => {
+    const el = document.createElement('div');
+    el.className = 'app-icon';
+    el.innerHTML = `<img src="icons/${app.icon}" alt="${app.name}"><span>${app.name}</span>`;
+    el.addEventListener('click', () => openWindow(app.key));
+    grid.appendChild(el);
+  });
+}
+
 function enterMobileSite() {
   document.getElementById('mobile-warning').style.display = 'none';
   document.getElementById('main-site').style.display = 'grid';
 }
 
 function openWindow(name) {
+  // Bird Call is a standalone page (p5.js particle piece), same as the
+  // desktop's own openWindow('birdart') — it opens in its own tab rather
+  // than living inside a mobile-window shell.
+  if (name === 'birdcall') {
+    window.open('./birdart/index.html', '_blank', 'noopener');
+    return;
+  }
+
   closeAllWindows();
+  const app = mobileApps.find(a => a.key === name);
   const container = document.getElementById('mobile-windows-container');
   const win = document.createElement('div');
   win.className = 'mobile-window';
   win.innerHTML = `
     <div class="mobile-title-bar">
-      <span>${capitalize(name)}</span>
-      <button onclick="closeAllWindows()">X</button>
+      <span>${app ? app.name : name}</span>
+      <button onclick="closeAllWindows()" aria-label="Close window">X</button>
     </div>
     <div class="mobile-window-content" id="window-content-${name}">Loading...</div>
   `;
@@ -692,14 +834,18 @@ function openWindow(name) {
 }
 
 function closeAllWindows() {
-  document.getElementById('mobile-windows-container').innerHTML = '';
+  // Stop playback/games before wiping the container — stopMobileVideo()
+  // looks up #mobile-video-player by id, which lives inside this
+  // container, so calling it after innerHTML='' would always find null
+  // and skip pause() (relying on the detached element's own GC to stop
+  // it instead of an explicit pause).
   stopMobileTunaGame();
+  stopMobileMusic();
+  stopMobileVideo();
+  document.getElementById('mobile-windows-container').innerHTML = '';
 }
 
-function capitalize(word) {
-  if (word === 'birdsweeper') return 'Birdsweeper';
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
+buildMobileAppGrid();
 
 const internetLinks = [
   { title: "Heavy Chest, Benee – Sunday926", url: "https://www.youtube.com/watch?v=jxwbtwL-2JM&ab_channel=HEAVYCHEST" },
@@ -715,6 +861,8 @@ const internetLinks = [
 ];
 
 const pressLinks = [
+  { title: "PAI_32 – Artist of the Month Interview", url: "https://pai32.com/2026/02/12/george-turner/" },
+  { title: "Salive.Live – Stages of grief Review", url: "https://saliva.live/exhibitions/8a8c7707" },
   { title: "Vice – Talking Stage Presence and Art Practice with George Turner", url: "https://www.vice.com/en/article/talking-stage-presence-and-art-practice-with-george-turner/" },
   { title: "Fucking Young – George Turner is Your New Favourite Avant-Pop Artist", url: "https://fuckingyoung.es/george-turner-new-favourite-avant-pop-artist/" },
   { title: "Sniffers – George Turner fuses fine arts with synth pop", url: "https://www.sniffers.co.nz/article/george-turner-fuses-fine-arts-synth-pop-lost-home" },
@@ -732,9 +880,9 @@ function loadWindowContent(name) {
     content.innerHTML = `<p>George Turner (Pākehā) is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.<br><br>
 Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including Ihi (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and The Battle (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.<br><br>
 As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.<br><br>
-Also an accomplished musician, Turner has released two EPs (Some Days, Thank You For Your Time) and a full-length debut album, Insect (2019), as well as playing across Aotearoa and Australia. Their sophomore album is scheduled for release in 2025.</p>`;
+Also an accomplished musician, Turner has released two EPs (Some Days, Thank You For Your Time) and a full-length debut album, Insect (2019), as well as playing across Aotearoa and Australia. Their sophomore album is forthcoming.</p>`;
   } else if (name === 'contact') {
-    content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank">@georgeturner___</a><br>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank">@georgeturner8087</a></p>`;
+    content.innerHTML = `<p>Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a><br>Instagram: <a href="https://www.instagram.com/georgeturner___/" target="_blank" rel="noopener noreferrer">@georgeturner___</a><br>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank" rel="noopener noreferrer">@georgeturner8087</a><br>Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq" target="_blank" rel="noopener noreferrer">George Turner</a></p>`;
   } else if (name === 'internet') {
     content.innerHTML = `<div class="mobile-link-list">${internetLinks.map(link => `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}</a>`).join('')}</div>`;
   } else if (name === 'press') {
@@ -747,6 +895,12 @@ Also an accomplished musician, Turner has released two EPs (Some Days, Thank You
     renderMobileBirdsweeper(content);
   } else if (name === 'tuna') {
     renderMobileTuna(content);
+  } else if (name === 'music') {
+    renderMobileMusic(content);
+  } else if (name === 'video') {
+    renderMobileVideo(content);
+  } else if (name === 'paint') {
+    renderMobilePaint(content);
   }
 }
 
@@ -755,21 +909,19 @@ function loadPdfList(jsonPath, container) {
     .then(response => response.json())
     .then(data => {
       container.innerHTML = '';
+      const listWrap = document.createElement('div');
+      listWrap.className = 'mobile-link-list';
+
       data.forEach(name => {
         const link = document.createElement('a');
-        link.href = "#";
-        link.onclick = (e) => {
-          e.preventDefault();
-          openMobilePDF(`pdfs/${jsonPath.split('/')[1]}/${name}`);
-        };
+        link.href = `pdfs/${jsonPath.split('/')[1]}/${name}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
         link.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
-        link.style.display = 'block';
-        link.style.margin = '8px 0';
-        link.style.padding = '8px 10px';
-        link.style.borderRadius = '10px';
-        link.style.background = 'rgba(255,255,255,0.35)';
-        container.appendChild(link);
+        listWrap.appendChild(link);
       });
+
+      container.appendChild(listWrap);
     })
     .catch(error => {
       container.innerHTML = '<p>Error loading PDFs.</p>';
@@ -777,15 +929,166 @@ function loadPdfList(jsonPath, container) {
     });
 }
 
-function openMobilePDF(src) {
-  window.open(src, '_blank');
+/* =========================
+   MOBILE MUSIC
+   simplified Jukebox: no visualizer/seek chrome, just a track list that
+   plays through a single shared <audio> element, tap-to-toggle
+   ========================= */
+
+let mobileAudio = null;
+let mobileMusicTracks = [];
+let mobileNowPlayingIndex = -1;
+
+function renderMobileMusic(container) {
+  container.innerHTML = `
+    <div class="game-intro">Tap a track to play. Tap the playing track again to pause.</div>
+    <div class="mobile-link-list" id="mobile-track-list">Loading tracks…</div>
+  `;
+
+  fetch('music/tracks.json')
+    .then(res => res.json())
+    .then(tracks => {
+      mobileMusicTracks = tracks;
+      const list = document.getElementById('mobile-track-list');
+      if (!list) return;
+
+      list.innerHTML = '';
+      tracks.forEach((track, i) => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = track.title;
+        a.dataset.index = i;
+        a.onclick = (e) => {
+          e.preventDefault();
+          toggleMobileTrack(i);
+        };
+        list.appendChild(a);
+      });
+
+      updateMobileNowPlayingUI(mobileNowPlayingIndex);
+    })
+    .catch(() => {
+      const list = document.getElementById('mobile-track-list');
+      if (list) list.innerHTML = '<p>Error loading tracks.</p>';
+    });
 }
 
-function closeMobilePDF() {
-  const viewer = document.getElementById('mobile-pdf-viewer');
-  const frame = document.getElementById('mobile-pdf-frame');
-  frame.src = '';
-  viewer.style.display = 'none';
+function getMobileAudio() {
+  if (!mobileAudio) {
+    mobileAudio = new Audio();
+    mobileAudio.addEventListener('ended', () => {
+      mobileNowPlayingIndex = -1;
+      updateMobileNowPlayingUI(-1);
+    });
+  }
+  return mobileAudio;
+}
+
+function toggleMobileTrack(index) {
+  const audio = getMobileAudio();
+  const track = mobileMusicTracks[index];
+  if (!track) return;
+
+  if (mobileNowPlayingIndex === index && !audio.paused) {
+    audio.pause();
+    mobileNowPlayingIndex = -1;
+    updateMobileNowPlayingUI(-1);
+    return;
+  }
+
+  audio.src = 'music/tracks/' + encodeURIComponent(track.file);
+  audio.play().catch(() => {});
+  mobileNowPlayingIndex = index;
+  updateMobileNowPlayingUI(index);
+}
+
+function updateMobileNowPlayingUI(index) {
+  const list = document.getElementById('mobile-track-list');
+  if (!list) return;
+  Array.from(list.children).forEach(a => {
+    a.classList.toggle('now-playing', Number(a.dataset.index) === index);
+  });
+}
+
+function stopMobileMusic() {
+  if (mobileAudio) mobileAudio.pause();
+  mobileNowPlayingIndex = -1;
+}
+
+/* =========================
+   MOBILE VIDEO
+   simplified Video Player: a list of clips that load into one native
+   <video> element with its own controls, instead of desktop's custom
+   screen/fader/seek device chrome (native controls are the better fit
+   for a touch screen anyway)
+   ========================= */
+
+let mobileVideoActiveIndex = -1;
+
+function renderMobileVideo(container) {
+  container.innerHTML = `
+    <div class="game-intro">Tap a video to play it below.</div>
+    <video id="mobile-video-player" controls playsinline style="width:100%; border-radius:12px; margin-bottom:12px; display:none; background:#000;"></video>
+    <div class="mobile-link-list" id="mobile-video-list">Loading videos…</div>
+  `;
+
+  // Clear the now-playing highlight once a video finishes on its own —
+  // otherwise it stays marked "now playing" after playback has stopped.
+  const player = document.getElementById('mobile-video-player');
+  if (player) {
+    player.addEventListener('ended', () => {
+      mobileVideoActiveIndex = -1;
+      const list = document.getElementById('mobile-video-list');
+      if (list) list.querySelectorAll('.now-playing').forEach(a => a.classList.remove('now-playing'));
+    });
+  }
+
+  fetch('videos/index.json')
+    .then(res => res.json())
+    .then(files => {
+      const list = document.getElementById('mobile-video-list');
+      if (!list) return;
+
+      list.innerHTML = '';
+      files.forEach((name, i) => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = name.replace('.mp4', '').replace(/_/g, ' ');
+        a.dataset.index = i;
+        a.onclick = (e) => {
+          e.preventDefault();
+          playMobileVideo(name, i);
+        };
+        list.appendChild(a);
+      });
+    })
+    .catch(() => {
+      const list = document.getElementById('mobile-video-list');
+      if (list) list.innerHTML = '<p>Error loading videos.</p>';
+    });
+}
+
+function playMobileVideo(filename, index) {
+  const player = document.getElementById('mobile-video-player');
+  if (!player) return;
+
+  player.src = `videos/${encodeURIComponent(filename)}`;
+  player.style.display = 'block';
+  player.play().catch(() => {});
+  mobileVideoActiveIndex = index;
+
+  const list = document.getElementById('mobile-video-list');
+  if (list) {
+    Array.from(list.children).forEach(a => {
+      a.classList.toggle('now-playing', Number(a.dataset.index) === index);
+    });
+  }
+}
+
+function stopMobileVideo() {
+  const player = document.getElementById('mobile-video-player');
+  if (player) player.pause();
+  mobileVideoActiveIndex = -1;
 }
 
 /* =========================
@@ -927,6 +1230,118 @@ function getMobileBirdNeighbors(index) {
 }
 
 /* =========================
+   MOBILE PAINT
+   a simplified touch-drawing canvas — pencil only, a small colour row,
+   Clear. Not a clone of desktop's tool wheel/shapes/symmetry — those are
+   built around a mouse-driven rotary dial that doesn't translate to a
+   small touch screen, so this keeps just the part that does: drawing.
+   ========================= */
+
+let mobilePaintCtx = null;
+let mobilePaintDrawing = false;
+let mobilePaintColor = '#ff4fd8';
+let mobilePaintLastPos = null;
+
+const MOBILE_PAINT_COLORS = ['#ff4fd8', '#397ee5', '#58be47', '#ffcc33', '#184a8c', '#ffffff', '#1a1a1a'];
+
+function renderMobilePaint(container) {
+  container.innerHTML = `
+    <div class="game-intro">Draw with your finger. Tap a colour to switch, Clear to start over.</div>
+    <div class="mobile-paint-swatches" id="mobile-paint-swatches"></div>
+    <canvas id="mobile-paint-canvas" class="mobile-paint-canvas"></canvas>
+    <div class="mobile-game-button-row">
+      <button class="mobile-game-button" onclick="clearMobilePaint()">Clear</button>
+    </div>
+  `;
+  initMobilePaint();
+}
+
+function initMobilePaint() {
+  const canvas = document.getElementById('mobile-paint-canvas');
+  const swatchRow = document.getElementById('mobile-paint-swatches');
+  if (!canvas || !swatchRow) return;
+
+  // Reset drag state for the fresh canvas — otherwise a drag interrupted
+  // while a previous Paint session's window was closing (or by a
+  // pointercancel) could leave this true, drawing a stray line from a
+  // stale mobilePaintLastPos the moment the new canvas sees a pointermove.
+  mobilePaintDrawing = false;
+
+  const cssWidth = canvas.getBoundingClientRect().width;
+  const cssHeight = cssWidth * 0.75;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
+  canvas.style.height = `${cssHeight}px`;
+
+  mobilePaintCtx = canvas.getContext('2d');
+  mobilePaintCtx.scale(dpr, dpr);
+  mobilePaintCtx.fillStyle = '#ffffff';
+  mobilePaintCtx.fillRect(0, 0, cssWidth, cssHeight);
+  mobilePaintCtx.lineCap = 'round';
+  mobilePaintCtx.lineJoin = 'round';
+  mobilePaintCtx.lineWidth = 6;
+
+  swatchRow.innerHTML = '';
+  MOBILE_PAINT_COLORS.forEach((color, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mobile-paint-swatch';
+    if (i === 0) btn.classList.add('active');
+    btn.style.background = color;
+    btn.setAttribute('aria-label', `Colour ${color}`);
+    btn.onclick = () => {
+      mobilePaintColor = color;
+      swatchRow.querySelectorAll('.mobile-paint-swatch').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+    };
+    swatchRow.appendChild(btn);
+  });
+
+  canvas.addEventListener('pointerdown', startMobilePaint);
+  canvas.addEventListener('pointermove', moveMobilePaint);
+}
+
+// One global listener, registered once — pointerup can land outside the
+// canvas (finger drags off the edge), so this can't be scoped per-open
+// the way the drawing listeners above are.
+document.addEventListener('pointerup', () => { mobilePaintDrawing = false; });
+// A drag can be interrupted without a pointerup (e.g. an iOS edge-swipe
+// gesture takes over) — without this, mobilePaintDrawing gets stuck true.
+document.addEventListener('pointercancel', () => { mobilePaintDrawing = false; });
+
+function getMobilePaintPos(e) {
+  const canvas = document.getElementById('mobile-paint-canvas');
+  const rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+function startMobilePaint(e) {
+  e.preventDefault();
+  mobilePaintDrawing = true;
+  mobilePaintLastPos = getMobilePaintPos(e);
+}
+
+function moveMobilePaint(e) {
+  if (!mobilePaintDrawing || !mobilePaintCtx) return;
+  e.preventDefault();
+  const pos = getMobilePaintPos(e);
+  mobilePaintCtx.strokeStyle = mobilePaintColor;
+  mobilePaintCtx.beginPath();
+  mobilePaintCtx.moveTo(mobilePaintLastPos.x, mobilePaintLastPos.y);
+  mobilePaintCtx.lineTo(pos.x, pos.y);
+  mobilePaintCtx.stroke();
+  mobilePaintLastPos = pos;
+}
+
+function clearMobilePaint() {
+  const canvas = document.getElementById('mobile-paint-canvas');
+  if (!canvas || !mobilePaintCtx) return;
+  const rect = canvas.getBoundingClientRect();
+  mobilePaintCtx.fillStyle = '#ffffff';
+  mobilePaintCtx.fillRect(0, 0, rect.width, rect.height);
+}
+
+/* =========================
    MOBILE TUNA
    ========================= */
 
@@ -946,11 +1361,11 @@ function renderMobileTuna(container) {
       <div id="mobile-tuna-grid"></div>
       <div class="mobile-controls">
         <div class="empty"></div>
-        <button onclick="setMobileTunaDirection('up')">↑</button>
+        <button onclick="setMobileTunaDirection('up')" aria-label="Up">↑</button>
         <div class="empty"></div>
-        <button onclick="setMobileTunaDirection('left')">←</button>
-        <button onclick="setMobileTunaDirection('down')">↓</button>
-        <button onclick="setMobileTunaDirection('right')">→</button>
+        <button onclick="setMobileTunaDirection('left')" aria-label="Left">←</button>
+        <button onclick="setMobileTunaDirection('down')" aria-label="Down">↓</button>
+        <button onclick="setMobileTunaDirection('right')" aria-label="Right">→</button>
       </div>
       <div class="mobile-game-button-row">
         <button class="mobile-game-button" onclick="initMobileTunaGame()">Restart Tuna</button>
@@ -1084,6 +1499,9 @@ let mgWhisperTimer = null;
 let mgWanderTimer = null;
 let mgDriftTimer = null;
 
+const mgReducedMotion =
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const MOBILE_GHOST_SPRITES = {
   base: 'icons/ghost.png',
   blink: 'icons/ghost-blink.png',
@@ -1127,8 +1545,9 @@ function initMobileGhost() {
   startMobileGhostWhispers();
   startMobileGhostDrift();
 
+  // pointerdown covers both mouse and touch — the old code also
+  // listened for touchstart, which made the ghost repel twice per tap
   document.addEventListener('pointerdown', repelGhostFromPoint, { passive: true });
-  document.addEventListener('touchstart', handleGhostTouchStart, { passive: true });
 
   window.addEventListener('resize', () => {
     mgTargetX = clamp(mgTargetX, 8, window.innerWidth - 70);
@@ -1151,7 +1570,7 @@ function animateMobileGhost() {
 }
 
 function leaveMobileGhostTrail() {
-  if (Math.random() > 0.18) return;
+  if (mgReducedMotion || Math.random() > 0.18) return;
 
   const trail = document.createElement('div');
   trail.className = 'mobile-ghost-trail';
@@ -1204,12 +1623,6 @@ function startMobileGhostDrift() {
   driftLoop();
 }
 
-
-function handleGhostTouchStart(e) {
-  const touch = e.touches && e.touches[0];
-  if (!touch) return;
-  moveGhostAwayFromPoint(touch.clientX, touch.clientY);
-}
 
 function repelGhostFromPoint(e) {
   moveGhostAwayFromPoint(e.clientX, e.clientY);
@@ -1309,7 +1722,7 @@ function startMobileGhostWhispers() {
   function queueWhisper() {
     const delay = 30000 + Math.random() * 30000;
     mgWhisperTimer = setTimeout(() => {
-      if (mobileGhostStarted) {
+      if (mobileGhostStarted && !mgSleeping) {
         showMobileGhostWhisper();
       }
       queueWhisper();

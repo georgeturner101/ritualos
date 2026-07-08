@@ -4,59 +4,111 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>George Turner – New Zealand Artist | Digital Art, Film & Queer Ecology</title>
+  <title>George Turner – NZ Artist & Musician | Transdisciplinary Art, Film & Queer Ecology</title>
 
   <!-- SEO Basics -->
   <meta
     name="description"
-    content="George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa. Explore digital art, films, exhibitions, queer ecology, and experimental projects through RitualOS."
+    content="George Turner is a New Zealand (NZ) artist and musician based in Te Whanganui-a-Tara, Wellington, Aotearoa. Explore George Turner's sculpture, installation, moving image, exhibitions, music, and freelance design work through RitualOS."
   />
-  <meta
-    name="keywords"
-    content="George Turner, George Turner artist, George Turner NZ, New Zealand artist, digital artist NZ, queer ecology artist, Aotearoa artist, RitualOS, digital art, experimental film, ecological art"
-  />
+  <meta name="keywords" content="George Turner, George Turner artist, George Turner NZ, George Turner New Zealand, George Turner musician, Te Whanganui-a-Tara artist, Wellington artist, queer ecology art" />
   <meta name="author" content="George Turner" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <link rel="canonical" href="https://georgeturner.space/" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="aero.css" />
   <link rel="icon" type="image/png" href="icons/favicon.png" />
+  <link rel="apple-touch-icon" href="icons/georgeturner_logo.png" />
+  <meta name="theme-color" content="#397ee5" />
+
+  <!-- Preload the boot logo so the boot screen never flashes empty -->
+  <link rel="preload" as="image" href="icons/georgeturner_logo.png" />
 
   <!-- Open Graph -->
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="profile" />
+  <meta property="profile:first_name" content="George" />
+  <meta property="profile:last_name" content="Turner" />
   <meta property="og:site_name" content="George Turner – RitualOS" />
-  <meta property="og:title" content="George Turner – New Zealand Artist" />
+  <meta property="og:title" content="George Turner – NZ Artist & Musician" />
   <meta
     property="og:description"
-    content="Explore the art, films, exhibitions, and digital worlds of George Turner through RitualOS."
+    content="George Turner is a New Zealand (NZ) artist and musician based in Wellington, Aotearoa. Explore their art, exhibitions, films, and music through RitualOS."
   />
-  <meta property="og:image" content="https://georgeturner.space/icons/ghost.png" />
+  <meta property="og:image" content="https://georgeturner.space/images/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Portrait of George Turner, New Zealand artist and musician" />
   <meta property="og:url" content="https://georgeturner.space/" />
+  <meta property="og:locale" content="en_NZ" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="George Turner – New Zealand Artist" />
+  <meta name="twitter:title" content="George Turner – NZ Artist & Musician" />
   <meta
     name="twitter:description"
-    content="Explore the art, films, exhibitions, and digital worlds of George Turner through RitualOS."
+    content="George Turner is a New Zealand (NZ) artist and musician based in Wellington, Aotearoa. Explore their art, exhibitions, films, and music through RitualOS."
   />
-  <meta name="twitter:image" content="https://georgeturner.space/icons/ghost.png" />
+  <meta name="twitter:image" content="https://georgeturner.space/images/og-image.jpg" />
+  <meta name="twitter:image:alt" content="Portrait of George Turner, New Zealand artist and musician" />
 
-  <!-- Structured Data -->
+  <!-- Structured Data — Person + WebSite, so search engines can connect
+       "George Turner" / "George Turner artist" / "George Turner NZ" style
+       queries directly to this site rather than just indexing loose text. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "George Turner",
-    "url": "https://georgeturner.space/",
-    "jobTitle": "Artist",
-    "description": "George Turner is a New Zealand artist and musician working across digital art, film, ecology, and experimental media.",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "NZ"
-    },
-    "sameAs": [
-      "https://www.instagram.com/georgeturner___/"
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://georgeturner.space/#person",
+        "name": "George Turner",
+        "alternateName": ["George Turner Artist", "George Turner NZ"],
+        "url": "https://georgeturner.space/",
+        "image": "https://georgeturner.space/images/og-image.jpg",
+        "jobTitle": ["Artist", "Musician"],
+        "nationality": {
+          "@type": "Country",
+          "name": "New Zealand"
+        },
+        "description": "George Turner (Pākehā) is a transdisciplinary artist and musician based in Te Whanganui-a-Tara, Aotearoa, working across sculpture, installation, moving image, projection, Virtual Reality, Artificial Intelligence, and simulation.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Wellington",
+          "addressRegion": "Te Whanganui-a-Tara",
+          "addressCountry": "NZ"
+        },
+        "homeLocation": {
+          "@type": "Place",
+          "name": "Te Whanganui-a-Tara, Wellington, New Zealand"
+        },
+        "knowsAbout": ["Queer ecology", "Installation art", "Sculpture", "Moving image", "Virtual Reality art", "Music production"],
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "Toi Rauwhārangi, Massey University"
+        },
+        "sameAs": [
+          "https://www.instagram.com/georgeturner___/",
+          "https://www.youtube.com/@georgeturner8087",
+          "https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq",
+          "https://turnergeorge.bandcamp.com/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://georgeturner.space/#website",
+        "url": "https://georgeturner.space/",
+        "name": "George Turner – RitualOS",
+        "description": "The interactive portfolio of George Turner, New Zealand artist and musician.",
+        "publisher": { "@id": "https://georgeturner.space/#person" },
+        "inLanguage": "en-NZ"
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://georgeturner.space/#profilepage",
+        "url": "https://georgeturner.space/",
+        "mainEntity": { "@id": "https://georgeturner.space/#person" }
+      }
     ]
   }
   </script>
@@ -72,10 +124,17 @@
 
   <script>
     (function () {
-      var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      // Detect phones/tablets, including iPadOS (which reports as "Macintosh" + touch)
+      var ua = navigator.userAgent;
+      var isMobileUA = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      var isIPadOS = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+      var isSmallTouchScreen =
+        window.matchMedia('(max-width: 820px)').matches &&
+        window.matchMedia('(pointer: coarse)').matches;
+
       var isAlreadyOnMobilePage = window.location.pathname.indexOf('mobile.html') !== -1;
 
-      if (isMobile && !isAlreadyOnMobilePage) {
+      if ((isMobileUA || isIPadOS || isSmallTouchScreen) && !isAlreadyOnMobilePage) {
         window.location.replace('/mobile.html');
       }
     })();
@@ -83,10 +142,134 @@
 </head>
 
 <body>
+  <!-- Shared hologram material defs — gtPlastic/gtFrostBelly/gtScreenGlass/
+       gtChromeRing/gtRim/gtNeonGlow/gtConvexLight/gtShellDropShadow/
+       gtSoftBlur/gtInternalsBlur/gtPanelClip/gtScreenClip/gtScreenFrameDonut.
+       Lives here — always in the DOM, NEVER display:none — so GT Paint, the
+       Video Player, and the Jukebox can all reference these by url(#id)
+       regardless of which of those windows is open. (A gradient/filter
+       defined inside an SVG that is itself display:none stops working as a
+       paint server for other elements anywhere in the document — that's
+       why the Video Player and Jukebox shells used to only render while
+       GT Paint's own window happened to be open, since the defs used to
+       live inside GT Paint's own SVG.) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="gtPlastic" cx="28%" cy="20%" r="95%">
+        <stop offset="0%" style="stop-color:color-mix(in srgb, transparent 55%, var(--aero-aqua))"/>
+        <stop offset="45%" style="stop-color:color-mix(in srgb, transparent 74%, var(--xp-blue-light))"/>
+        <stop offset="100%" style="stop-color:color-mix(in srgb, transparent 84%, var(--xp-blue-dark))"/>
+      </radialGradient>
+
+      <radialGradient id="gtFrostBelly" cx="32%" cy="18%" r="95%">
+        <stop offset="0%" style="stop-color:color-mix(in srgb, transparent 93%, white)"/>
+        <stop offset="55%" style="stop-color:color-mix(in srgb, transparent 91%, var(--aero-aqua))"/>
+        <stop offset="100%" style="stop-color:color-mix(in srgb, transparent 88%, var(--xp-blue-light))"/>
+      </radialGradient>
+
+      <linearGradient id="gtScreenGlass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" style="stop-color:color-mix(in srgb, transparent 58%, var(--aero-aqua))"/>
+        <stop offset="45%" style="stop-color:color-mix(in srgb, transparent 74%, var(--xp-blue-mid))"/>
+        <stop offset="100%" style="stop-color:color-mix(in srgb, transparent 85%, var(--xp-blue-dark))"/>
+      </linearGradient>
+
+      <linearGradient id="gtChromeRing" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" style="stop-color:color-mix(in srgb, transparent 45%, white)"/>
+        <stop offset="35%" style="stop-color:color-mix(in srgb, transparent 62%, var(--aero-aqua))"/>
+        <stop offset="65%" style="stop-color:color-mix(in srgb, transparent 78%, var(--xp-blue-light))"/>
+        <stop offset="100%" style="stop-color:color-mix(in srgb, transparent 86%, var(--xp-blue-mid))"/>
+      </linearGradient>
+
+      <linearGradient id="gtRim" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" style="stop-color:color-mix(in srgb, white 85%, var(--aero-aqua))"/>
+        <stop offset="100%" style="stop-color:color-mix(in srgb, white 35%, var(--aero-aqua))"/>
+      </linearGradient>
+
+      <filter id="gtNeonGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur1"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur2"/>
+        <feColorMatrix in="blur2" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1.6 0" result="blur2Bright"/>
+        <feMerge>
+          <feMergeNode in="blur2Bright"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <radialGradient id="gtConvexLight" cx="30%" cy="24%" r="88%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
+        <stop offset="45%" stop-color="rgba(255,255,255,0.06)"/>
+        <stop offset="100%" stop-color="rgba(0,10,25,0.28)"/>
+      </radialGradient>
+
+      <filter id="gtShellDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="var(--xp-blue-dark)" flood-opacity="0.45"/>
+      </filter>
+      <filter id="gtSoftBlur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="10"/>
+      </filter>
+      <filter id="gtInternalsBlur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="22"/>
+      </filter>
+
+      <!-- Unifying "case" outline: dilates the ALPHA of whatever shapes are
+           drawn inside a <g filter="url(#gtCaseOutline)"> outward, so the
+           resulting backing shape automatically follows the exact contour
+           of those shapes (screen + panel + wheels, or pill + tray + pod)
+           instead of being a plain bounding rectangle with dead space in
+           the corners. The source shapes themselves aren't part of the
+           final output (feMerge below never references SourceGraphic) —
+           only the derived fill + glowing rim are. -->
+      <filter id="gtCaseOutline" x="-18%" y="-18%" width="136%" height="136%">
+        <feMorphology operator="dilate" radius="16" in="SourceAlpha" result="fillMask"/>
+        <feFlood flood-color="color-mix(in srgb, transparent 74%, var(--aero-aqua))" result="fillColor"/>
+        <feComposite in="fillColor" in2="fillMask" operator="in" result="backingFill"/>
+
+        <feMorphology operator="dilate" radius="23" in="SourceAlpha" result="rimMaskOuter"/>
+        <feComposite in="rimMaskOuter" in2="fillMask" operator="out" result="rimRing"/>
+        <feFlood flood-color="color-mix(in srgb, white 78%, var(--aero-aqua))" result="rimColor"/>
+        <feComposite in="rimColor" in2="rimRing" operator="in" result="rimSharp"/>
+        <feGaussianBlur in="rimSharp" stdDeviation="6" result="rimGlow"/>
+
+        <feMerge>
+          <feMergeNode in="rimGlow"/>
+          <feMergeNode in="backingFill"/>
+          <feMergeNode in="rimSharp"/>
+        </feMerge>
+      </filter>
+
+      <clipPath id="gtPanelClip">
+        <path d="M 40,478 C 40,566 8,650 34,724 C 60,788 158,796 258,796 L 800,796
+          C 855,796 875,760 875,706 L 875,458 C 875,412 806,392 758,408
+          L 112,428 C 76,438 40,452 40,478 Z"/>
+      </clipPath>
+      <clipPath id="gtScreenClip">
+        <rect x="30" y="22" width="676" height="414" rx="42"/>
+      </clipPath>
+      <clipPath id="gtScreenFrameDonut" clip-rule="evenodd">
+        <path d="M30,22 H706 V436 H30 Z M65,46 H671 V412 H65 Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
   <!-- Video background -->
-  <video id="bg-video" autoplay loop muted playsinline>
+  <video id="bg-video" autoplay loop muted playsinline aria-hidden="true" disablepictureinpicture>
     <source src="video/church.mp4" type="video/mp4">
   </video>
+
+  <!-- Aero sky — composited over the video, shifts with the visitor's local time (see DESIGN.md Phase 1) -->
+  <div id="aero-sky" aria-hidden="true">
+    <div class="aero-sky-tint"></div>
+    <div class="aero-sky-aurora"></div>
+    <div class="aero-sky-stars"></div>
+    <div class="aero-cloud aero-cloud-1"></div>
+    <div class="aero-cloud aero-cloud-2"></div>
+    <div class="aero-cloud aero-cloud-3"></div>
+    <div class="aero-bubble aero-bubble-1"></div>
+    <div class="aero-bubble aero-bubble-2"></div>
+    <div class="aero-bubble aero-bubble-3"></div>
+    <div class="aero-sky-darken"></div>
+  </div>
 
   <!-- Boot screen -->
   <div id="boot-screen">
@@ -108,282 +291,942 @@
     </div>
   </div>
 
+  <!-- Hidden page heading for search engines and screen readers -->
+  <h1 class="sr-only">George Turner – New Zealand artist and musician. RitualOS is the interactive portfolio of George Turner, featuring artworks, exhibitions, films, music, and freelance work exploring queer ecology and Aotearoa's landscapes.</h1>
+
   <!-- Desktop icons -->
   <div id="desktop"></div>
 
   <!-- Selection box -->
   <div id="selection-box"></div>
 
-  <!-- Taskbar -->
-  <div id="taskbar">
-    <button id="start-button" onclick="toggleStartMenu()">Start</button>
+  <!-- Taskbar (Aero Phase 1: floating aqua-glass dock) -->
+  <div id="taskbar" class="aero-dock">
+    <button id="start-button" class="aero-orb" onclick="toggleStartMenu()" aria-haspopup="true" aria-expanded="false" aria-controls="start-menu">Start</button>
     <div id="search">Search...</div>
     <div id="taskbar-center">George Turner</div>
     <div id="taskbar-apps"></div>
-    <div id="clock"></div>
-    <div id="audio-toggle" onclick="toggleAudio()">🔊</div>
+    <div id="clock" aria-hidden="true"></div>
+    <button id="audio-toggle" onclick="toggleAudio()" aria-label="Toggle ambient sound" aria-pressed="true">🔊</button>
   </div>
 
-  <!-- Start menu -->
+  <!-- Start menu — rows + flyout submenus are built in script.js
+       (buildStartMenu()), from the same `icons` array that drives the
+       desktop icons and taskbar, so they always stay in sync. -->
   <div id="start-menu" class="hidden">
-    <ul>
-      <li onclick="openWindow('exhibitions')">Exhibitions</li>
-      <li onclick="openWindow('freelance')">Freelance</li>
-      <li onclick="openWindow('about')">About Me</li>
-      <li onclick="openWindow('music')">Music</li>
-      <li onclick="openWindow('contact')">Contact</li>
-      <li onclick="openWindow('game')">Birdsweeper</li>
-      <li onclick="openWindow('tuna')">Tuna</li>
-      <li onclick="openWindow('video')">Video</li>
-      <li onclick="openWindow('internet')">Internet</li>
-      <li onclick="openWindow('press')">Press</li>
-      <li onclick="openWindow('gtpaint')">GT Paint</li>
-      <li onclick="openWindow('birdart')">Bird Art</li>
-    </ul>
+    <ul id="start-menu-list"></ul>
   </div>
 
 
-  <!-- Exhibitions Window -->
-  <div class="window" id="window-exhibitions">
-    <div class="title-bar">Exhibitions <button onclick="closeWindow('exhibitions')">X</button></div>
+  <!-- Exhibitions Window (Stage 2 of the aero-demo glass pass — see
+       DESIGN.md). listPDFs() in script.js adds .aero-content-bubble to
+       each generated <a>, so no per-item markup lives here. -->
+  <div class="window aero-demo" id="window-exhibitions">
+    <div class="title-bar">Exhibitions <button onclick="closeWindow('exhibitions')" aria-label="Close Exhibitions window">X</button></div>
+    <h2 class="sr-only">Exhibitions by George Turner, New Zealand artist</h2>
     <div class="pdf-list" id="pdfs-exhibitions"></div>
   </div>
 
   <!-- Freelance Window -->
-  <div class="window" id="window-freelance">
-    <div class="title-bar">Freelance <button onclick="closeWindow('freelance')">X</button></div>
+  <div class="window aero-demo" id="window-freelance">
+    <div class="title-bar">Freelance <button onclick="closeWindow('freelance')" aria-label="Close Freelance window">X</button></div>
+    <h2 class="sr-only">Freelance design and visual art by George Turner</h2>
     <div class="pdf-list" id="pdfs-freelance"></div>
   </div>
 
-  <!-- About Window -->
-  <div class="window" id="window-about">
-    <div class="title-bar">About Me <button onclick="closeWindow('about')">X</button></div>
+  <!-- About Window — biography paragraphs use .aero-content-card (the
+       block variant of the gel material) rather than .aero-content-
+       bubble, since a full pill shape clips awkwardly around wrapped
+       multi-line text. -->
+  <div class="window aero-demo" id="window-about">
+    <div class="title-bar">About Me <button onclick="closeWindow('about')" aria-label="Close About window">X</button></div>
     <div class="window-content">
+      <h2 class="sr-only">About George Turner, New Zealand artist and musician</h2>
       <div class="about-photo-container">
-        <img src="images/portrait.jpg" alt="Portrait of George Turner" class="about-photo">
+        <img src="images/portrait.jpg" alt="Portrait of George Turner" class="about-photo" loading="lazy">
       </div>
 
-      <p><strong>George Turner (Pākehā)</strong> is an artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across a range of digital and physical mediums, Turner’s practice explores queer-ecological narratives and the lingering trauma embedded within Aotearoa’s landscapes. Through large-scale projections, Virtual Reality, Artificial Intelligence, and experimental digital techniques, their work interrogates contemporary identity and the fragile intersections between nature, technology, and belonging.</p>
+      <div class="about-bio">
+        <p><strong>George Turner (Pākehā)</strong> is a transdisciplinary artist and musician based in Te Whanganui-a-Tara, Aotearoa. Working across sculpture, installation, moving image, projection, Virtual Reality, Artificial Intelligence, and simulation. Their practice treats ecology not as scenery but as a system of memory – one that leaks through matter, bodies, images, and structures, carrying the disregarded residue of landscapes and the trauma embedded within them. Guided by posthuman and postcolonial thought, queer ecology, and the material intelligence of more-than-human life, Turner is drawn to nonhuman forces that expose the instability of the systems humans depend on.</p>
 
-      <p>Since 2017, Turner has exhibited extensively across Aotearoa, developing a distinctive voice grounded in queer ecology, environmentalism, and Pākehā identity. Alongside their own practice, they have worked with acclaimed artist Lisa Reihana on major projects including <em>Ihi</em> (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and <em>The Battle</em> (Aotearoa Festival of Arts). In 2022, Turner was selected for the first trans-Tasman digital artist fellowship, co-organised by the Australian Arts Council and Creative New Zealand. Recent highlights include being named a finalist in the 2024 Molly Morpeth Canaday Awards and exhibiting at Bowen Galleries and Webb’s Gallery in Te Whanganui-a-Tara.</p>
+        <p>Working with materials such as beeswax, gorse, fungi, fire, water, and domestic objects, Turner stages encounters between symbolic order and material failure: flags burn, soap wounds, furniture becomes host, flowers bend under unseen pressure, devotional forms are remade as contaminated objects. In <em>Out of the Scene, Into the Fever</em> (2025), 256 hand-cast beeswax mushrooms reconstructed the New Zealand flag at floor level; forty-eight, fitted with wicks, were lit so the national symbol briefly reassembled – unstable, flickering, composed entirely of fire – before extinguishing itself over seventy minutes. The work offers no redemption. It asks what remains when the performance of innocence is exhausted, and what might begin when inherited structures decompose.</p>
 
-      <p>As a freelance designer and visual artist, Turner has created music videos and visual campaigns for a wide range of musicians including Benee, Heavy Chest, and Lola. They produced visuals for Benee’s 2023 Coachella performance and contributed to the visuals for her international tour. With over a decade of experience, Turner’s music video portfolio spans genres from hip hop and pop to electronica and experimental rock.</p>
+        <p>Since 2017, Turner has exhibited extensively across Aotearoa and internationally, including <em>Under the Pasture</em> (Enjoy Contemporary art space, Wellington), <em>Unsettling</em> (Te Whare Toi City Gallery Wellington), <em>The Ground Will Not Hold</em> (Bowen Galleries, Wellington), and <em>Stages of Grief</em> (Pada Studios, Portugal). They were a finalist in the 2024 Molly Morpeth Canaday Awards. Alongside their own practice, Turner has assisted acclaimed artist Lisa Reihana on major projects including <em>Ihi</em> (Toi Tū Toi Ora: Contemporary Māori Art, 2021) and <em>The Battle</em> (Aotearoa Festival of Arts).</p>
 
-      <p>Also an accomplished musician, Turner has released two EPs (<em>Some Days</em>, <em>Thank You For Your Time</em>) and a full-length debut album, <em>Insect</em> (2019), followed by several tours across Aotearoa and Australia. Their highly anticipated sophomore album is scheduled for release in 2025.</p>
+        <p>Turner holds a BFA (First Class Honours) from Toi Rauwhārangi Massey University, and has undertaken residencies and fellowships including the Trans-Tasman Digital Artist Fellowship – a first-of-its-kind program co-organised by the Australia Council for the Arts and Creative New Zealand – the Pada Residency in Portugal, and the Commode Residency.</p>
+
+        <p>As a freelance designer and visual artist, Turner has produced music videos and visual campaigns for musicians including Benee, Heavy Chest, and Lola, including visuals for Benee’s 2023 Coachella performance and her subsequent international tour. With over a decade of experience, Turner’s design and moving-image work spans hip hop, pop, electronica, and experimental rock.</p>
+
+        <p>Also an accomplished musician, Turner has released two EPs, <em>Some Days</em> and <em>Thank You For Your Time</em>, and the full-length debut album <em>Insect</em> (2019), followed by tours across Aotearoa and Australia. A sophomore album is forthcoming.</p>
+      </div>
     </div>
   </div>
 
-  <!-- Contact Window -->
-  <div class="window" id="window-contact">
-    <div class="title-bar">Contact <button onclick="closeWindow('contact')">X</button></div>
+  <!-- Contact Window (Aero Phase 0 hero demo — see DESIGN.md).
+       Stage 1 of the gel-bubble content pass: EACH line is its own
+       separate .aero-content-bubble pill (same gel-material recipe as
+       #start-button.aero-orb — gradient fill, top highlight rim, bottom
+       inset shadow, glossy bulge — not one shared panel). Stage 2
+       carried the same .aero-demo/.aero-content-bubble classes over to
+       Exhibitions/Freelance/About/Press/Internet/the PDF viewer. -->
+  <div class="window aero-demo" id="window-contact">
+    <div class="title-bar">Contact <button onclick="closeWindow('contact')" aria-label="Close Contact window">X</button></div>
     <div class="window-content">
-      <p>Email: stowaway101@gmail.com</p>
-      <p>Instagram: <a href="https://instagram.com/georgeturner___" target="_blank" rel="noopener noreferrer">@georgeturner___</a></p>
-      <p>YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank" rel="noopener noreferrer">@georgeturner8087</a></p>
-      <p>Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq?si=Mam8Lm2DRUawDOoQyc-2wg" target="_blank" rel="noopener noreferrer">George Turner</a></p>
+      <h2 class="sr-only">Contact George Turner</h2>
+      <p class="aero-content-bubble">Email: <a href="mailto:stowaway101@gmail.com">stowaway101@gmail.com</a></p>
+      <p class="aero-content-bubble">Instagram: <a href="https://instagram.com/georgeturner___" target="_blank" rel="noopener noreferrer">@georgeturner___</a></p>
+      <p class="aero-content-bubble">YouTube: <a href="https://www.youtube.com/@georgeturner8087" target="_blank" rel="noopener noreferrer">@georgeturner8087</a></p>
+      <p class="aero-content-bubble">Spotify: <a href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq" target="_blank" rel="noopener noreferrer">George Turner</a></p>
     </div>
   </div>
 
-  <!-- Music Window -->
-  <div class="window" id="window-music">
-    <div class="title-bar">Music <button onclick="closeWindow('music')">X</button></div>
-    <div class="window-content">
-      <iframe
-        style="border-radius:12px"
-        src="https://open.spotify.com/embed/album/0pyvTVrYsT8QXB8EYyJdxF?..."
-        width="100%"
-        height="352">
-      </iframe>
+  <!-- Music Window — "The Jukebox". Aero Phase 2 device 3, rebuilt from
+       the ground up per design_1.png in /music player design ref/. Same
+       hologram glass language as GT Paint/Video Player (reuses their
+       gtPlastic/gtRim/gtConvexLight/gtNeonGlow/gtScreenGlass/gtChromeRing/
+       gtSoftBlur/gtShellDropShadow defs directly by id): a continuous
+       moulded pill (screen zone flowing into a narrower tracklist tray,
+       per the sketch), a thick chrome+glass screen bezel with a diagonal
+       specular sweep, a red exit orb on the top-right rim, and a FIXED
+       (non-rotating) transport pod overlapping the bottom-right corner —
+       central play/pause, prev/next flanking, a drag-to-set volume ring
+       around the rim, shuffle/repeat/mute dots. Native <audio> element
+       routed through Web Audio (see musicplayer.js) — no iframe. -->
+  <div class="window aero-device-gadget aero-media-gadget" id="window-music">
+    <svg class="gt-shell aero-music-shell" viewBox="0 0 900 800" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <!-- screen frame "donut" (outer bezel minus inner canvas) so the
+             specular sweep only paints on the chrome+glass bezel, never
+             over the visualizer itself — same technique as the video
+             player's screen -->
+        <clipPath id="jukeboxScreenFrameDonut" clip-rule="evenodd">
+          <path d="M75,65 H625 V405 H75 Z M95,85 H605 V385 H95 Z"/>
+        </clipPath>
+      </defs>
+
+      <g filter="url(#gtShellDropShadow)">
+        <!-- external unifying case: follows the ACTUAL contour of the
+             pill, tray, and pod (via the gtCaseOutline dilate filter on a
+             silhouette copy of those same shapes below) rather than being
+             a plain bounding rectangle with dead space in the corners. -->
+        <g filter="url(#gtCaseOutline)">
+          <path fill="white" d="M 40,180
+            C 40,95 95,30 190,30
+            L 510,30
+            C 605,30 660,95 660,180
+            L 660,410
+            C 660,438 636,460 604,460
+            L 96,460
+            C 64,460 40,438 40,410
+            Z"/>
+          <rect x="170" y="450" width="350" height="210" rx="16" fill="white"/>
+          <circle cx="705" cy="605" r="150" fill="white"/>
+        </g>
+
+        <!-- main body: tall rounded-pill screen zone flowing into a
+             narrower tracklist tray below, per design_1.png -->
+        <path class="jukebox-shell-pill" filter="url(#gtNeonGlow)" d="M 40,180
+          C 40,95 95,30 190,30
+          L 510,30
+          C 605,30 660,95 660,180
+          L 660,410
+          C 660,438 636,460 604,460
+          L 96,460
+          C 64,460 40,438 40,410
+          Z" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <path d="M 40,180
+          C 40,95 95,30 190,30
+          L 510,30
+          C 605,30 660,95 660,180
+          L 660,410
+          C 660,438 636,460 604,460
+          L 96,460
+          C 64,460 40,438 40,410
+          Z" fill="url(#gtConvexLight)" opacity="0.4"/>
+
+        <!-- tracklist tray: a plain rect matching the CSS content box
+             (.jukebox-tracklist-wrap: x:170-520, y:450-660) EXACTLY, not
+             a hand-drawn path with mismatched rounded corners bulging
+             30 units past the real content on the right/bottom — that
+             mismatch was what made the frame look uneven around the
+             actual list. -->
+        <rect class="jukebox-shell-tray" x="170" y="450" width="350" height="210" rx="16" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="170" y="450" width="350" height="210" rx="16" fill="url(#gtConvexLight)" opacity="0.3"/>
+
+        <!-- screen: thick chrome+glass bezel around the visualizer canvas -->
+        <rect x="75" y="65" width="550" height="340" rx="32" filter="url(#gtNeonGlow)" fill="url(#gtScreenGlass)" stroke="url(#gtRim)" stroke-width="4"/>
+        <rect x="75" y="65" width="550" height="340" rx="32" fill="url(#gtConvexLight)" opacity="0.45" clip-path="url(#jukeboxScreenFrameDonut)"/>
+        <rect x="95" y="85" width="510" height="300" rx="20" fill="#020608"/>
+        <!-- diagonal specular sweep across the bezel only -->
+        <g clip-path="url(#jukeboxScreenFrameDonut)">
+          <path d="M 20,-20 L 150,-20 L 420,430 L 290,430 Z" fill="rgba(255,255,255,0.22)" filter="url(#gtSoftBlur)"/>
+          <path d="M 50,-20 L 90,-20 L 360,430 L 320,430 Z" fill="rgba(255,255,255,0.5)"/>
+        </g>
+
+        <!-- exit orb connector strap, same idea as GT Paint's -->
+        <path d="M 588,42 C 604,28 616,24 618,42 L 618,70 C 618,86 606,88 594,80 Z"
+          fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <circle cx="618" cy="42" r="40" fill="rgba(10,30,50,0.28)" filter="url(#gtSoftBlur)"/>
+
+        <!-- transport pod rim: chrome ring seated in a moulded well (the
+             recessed groove is built in CSS via .jukebox-pod-well's inset
+             shadow, not a separate SVG shape — keeps the transparent
+             hologram material consistent instead of reverting to solid
+             chrome bands) -->
+        <circle cx="705" cy="605" r="150" filter="url(#gtNeonGlow)" fill="url(#gtChromeRing)" stroke="url(#gtRim)" stroke-width="5" opacity="0.95"/>
+      </g>
+    </svg>
+
+    <button class="gt-exit-orb jukebox-exit-orb" onclick="closeWindow('music')" aria-label="Close Music window">✕</button>
+
+    <div class="window-content jukebox-content aero-drag-region">
+      <div class="jukebox-screen-wrap">
+        <canvas id="jukebox-visualizer"></canvas>
+        <button type="button" class="jukebox-mode-btn" id="jukebox-mode-btn" title="Cycle visualizer mode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.7 1 6.3 2.7"/><path d="M21 3v6h-6"/></svg>
+        </button>
+        <div class="jukebox-track-info">
+          <span id="jukebox-track-title">George Turner — select a track</span>
+        </div>
+      </div>
+
+      <!-- seek bar: grooved chrome channel under the screen -->
+      <div class="jukebox-seek-row">
+        <span class="jukebox-time" id="jukebox-time-current">0:00</span>
+        <input type="range" id="jukebox-seek" class="jukebox-seek-slider" min="0" max="100" step="0.1" value="0" aria-label="Seek">
+        <span class="jukebox-time" id="jukebox-time-duration">0:00</span>
+      </div>
+
+      <!-- tracklist tray -->
+      <div class="jukebox-tracklist-wrap">
+        <div class="jukebox-tracklist-header">
+          <span class="jukebox-tracklist-title">Tracks</span>
+          <a class="jukebox-extlink" id="jukebox-spotify-link" href="https://open.spotify.com/artist/7DsA0wxfFLdxTViAc6hEqq" target="_blank" rel="noopener noreferrer" title="Open on Spotify" aria-label="Open on Spotify">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.5"/><path d="M7 10c3-1 7-1 10 1" stroke-linecap="round"/><path d="M7.3 13c2.5-.8 6-.8 8.5.8" stroke-linecap="round"/><path d="M7.6 16c2-.6 4.5-.6 6.5.6" stroke-linecap="round"/></svg>
+          </a>
+          <a class="jukebox-extlink" id="jukebox-bandcamp-link" href="https://turnergeorge.bandcamp.com/" target="_blank" rel="noopener noreferrer" title="Open on Bandcamp" aria-label="Open on Bandcamp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3" stroke-linecap="round"/></svg>
+          </a>
+        </div>
+        <div class="jukebox-tracklist" id="jukebox-tracklist"></div>
+      </div>
+
+      <!-- transport pod: FIXED cluster (no rotation) — central play/pause,
+           prev/next flanking, drag-to-set volume ring around the rim,
+           shuffle/repeat/mute gel dots -->
+      <div class="jukebox-pod" id="jukebox-pod">
+        <div class="jukebox-volume-ring" id="jukebox-volume-ring">
+          <div class="jukebox-volume-fill" id="jukebox-volume-fill"></div>
+          <div class="jukebox-volume-thumb" id="jukebox-volume-thumb"></div>
+        </div>
+        <div class="jukebox-pod-well"></div>
+
+        <button type="button" class="jukebox-dot jukebox-shuffle" id="jukebox-shuffle" title="Shuffle" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h4l10-10h4"/><path d="M18 4l4 3-4 3"/><path d="M4 7h4l2.5 2.5"/><path d="M14.5 14.5L17 17"/><path d="M18 20l4-3-4-3"/></svg>
+        </button>
+        <button type="button" class="jukebox-dot jukebox-repeat" id="jukebox-repeat" title="Repeat" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
+        <button type="button" class="jukebox-dot jukebox-mute" id="jukebox-mute" title="Mute" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
+        </button>
+
+        <button type="button" class="jukebox-btn jukebox-prev" id="jukebox-prev" title="Previous track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6z"/><path d="M20 6L10 12l10 6V6z"/></svg>
+        </button>
+        <button type="button" class="jukebox-btn jukebox-playpause" id="jukebox-playpause" title="Play/Pause">
+          <svg id="jukebox-playpause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button type="button" class="jukebox-btn jukebox-next" id="jukebox-next" title="Next track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2z"/><path d="M4 6l10 6-10 6V6z"/></svg>
+        </button>
+      </div>
+
+      <audio id="jukebox-audio" preload="metadata" crossorigin="anonymous"></audio>
     </div>
   </div>
 
-  <!-- Birdsweeper Window -->
-  <div class="window" id="window-game">
-    <div class="title-bar">Birdsweeper <button onclick="closeWindow('game')">X</button></div>
-    <div class="window-content">
-      <div id="birdsweeper-grid"></div>
-      <button onclick="resetBirdsweeper()">Reset Game</button>
+  <!-- Birdsweeper Window — rectangular sibling to GT Paint/the Jukebox/
+       the Video Player/Tuna (kept as a plain rectangle, like a classic
+       handheld Minesweeper, rather than a sculpted silhouette). Same
+       hologram glass language, same red exit orb, same gtCaseOutline
+       unifying case and lens-flare treatment. -->
+  <div class="window aero-device-gadget aero-media-gadget" id="window-game">
+    <svg class="gt-shell aero-birdsweeper-shell" viewBox="0 0 640 760" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="birdsweeperScreenFrameDonut" clip-rule="evenodd">
+          <path d="M46,46 H594 V594 H46 Z M62,62 H578 V578 H62 Z"/>
+        </clipPath>
+      </defs>
+
+      <g filter="url(#gtShellDropShadow)">
+        <!-- external unifying case: follows the contour of the shell
+             (see gtCaseOutline in the shared defs) -->
+        <g filter="url(#gtCaseOutline)">
+          <rect x="16" y="16" width="608" height="728" rx="32" fill="white"/>
+        </g>
+
+        <!-- shell body: a plain rounded rectangle, same construction as
+             the original Video Player device -->
+        <rect class="birdsweeper-shell-body" x="16" y="16" width="608" height="728" rx="32" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="16" y="16" width="608" height="728" rx="32" fill="url(#gtConvexLight)" opacity="0.4"/>
+
+        <!-- screen: thick chrome+glass bezel around the game canvas —
+             square, so the 8x8 grid's cells render as true squares -->
+        <rect x="46" y="46" width="548" height="548" rx="20" filter="url(#gtNeonGlow)" fill="url(#gtScreenGlass)" stroke="url(#gtRim)" stroke-width="4"/>
+        <rect x="46" y="46" width="548" height="548" rx="20" fill="url(#gtConvexLight)" opacity="0.45" clip-path="url(#birdsweeperScreenFrameDonut)"/>
+        <rect x="62" y="62" width="516" height="516" rx="12" fill="#020608"/>
+        <!-- diagonal specular sweep across the bezel only -->
+        <g clip-path="url(#birdsweeperScreenFrameDonut)">
+          <path d="M 15,-20 L 130,-20 L 350,640 L 235,640 Z" fill="rgba(255,255,255,0.22)" filter="url(#gtSoftBlur)"/>
+          <path d="M 45,-20 L 78,-20 L 298,640 L 265,640 Z" fill="rgba(255,255,255,0.5)"/>
+        </g>
+
+        <circle cx="594" cy="40" r="30" fill="rgba(10,30,50,0.28)" filter="url(#gtSoftBlur)"/>
+      </g>
+    </svg>
+
+    <button class="gt-exit-orb birdsweeper-exit-orb" onclick="closeWindow('game')" aria-label="Close Birdsweeper window">✕</button>
+
+    <div class="window-content birdsweeper-content aero-drag-region">
+      <div class="birdsweeper-screen-wrap">
+        <div id="birdsweeper-grid"></div>
+      </div>
+
+      <button type="button" class="birdsweeper-reset-btn" onclick="resetBirdsweeper()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 3 6.7"/><path d="M3 21v-5h5"/></svg>
+        <span>Reset Game</span>
+      </button>
     </div>
   </div>
 
   <!-- Bird Found Window -->
-  <div class="window" id="window-bird-found">
-    <div class="title-bar">You Found a Bird! <button onclick="closeWindow('bird-found')">X</button></div>
-    <div class="window-content bird-popup">
+  <!-- "You Found a Bird!" popout — restyled as a translucent aero-glass
+       card matching GT Paint/the Jukebox/the Video Player/Tuna, with a
+       red gel exit orb instead of a title-bar. Stays a normal
+       position:absolute .window (centred/dragged by the site's regular
+       window system) — no special fixed-position centering needed
+       here, unlike Tuna's dynamically-created popup. -->
+  <div class="window aero-bird-found-popup" id="window-bird-found">
+    <button class="gt-exit-orb bird-found-exit-orb" onclick="closeWindow('bird-found')" aria-label="Close bird window">✕</button>
+    <div class="window-content bird-popup aero-drag-region">
+      <h3 class="bird-found-title">You found a bird!</h3>
       <img id="bird-found-img" src="" alt="Bird Found" />
       <p id="bird-found-name"><strong>Species:</strong></p>
       <p id="bird-found-fact"></p>
     </div>
   </div>
 
-  <!-- Video Window -->
-  <div class="window" id="window-video">
-    <div class="title-bar">Videos <button onclick="closeWindow('video')">X</button></div>
-    <div class="window-content">
-      <div id="video-list"></div>
-    </div>
-  </div>
+  <!-- Tuna Window — rebuilt from "core design.png" in tuna design/ as a
+       handheld sibling to GT Paint/the Jukebox/the Video Player: a
+       screen zone (bezel + speaker grille) flowing into a control body
+       (New Game + Leaderboard gel buttons, a D-pad). Same hologram
+       glass language, same red exit orb, same gtCaseOutline unifying
+       case and lens-flare treatment. -->
+  <div class="window aero-device-gadget aero-media-gadget" id="window-tuna">
+    <svg class="gt-shell aero-tuna-shell" viewBox="0 0 700 900" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <!-- screen is a true square (matches the 20x20 grid's natural
+             1:1 shape exactly — no stretching/warping of cells) -->
+        <clipPath id="tunaScreenFrameDonut" clip-rule="evenodd">
+          <path d="M70,60 H630 V620 H70 Z M90,80 H610 V600 H90 Z"/>
+        </clipPath>
+      </defs>
 
-  <!-- Tuna Window -->
-  <div class="window" id="window-tuna">
-    <div class="title-bar">Tuna 🐟 <button onclick="closeWindow('tuna')">X</button></div>
-    <div class="window-content">
-      <div id="tuna-grid"></div>
+      <g filter="url(#gtShellDropShadow)">
+        <!-- external unifying case: follows the contour of the shell +
+             control body (see gtCaseOutline in the shared defs) -->
+        <g filter="url(#gtCaseOutline)">
+          <path fill="white" d="M 40,150
+            C 40,80 100,20 190,20
+            L 510,20
+            C 600,20 660,80 660,150
+            L 660,610
+            C 660,650 628,690 588,690
+            L 112,690
+            C 72,690 40,650 40,610
+            Z"/>
+          <rect x="40" y="690" width="620" height="210" rx="36" fill="white"/>
+        </g>
+
+        <!-- screen-zone shell -->
+        <path class="tuna-shell-body" filter="url(#gtNeonGlow)" d="M 40,150
+          C 40,80 100,20 190,20
+          L 510,20
+          C 600,20 660,80 660,150
+          L 660,610
+          C 660,650 628,690 588,690
+          L 112,690
+          C 72,690 40,650 40,610
+          Z" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <path d="M 40,150
+          C 40,80 100,20 190,20
+          L 510,20
+          C 600,20 660,80 660,150
+          L 660,610
+          C 660,650 628,690 588,690
+          L 112,690
+          C 72,690 40,650 40,610
+          Z" fill="url(#gtConvexLight)" opacity="0.4"/>
+
+        <!-- control body -->
+        <rect class="tuna-shell-lobe" x="40" y="690" width="620" height="210" rx="36" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="40" y="690" width="620" height="210" rx="36" fill="url(#gtConvexLight)" opacity="0.3"/>
+
+        <!-- screen: thick chrome+glass bezel around the game canvas —
+             square, so the 20x20 grid's cells render as true squares -->
+        <rect x="70" y="60" width="560" height="560" rx="24" filter="url(#gtNeonGlow)" fill="url(#gtScreenGlass)" stroke="url(#gtRim)" stroke-width="4"/>
+        <rect x="70" y="60" width="560" height="560" rx="24" fill="url(#gtConvexLight)" opacity="0.45" clip-path="url(#tunaScreenFrameDonut)"/>
+        <rect x="90" y="80" width="520" height="520" rx="14" fill="#020608"/>
+        <!-- diagonal specular sweep across the bezel only -->
+        <g clip-path="url(#tunaScreenFrameDonut)">
+          <path d="M 15,-20 L 130,-20 L 350,640 L 235,640 Z" fill="rgba(255,255,255,0.22)" filter="url(#gtSoftBlur)"/>
+          <path d="M 45,-20 L 78,-20 L 298,640 L 265,640 Z" fill="rgba(255,255,255,0.5)"/>
+        </g>
+
+        <!-- speaker grille dots, same motif as GT Paint's -->
+        <g opacity="0.5">
+          <circle cx="90" cy="637" r="4.5" fill="var(--aero-aqua)"/>
+          <circle cx="106" cy="637" r="4.5" fill="var(--aero-aqua)"/>
+          <circle cx="90" cy="653" r="4.5" fill="var(--aero-aqua)"/>
+          <circle cx="106" cy="653" r="4.5" fill="var(--aero-aqua)"/>
+        </g>
+
+        <!-- D-pad housing: recessed well, same technique as the
+             Jukebox's pod well -->
+        <rect x="415" y="725" width="150" height="150" rx="24" filter="url(#gtNeonGlow)" fill="url(#gtChromeRing)" stroke="url(#gtRim)" stroke-width="5" opacity="0.95"/>
+
+        <!-- exit orb connector strap, same idea as every other device's -->
+        <path d="M 588,42 C 604,28 616,24 618,42 L 618,70 C 618,86 606,88 594,80 Z"
+          fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <circle cx="618" cy="42" r="40" fill="rgba(10,30,50,0.28)" filter="url(#gtSoftBlur)"/>
+      </g>
+    </svg>
+
+    <button class="gt-exit-orb tuna-exit-orb" onclick="closeWindow('tuna')" aria-label="Close Tuna window">✕</button>
+
+    <div class="window-content tuna-content aero-drag-region">
+      <div class="tuna-screen-wrap">
+        <div id="tuna-grid"></div>
+        <div class="tuna-score-readout">
+          Score: <span id="tuna-score-text">0</span>
+        </div>
+      </div>
+
+      <button type="button" class="tuna-gel-btn tuna-new-game-btn" id="tuna-new-game-btn" title="New game">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 3 6.7"/><path d="M3 21v-5h5"/></svg>
+        <span>New game</span>
+      </button>
+
+      <button type="button" class="tuna-gel-btn tuna-leaderboard-btn" id="tuna-leaderboard-btn" title="Leaderboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0Z"/><path d="M7 6H4a3 3 0 0 0 3 4"/><path d="M17 6h3a3 3 0 0 1-3 4"/></svg>
+        <span>Leaderboard</span>
+      </button>
+
+      <!-- D-pad: click OR arrow keys both work; arrow keys are wired
+           independently and remain the primary/smarter way to play -->
+      <div class="tuna-dpad" id="tuna-dpad">
+        <button type="button" class="tuna-dpad-btn tuna-dpad-up" id="tuna-dpad-up" aria-label="Up">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 9H5z"/></svg>
+        </button>
+        <button type="button" class="tuna-dpad-btn tuna-dpad-down" id="tuna-dpad-down" aria-label="Down">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 19l-7-9h14z"/></svg>
+        </button>
+        <button type="button" class="tuna-dpad-btn tuna-dpad-left" id="tuna-dpad-left" aria-label="Left">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 12l9-7v14z"/></svg>
+        </button>
+        <button type="button" class="tuna-dpad-btn tuna-dpad-right" id="tuna-dpad-right" aria-label="Right">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 12l-9 7V5z"/></svg>
+        </button>
+        <div class="tuna-dpad-hub" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
 
   <!-- Internet Window -->
-  <div class="window" id="window-internet">
-    <div class="title-bar">Internet <button onclick="closeWindow('internet')">X</button></div>
+  <div class="window aero-demo" id="window-internet">
+    <div class="title-bar">Internet <button onclick="closeWindow('internet')" aria-label="Close Internet window">X</button></div>
+    <h2 class="sr-only">George Turner videos and links</h2>
     <div class="window-content" id="internet-links"></div>
   </div>
 
   <!-- Press Window -->
-  <div class="window" id="window-press">
-    <div class="title-bar">Press <button onclick="closeWindow('press')">X</button></div>
+  <div class="window aero-demo" id="window-press">
+    <div class="title-bar">Press <button onclick="closeWindow('press')" aria-label="Close Press window">X</button></div>
+    <h2 class="sr-only">Press coverage of George Turner</h2>
     <div class="window-content" id="press-links"></div>
   </div>
 
-  <!-- Video Player Window -->
-  <div class="window" id="window-video-viewer">
-    <div class="title-bar">Video Player <button onclick="closeWindow('video-viewer')">X</button></div>
-    <video id="video-frame" controls style="width:100%; height:100%; background:black;"></video>
+  <!-- Video Player Window — rebuilt from design_1.png in
+       "video player design/" as a video sibling to the Jukebox: same
+       continuous moulded shell (screen zone flowing into three lobes —
+       transport left, video list centre, transport right), same
+       hologram glass language (gtPlastic/gtRim/gtConvexLight/gtNeonGlow/
+       gtScreenGlass/gtChromeRing), same red exit orb, same
+       gtCaseOutline unifying case and lens-flare treatment as GT Paint
+       and the Jukebox. Native <video> — no iframe. -->
+  <div class="window aero-device-gadget aero-media-gadget" id="window-video-viewer">
+    <svg class="gt-shell aero-videoplayer-shell" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="videoplayerScreenFrameDonut" clip-rule="evenodd">
+          <path d="M70,55 H800 V483 H70 Z M90,75 H780 V463 H90 Z"/>
+        </clipPath>
+      </defs>
+
+      <g filter="url(#gtShellDropShadow)">
+        <!-- external unifying case: follows the contour of the shell +
+             all three lobes (see gtCaseOutline in the shared defs) -->
+        <g filter="url(#gtCaseOutline)">
+          <path fill="white" d="M 40,150
+            C 40,80 100,20 190,20
+            L 790,20
+            C 880,20 940,80 940,150
+            L 940,480
+            C 940,522 908,560 866,560
+            L 114,560
+            C 72,560 40,522 40,480
+            Z"/>
+          <rect x="130" y="560" width="200" height="140" rx="24" fill="white"/>
+          <rect x="330" y="560" width="320" height="240" rx="24" fill="white"/>
+          <rect x="650" y="560" width="200" height="140" rx="24" fill="white"/>
+        </g>
+
+        <!-- main body: wide screen zone flowing into the three lobes -->
+        <path class="videoplayer-shell-body" filter="url(#gtNeonGlow)" d="M 40,150
+          C 40,80 100,20 190,20
+          L 790,20
+          C 880,20 940,80 940,150
+          L 940,480
+          C 940,522 908,560 866,560
+          L 114,560
+          C 72,560 40,522 40,480
+          Z" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <path d="M 40,150
+          C 40,80 100,20 190,20
+          L 790,20
+          C 880,20 940,80 940,150
+          L 940,480
+          C 940,522 908,560 866,560
+          L 114,560
+          C 72,560 40,522 40,480
+          Z" fill="url(#gtConvexLight)" opacity="0.4"/>
+
+        <!-- left lobe: skip-back / play / rewind -->
+        <rect class="videoplayer-shell-lobe" x="130" y="560" width="200" height="140" rx="24" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="130" y="560" width="200" height="140" rx="24" fill="url(#gtConvexLight)" opacity="0.3"/>
+
+        <!-- centre lobe: video list -->
+        <rect class="videoplayer-shell-lobe" x="330" y="560" width="320" height="240" rx="24" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="330" y="560" width="320" height="240" rx="24" fill="url(#gtConvexLight)" opacity="0.3"/>
+
+        <!-- right lobe: fast-forward / pause / skip-forward -->
+        <rect class="videoplayer-shell-lobe" x="650" y="560" width="200" height="140" rx="24" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <rect x="650" y="560" width="200" height="140" rx="24" fill="url(#gtConvexLight)" opacity="0.3"/>
+
+        <!-- screen: thick chrome+glass bezel around the video canvas -->
+        <rect x="70" y="55" width="730" height="428" rx="30" filter="url(#gtNeonGlow)" fill="url(#gtScreenGlass)" stroke="url(#gtRim)" stroke-width="4"/>
+        <rect x="70" y="55" width="730" height="428" rx="30" fill="url(#gtConvexLight)" opacity="0.45" clip-path="url(#videoplayerScreenFrameDonut)"/>
+        <rect x="90" y="75" width="690" height="388" rx="18" fill="#020608"/>
+        <!-- diagonal specular sweep across the bezel only -->
+        <g clip-path="url(#videoplayerScreenFrameDonut)">
+          <path d="M 20,-30 L 170,-30 L 460,470 L 310,470 Z" fill="rgba(255,255,255,0.22)" filter="url(#gtSoftBlur)"/>
+          <path d="M 55,-30 L 100,-30 L 390,470 L 345,470 Z" fill="rgba(255,255,255,0.5)"/>
+        </g>
+
+        <!-- vertical volume fader track: recessed groove in the same
+             transparent chrome-ring material as the Jukebox's pod rim -->
+        <rect x="862" y="70" width="16" height="400" rx="8" filter="url(#gtNeonGlow)" fill="url(#gtChromeRing)" stroke="url(#gtRim)" stroke-width="3" opacity="0.95"/>
+
+        <!-- exit orb connector strap, same idea as GT Paint's/Jukebox's -->
+        <path d="M 866,42 C 882,28 894,24 896,42 L 896,70 C 896,86 884,88 872,80 Z"
+          fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+        <circle cx="898" cy="44" r="42" fill="rgba(10,30,50,0.28)" filter="url(#gtSoftBlur)"/>
+      </g>
+    </svg>
+
+    <button class="gt-exit-orb videoplayer-exit-orb" onclick="closeWindow('video-viewer')" aria-label="Close video player">✕</button>
+
+    <div class="window-content videoplayer-content aero-drag-region">
+      <div class="videoplayer-screen-wrap">
+        <video id="videoplayer-frame" preload="metadata"></video>
+        <button type="button" class="videoplayer-fullscreen-btn" id="videoplayer-fullscreen-btn" title="Full screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+        <div class="videoplayer-title-readout">
+          <span id="videoplayer-title-text">select a video</span>
+        </div>
+      </div>
+
+      <!-- timecode: grooved chrome channel under the screen -->
+      <div class="videoplayer-seek-row">
+        <span class="videoplayer-time-label" id="videoplayer-time-current">0:00</span>
+        <input type="range" id="videoplayer-seek" class="videoplayer-seek-slider" min="0" max="100" step="0.1" value="0" aria-label="Seek">
+        <span class="videoplayer-time-label" id="videoplayer-time-duration">0:00</span>
+      </div>
+
+      <!-- vertical volume fader -->
+      <div class="videoplayer-volume-wrap">
+        <input type="range" id="videoplayer-volume" class="videoplayer-volume-slider" min="0" max="100" step="1" value="100" aria-label="Volume" orient="vertical">
+      </div>
+
+      <!-- left lobe: skip-back / play / rewind -->
+      <div class="videoplayer-lobe videoplayer-lobe-left">
+        <button type="button" class="videoplayer-transport-btn videoplayer-skip-back" id="videoplayer-skip-back" title="Previous video">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6z"/><path d="M20 6L10 12l10 6V6z"/></svg>
+        </button>
+        <button type="button" class="videoplayer-transport-btn videoplayer-play-big" id="videoplayer-play" title="Play">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button type="button" class="videoplayer-transport-btn videoplayer-rewind" id="videoplayer-rewind" title="Rewind 10s">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6L1 12l10 6V6z"/><path d="M22 6L12 12l10 6V6z"/></svg>
+        </button>
+      </div>
+
+      <!-- centre lobe: video list -->
+      <div class="videoplayer-lobe videoplayer-lobe-center">
+        <div class="videoplayer-list-header">
+          <span class="videoplayer-list-title">Videos</span>
+        </div>
+        <div class="videoplayer-list" id="videoplayer-list"></div>
+      </div>
+
+      <!-- right lobe: fast-forward / pause / skip-forward -->
+      <div class="videoplayer-lobe videoplayer-lobe-right">
+        <button type="button" class="videoplayer-transport-btn videoplayer-fast-forward" id="videoplayer-fast-forward" title="Forward 10s">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 6l10 6-10 6V6z"/><path d="M13 6l10 6-10 6V6z"/></svg>
+        </button>
+        <button type="button" class="videoplayer-transport-btn videoplayer-pause-big" id="videoplayer-pause" title="Pause">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <button type="button" class="videoplayer-transport-btn videoplayer-skip-forward" id="videoplayer-skip-forward" title="Next video">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2z"/><path d="M4 6l10 6-10 6V6z"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- PDF Viewer Window -->
-  <div class="window" id="window-pdf-viewer">
-    <div class="title-bar">Viewer <button onclick="closeWindow('pdf-viewer')">X</button></div>
-    <iframe id="pdf-frame" src=""></iframe>
+  <div class="window aero-demo" id="window-pdf-viewer">
+    <div class="title-bar">Viewer <button onclick="closeWindow('pdf-viewer')" aria-label="Close viewer">X</button></div>
+    <iframe id="pdf-frame" src="" title="Document viewer"></iframe>
   </div>
 
-  <audio id="startup">
+  <audio id="startup" preload="auto">
     <source src="audio/startup.mp3" type="audio/mpeg">
   </audio>
 
-  <audio id="ambient-sound" loop>
+  <audio id="ambient-sound" loop preload="none">
     <source src="audio/forest.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Spirit Ghost -->
-  <img id="spirit-ghost" src="icons/ghost.png" alt="spirit ghost">
+  <img id="spirit-ghost" src="icons/ghost.png" alt="" aria-hidden="true">
 
-<!-- GT Paint Window -->
-<div class="window" id="window-gtpaint">
-  <div class="title-bar">GT Paint <button onclick="closeWindow('gtpaint')">X</button></div>
-  <div class="window-content gtpaint-content">
+<!-- GT Paint Window — Aero Phase 2 device: "the gadget". A single sculpted
+     handheld: SVG shell (screen bezel + tools-panel body + wheel rim,
+     chrome trim, aero-blue glass), a liquid red exit orb, a real rotating
+     tool dial, and a curved tools panel. No title bar — dragged by
+     grabbing any non-control shell area (see initWindowDragging in
+     script.js). Every control keeps its original id; gtpaint.js wires
+     everything by getElementById and has no idea where in the layout a
+     button physically sits. -->
+<div class="window aero-device-gadget" id="window-gtpaint">
 
-    <div class="gtpaint-toolbar">
-      <div class="gtpaint-toolbar-row">
-        <button id="gtpaint-pencil" class="gtpaint-tool active">Pencil</button>
-        <button id="gtpaint-eraser" class="gtpaint-tool">Eraser</button>
-        <button id="gtpaint-spray" class="gtpaint-tool">Spray</button>
-        <button id="gtpaint-glow" class="gtpaint-tool">Glow</button>
-        <button id="gtpaint-tube" class="gtpaint-tool">Tube</button>
-        <button id="gtpaint-ribbon" class="gtpaint-tool">Ribbon</button>
-        <button id="gtpaint-glitter" class="gtpaint-tool">Glitter</button>
-        <button id="gtpaint-type" class="gtpaint-tool">Type</button>
-      </div>
+  <svg class="gt-shell" viewBox="0 0 1000 800" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <!-- shared material defs (gtPlastic, gtRim, gtNeonGlow, gtScreenClip,
+         etc.) now live in the always-rendered SVG right after <body> —
+         see the comment there for why they can't live inside a window
+         that gets display:none. -->
 
-      <div class="gtpaint-toolbar-row">
-        <label for="gtpaint-color">Colour</label>
-        <input type="color" id="gtpaint-color" value="#ff4fd8">
+    <g filter="url(#gtShellDropShadow)">
+      <!-- external unifying case: follows the ACTUAL contour of the screen,
+           panel, and both wheels (via the gtCaseOutline dilate filter on a
+           silhouette copy of those same shapes below) rather than being a
+           plain bounding rectangle with dead space in the corners. Nothing
+           else in this file was changed to make room for this. -->
+      <g filter="url(#gtCaseOutline)">
+        <rect x="30" y="22" width="676" height="414" rx="42" fill="white"/>
+        <path fill="white" d="M 40,468
+          C 40,566 8,650 34,724
+          C 60,788 158,796 258,796
+          L 800,796
+          C 855,796 875,760 875,706
+          L 875,430
+          C 875,384 806,364 758,380
+          L 112,420
+          C 76,430 40,442 40,468 Z"/>
+        <circle cx="740" cy="526" r="125" fill="white"/>
+        <circle cx="740" cy="703" r="92" fill="white"/>
+      </g>
 
-        <label for="gtpaint-size">Brush</label>
-        <input type="range" id="gtpaint-size" min="1" max="90" value="14">
-        <span id="gtpaint-size-display">14</span>
+      <!-- tools panel body: concave swoop left, flared bottom-right,
+           right edge flowing under both wheels. One plastic material,
+           one rim colour (see gtRim, shared with every other part). -->
+      <path class="gt-shell-panel" filter="url(#gtNeonGlow)" d="M 40,468
+        C 40,566 8,650 34,724
+        C 60,788 158,796 258,796
+        L 800,796
+        C 855,796 875,760 875,706
+        L 875,430
+        C 875,384 806,364 758,380
+        L 112,420
+        C 76,430 40,442 40,468 Z"
+        fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+      <!-- upper-left sheen — confined to the panel's exact silhouette,
+           reads on the glass rim band since the belly sits on top of it -->
+      <path d="M 40,468 C 40,566 8,650 34,724 C 60,788 158,796 258,796 L 800,796
+        C 855,796 875,760 875,706 L 875,430 C 875,384 806,364 758,380
+        L 112,420 C 76,430 40,442 40,468 Z"
+        fill="url(#gtConvexLight)" opacity="0.5"/>
 
-        <label for="gtpaint-font-size">Text</label>
-        <input type="range" id="gtpaint-font-size" min="12" max="140" value="42">
-        <span id="gtpaint-font-size-display">42</span>
-      </div>
+      <!-- sparkle / water detail in the rim's lower-left curve, drawn
+           before the belly so it's the outer glass reading through -->
+      <g opacity="0.8">
+        <circle cx="58" cy="700" r="5" fill="#ffffff" opacity="0.55" filter="url(#gtSoftBlur)"/>
+        <circle cx="46" cy="686" r="2.4" fill="#ffffff" opacity="0.85"/>
+        <circle cx="70" cy="712" r="1.6" fill="#ffffff" opacity="0.7"/>
+        <path d="M 38,660 C 34,690 40,718 62,742" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+      </g>
 
-      <div class="gtpaint-toolbar-row">
-        <button id="gtpaint-fill">Fill</button>
-        <button id="gtpaint-undo">Undo</button>
-        <button id="gtpaint-redo">Redo</button>
-        <button id="gtpaint-clear">Clear</button>
-        <button id="gtpaint-download">Download PNG</button>
-      </div>
-    </div>
+      <!-- the frosted white/ice belly — a uniformly inset copy of the
+           panel silhouette (scaled ~9% around its centroid), sitting on
+           top of the blue glass so an even rim border shows all the way
+           around. This is where every control lives. -->
+      <path d="M 40,468 C 40,566 8,650 34,724 C 60,788 158,796 258,796 L 800,796
+        C 855,796 875,760 875,706 L 875,430 C 875,384 806,364 758,380
+        L 112,420 C 76,430 40,442 40,468 Z"
+        fill="url(#gtFrostBelly)"
+        transform="translate(433,580) scale(0.91) translate(-433,-580)"/>
+      <ellipse cx="420" cy="620" rx="220" ry="90" fill="var(--xp-blue-dark)" opacity="0.05" filter="url(#gtInternalsBlur)" clip-path="url(#gtPanelClip)"/>
+      <!-- speaker grille tucked in a dead corner of the belly -->
+      <g opacity="0.5">
+        <circle cx="120" cy="740" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="132" cy="740" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="144" cy="740" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="120" cy="750" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="132" cy="750" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="144" cy="750" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="120" cy="760" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="132" cy="760" r="2.2" fill="var(--aero-aqua)"/>
+        <circle cx="144" cy="760" r="2.2" fill="var(--aero-aqua)"/>
+      </g>
+
+      <!-- screen: a thick glossy deep-blue glass frame (proportioned to
+           860:520, the canvas's real aspect ratio, so "fit" zoom fills it
+           edge to edge instead of letterboxing) -->
+      <rect x="30" y="22" width="676" height="414" rx="42" filter="url(#gtNeonGlow)" fill="url(#gtScreenGlass)" stroke="url(#gtRim)" stroke-width="5"/>
+      <rect x="30" y="22" width="676" height="414" rx="42" fill="url(#gtConvexLight)" opacity="0.4" clip-path="url(#gtScreenClip)"/>
+      <rect x="65" y="46" width="606" height="366" rx="26" fill="#0a1520"/>
+      <!-- long diagonal specular streak across the frame's top-left,
+           clipped to the frame band so it never crosses the canvas -->
+      <g clip-path="url(#gtScreenFrameDonut)">
+        <path d="M 10,-20 L 140,-20 L 420,460 L 290,460 Z" fill="rgba(255,255,255,0.22)" filter="url(#gtSoftBlur)"/>
+        <path d="M 40,-20 L 80,-20 L 360,460 L 320,460 Z" fill="rgba(255,255,255,0.5)"/>
+      </g>
+
+      <!-- exit orb's connector: a short glowing strap of the SAME rim
+           colour tying the orb visually onto the screen's top-right
+           corner, so it reads as budding off one continuous edge -->
+      <path d="M 672,44 C 690,30 704,26 706,44 L 706,74 C 706,92 692,94 678,86 Z"
+        filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5"/>
+
+      <!-- exit orb: only the ambient caustic shadow lives in the static
+           shell — the gel body itself is a real animated button below,
+           so hover-wobble/press actually affects what's visible -->
+      <circle cx="700" cy="46" r="46" fill="rgba(10,30,50,0.28)" filter="url(#gtSoftBlur)"/>
+
+      <!-- tool wheel: a transparent glass ring seated into the shell,
+           with a brighter cyan accent arc. The glossy pie-segment dial
+           face floats ON TOP as a CSS element (see .gtpaint-wheel in
+           aero.css). -->
+      <circle cx="740" cy="526" r="125" filter="url(#gtNeonGlow)" fill="url(#gtChromeRing)" stroke="url(#gtRim)" stroke-width="5" opacity="0.95"/>
+      <path d="M 622.5,568.8 A 125,125 0 0 1 622.5,483.2" fill="none" stroke="color-mix(in srgb, white 55%, var(--aero-aqua))" stroke-width="9" stroke-linecap="round" opacity="0.9" filter="url(#gtNeonGlow)"/>
+
+      <!-- colour wheel: same thin rim ring as before -->
+      <circle cx="740" cy="703" r="92" filter="url(#gtNeonGlow)" fill="url(#gtPlastic)" stroke="url(#gtRim)" stroke-width="5" opacity="0.9"/>
+    </g>
+  </svg>
+
+  <!-- exit orb — a real button styled to match the shell's red gel
+       material; hover wobbles it, press depresses it (see aero.css) -->
+  <button class="gt-exit-orb" onclick="closeWindow('gtpaint')" aria-label="Close Paint window">✕</button>
+
+  <div class="window-content gtpaint-content aero-drag-region">
 
     <div class="gtpaint-canvas-wrap">
       <canvas id="gtpaint-canvas" width="860" height="520"></canvas>
     </div>
+
+    <!-- the tool wheel — a real rotary dial (drag or scroll to turn; see
+         initGTPaintWheel in gtpaint.js). The ring physically rotates;
+         clicking an icon directly also works without turning the dial. -->
+    <div class="gtpaint-wheel">
+      <div class="gtpaint-wheel-notch" aria-hidden="true"></div>
+      <div class="gtpaint-wheel-hub" id="gtpaint-wheel-hub" aria-hidden="true">
+        <span class="gtpaint-wheel-hub-icon" id="gtpaint-wheel-hub-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 L4 17 L15 6 L18 9 L7 20 Z"/><path d="M15 6 L18 3 L21 6 L18 9 Z" fill="white"/></svg>
+        </span>
+      </div>
+      <div class="gtpaint-wheel-ring">
+        <button id="gtpaint-pencil" class="gtpaint-tool active" style="--r:0deg" title="Pencil">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 L4 17 L15 6 L18 9 L7 20 Z"/><path d="M15 6 L18 3 L21 6 L18 9 Z" fill="white"/></svg></span>
+        </button>
+        <button id="gtpaint-eraser" class="gtpaint-tool" style="--r:45deg" title="Eraser">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="8" rx="2" transform="rotate(-20 12 14)"/></svg></span>
+        </button>
+        <button id="gtpaint-spray" class="gtpaint-tool" style="--r:90deg" title="Spray">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="9" width="8" height="12" rx="2"/><path d="M10 9V6h4v3"/><circle cx="17" cy="5" r="1" fill="white" stroke="none"/><circle cx="20" cy="8" r="1" fill="white" stroke="none"/><circle cx="19" cy="4" r="1" fill="white" stroke="none"/></svg></span>
+        </button>
+        <button id="gtpaint-glow" class="gtpaint-tool" style="--r:135deg" title="Glow">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"/></svg></span>
+        </button>
+        <button id="gtpaint-tube" class="gtpaint-tool" style="--r:180deg" title="Tube">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l1 4H7z"/><path d="M7 7h10l-1 12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2Z"/></svg></span>
+        </button>
+        <button id="gtpaint-ribbon" class="gtpaint-tool" style="--r:225deg" title="Ribbon">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M3 12c2-4 4 4 6 0s4-4 6 0 4-4 6 0"/></svg></span>
+        </button>
+        <button id="gtpaint-glitter" class="gtpaint-tool" style="--r:270deg" title="Glitter">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="white" stroke="none"><path d="M6 3 L7 6 L10 7 L7 8 L6 11 L5 8 L2 7 L5 6 Z"/><path d="M17 10 L18 13 L21 14 L18 15 L17 18 L16 15 L13 14 L16 13 Z"/></svg></span>
+        </button>
+        <button id="gtpaint-type" class="gtpaint-tool" style="--r:315deg" title="Type">
+          <span class="gtpaint-tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><path d="M5 6h14"/><path d="M12 6v14"/></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- the colour wheel — a static rainbow ring (click or drag anywhere
+         on it to pick that hue directly, no rotation needed) around a
+         large glossy pearl orb. Dragging the orb vertically adjusts
+         lightness; double-clicking it opens the native colour input for
+         precision (see initGTPaintColourWheel in gtpaint.js). A small
+         thumb dot rotates to mark the current hue's position. -->
+    <div class="gtpaint-colour-wheel">
+      <div class="gtpaint-colour-wheel-ring" id="gtpaint-colour-wheel-ring"></div>
+      <div class="gtpaint-colour-wheel-thumb" id="gtpaint-colour-wheel-thumb" aria-hidden="true"></div>
+      <button type="button" class="gtpaint-colour-wheel-hub" id="gtpaint-colour-wheel-hub" title="Drag to adjust lightness — double-click for full colour picker" aria-label="Colour lightness — drag to adjust, double-click for full picker"></button>
+    </div>
+
+    <!-- tools panel — everything else, gel-styled, contained within the
+         curved shell body -->
+    <div class="gtpaint-panel-content">
+      <div class="gtpaint-toolbar gtpaint-readout">
+        <!-- the flat colour swatch is gone — the colour orb (bottom
+             right) is the only colour picker now. This input stays as
+             the underlying value store everything else reads/writes,
+             and is opened programmatically by double-clicking the orb. -->
+        <input type="color" id="gtpaint-color" value="#ff4fd8" class="gtpaint-color-input-hidden" aria-hidden="true" tabindex="-1">
+
+        <span class="gtpaint-readout-group" id="gtpaint-brush-size-group">
+          <label for="gtpaint-size">Brush</label>
+          <input type="range" id="gtpaint-size" min="1" max="90" value="14">
+          <span id="gtpaint-size-display">14</span>
+        </span>
+
+        <span class="gtpaint-readout-group" id="gtpaint-font-size-group" style="display:none;">
+          <label for="gtpaint-font-size">Text</label>
+          <input type="range" id="gtpaint-font-size" min="12" max="140" value="42">
+          <span id="gtpaint-font-size-display">42</span>
+        </span>
+      </div>
+
+      <div class="gtpaint-toolbar gtpaint-deck">
+        <div class="gtpaint-toolbar-row">
+          <button id="gtpaint-stamp" class="gtpaint-tool" title="Stamp"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="12" rx="2"/><path d="M9 20h6"/><path d="M12 16v4"/></svg></span>Stamp</button>
+          <button id="gtpaint-eyedropper" class="gtpaint-tool" title="Eyedropper"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 L4 17 L15 6 L18 9 L7 20 Z"/><circle cx="18" cy="6" r="2.4"/></svg></span>Drop</button>
+          <button id="gtpaint-line" class="gtpaint-tool" title="Line"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19 L19 5"/></svg></span>Line</button>
+          <button id="gtpaint-rect" class="gtpaint-tool" title="Rectangle"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="6" width="16" height="12" rx="1"/></svg></span>Rect</button>
+          <button id="gtpaint-ellipse" class="gtpaint-tool" title="Ellipse"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg></span>Ellipse</button>
+        </div>
+
+        <div class="gtpaint-toolbar-row gtpaint-subrow" id="gtpaint-stamp-picker" style="display:none;">
+          <label>Stamp</label>
+          <button type="button" class="gtpaint-stamp-swatch active" data-stamp="ghost" title="Ghost"><img src="icons/ghost.png" alt="Ghost"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="star" title="Star"><img src="icons/star.png" alt="Star"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="kaka" title="Kākā"><img src="icons/kaka.png" alt="Kākā"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="tui" title="Tūī"><img src="icons/tui.png" alt="Tūī"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="kereru" title="Kererū"><img src="icons/kereru.png" alt="Kererū"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="kakapo" title="Kākāpō"><img src="icons/kakapo.png" alt="Kākāpō"></button>
+          <button type="button" class="gtpaint-stamp-swatch" data-stamp="tieke" title="Tīeke"><img src="icons/tieke.png" alt="Tīeke"></button>
+        </div>
+
+        <div class="gtpaint-toolbar-row gtpaint-subrow" id="gtpaint-shape-texture-row" style="display:none;">
+          <label>Shape texture</label>
+          <button type="button" class="gtpaint-shape-texture-btn active" data-texture="tube">Tube</button>
+          <button type="button" class="gtpaint-shape-texture-btn" data-texture="ribbon">Ribbon</button>
+        </div>
+
+        <div class="gtpaint-toolbar-row">
+          <label>Mirror</label>
+          <button type="button" class="gtpaint-mirror-btn active" data-mirror="none">Off</button>
+          <button type="button" class="gtpaint-mirror-btn" data-mirror="vertical">Mirror</button>
+          <button type="button" class="gtpaint-mirror-btn" data-mirror="kaleidoscope">Kaleidoscope</button>
+
+          <button type="button" id="gtpaint-rainbow-toggle">Rainbow: Off</button>
+        </div>
+
+        <div class="gtpaint-toolbar-row">
+          <label>Background</label>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-white" data-bg="white" title="White"></button>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-transparent" data-bg="transparent" title="Transparent"></button>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-candy-sky" data-bg="candy-sky" title="Candy Sky"></button>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-ghost-glow" data-bg="ghost-glow" title="Ghost Glow"></button>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-sunset-gold" data-bg="sunset-gold" title="Sunset Gold"></button>
+          <button type="button" class="gtpaint-bg-swatch gtpaint-bg-rainbow" data-bg="rainbow" title="Rainbow"></button>
+        </div>
+
+        <div class="gtpaint-toolbar-row">
+          <button id="gtpaint-fill"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 L12 4 L20 12 L12 20 Z"/><path d="M4 12 L20 12"/></svg></span>Fill</button>
+          <button id="gtpaint-undo"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 L4 12 L9 17"/><path d="M4 12 H14 a6 6 0 0 1 0 12 h-2"/></svg></span>Undo</button>
+          <button id="gtpaint-redo"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7 L20 12 L15 17"/><path d="M20 12 H10 a6 6 0 0 0 0 12 h2"/></svg></span>Redo</button>
+          <button id="gtpaint-clear"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></span>Clear</button>
+          <button id="gtpaint-download"><span class="gtpaint-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></span>Download PNG</button>
+        </div>
+
+        <div class="gtpaint-toolbar-row">
+          <label for="gtpaint-zoom-slider">Zoom</label>
+          <button type="button" id="gtpaint-zoom-fit-btn">Fit</button>
+          <input type="range" id="gtpaint-zoom-slider" min="10" max="400" step="5" value="100">
+          <span id="gtpaint-zoom-display">100%</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-  <!-- Firebase core + database -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+  <!-- Firebase core + database (analytics removed — gtag above already covers G-KY7YFERX5Q) -->
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <!-- Your own Firebase config -->
-  <script src="firebase-config.js"></script>
+  <script defer src="firebase-config.js"></script>
 
   <!-- RitualOS Main Script -->
-  <script src="script.js"></script>
+  <script defer src="script.js"></script>
 
-  <!-- SEO text block for search engines -->
-  <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
-    <h1>George Turner – New Zealand Artist and Musician</h1>
+  <!-- Lens flares (standalone module) — scatters 1-3 small PNGs from
+       "lens flares/" across a window's border every time it opens, see
+       spawnLensFlares() called from openWindow() above -->
+  <script defer src="lens-flares.js"></script>
 
-    <p>
-      George Turner is a New Zealand artist and musician based in Te Whanganui-a-Tara, Aotearoa.
-      Their work explores queer ecology, environmental storytelling, digital art, experimental film,
-      immersive ecosystems, installation, painting, and speculative digital worlds.
-    </p>
+  <!-- GT Paint (standalone module) -->
+  <script defer src="gtpaint.js"></script>
 
-    <p>
-      George Turner is also a musician creating experimental pop and electronic music.
-      Their albums and releases include Insect, Thank You For Your Time, Some Days,
-      Oriental Beach, and Lost At Home.
-    </p>
+  <!-- Aero environment (sky/time-of-day) -->
+  <script defer src="aero.js"></script>
 
-    <p>
-      RitualOS is the interactive website and digital portfolio of George Turner,
-      featuring artworks, exhibitions, films, music projects, and freelance work.
-    </p>
+  <!-- Cursor trail + click shockwave (standalone module) -->
+  <script defer src="cursor-fx.js"></script>
 
-    <h2>Artist Keywords</h2>
-    <p>
-      George Turner artist, George Turner NZ, George Turner New Zealand artist,
-      George Turner art, George Turner music, George Turner musician,
-      digital artist NZ, experimental artist New Zealand, queer ecology artist,
-      video artist Aotearoa, ecological artist New Zealand.
-    </p>
+  <!-- Music Player (standalone module) — "The Jukebox". Native <audio>
+       routed through Web Audio (no iframe — Spotify's embed can't be
+       audio-analysed cross-origin). Doesn't init until the Music window
+       opens. -->
+  <script defer src="musicplayer.js"></script>
 
-    <h2>Selected Artworks</h2>
-    <ul>
-      <li>Out of the Scene, Into the Fever</li>
-      <li>Nikau</li>
-      <li>Ti Kouka</li>
-      <li>Sixteen Trees</li>
-      <li>A Place to Watch the World Rot</li>
-    </ul>
-
-    <h2>Selected Exhibitions</h2>
-    <ul>
-      <li>Stages of Grief</li>
-      <li>Remnants</li>
-      <li>Under the Pasture</li>
-      <li>Second Impressions</li>
-      <li>Tangible Remains</li>
-    </ul>
-
-    <h2>Music and Albums</h2>
-    <ul>
-      <li>Insect</li>
-      <li>Thank You For Your Time</li>
-      <li>Some Days</li>
-      <li>Oriental Beach</li>
-      <li>Lost At Home</li>
-    </ul>
-
-    <p>
-      Explore the artworks, exhibitions, music releases, digital environments,
-      and experimental ecological storytelling of George Turner.
-    </p>
-  </div>
+  <!-- Video Player (standalone module) — video sibling of the Jukebox,
+       built-in video list, doesn't init until the window opens. -->
+  <script defer src="videoplayer.js"></script>
 
 </body>
 </html>

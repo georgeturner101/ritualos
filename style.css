@@ -1,4 +1,102 @@
 /* =========================
+   RITUALOS PALETTE
+   ========================= */
+
+:root {
+  /* blues — title bars, taskbar, window borders, links */
+  --xp-blue-light: #62a9ff;
+  --xp-blue-mid:   #397ee5;
+  --xp-blue-dark:  #2b64cc;
+  --xp-blue-border: #1f4fa3;
+  --xp-window-border: #4f86d8;
+  --start-menu-bg-light: #f4f9ff;
+  --start-menu-bg-dark:  #d9ebff;
+  --start-menu-border:   #5e97dc;
+
+  /* candy pink — window bodies */
+  --candy-pink-light: #ffe9f7;
+  --candy-pink-dark:  #ffd2ea;
+
+  /* start button green */
+  --start-green-light: #58be47;
+  --start-green-mid:   #3ca936;
+  --start-green-dark:  #2b8e26;
+  --start-green-hover-light: #67c955;
+  --start-green-hover-mid:   #49b440;
+  --start-green-hover-dark:  #32982b;
+  --start-green-active-light: #2f9129;
+  --start-green-active-dark:  #46ad3f;
+
+  /* ghost glow — sparkles, whispers, spirit ghost */
+  --ghost-glow-pink-light: #ffe6ff;
+  --ghost-glow-pink-dark:  #ffccff;
+  --ghost-glow-blue: #c0eaff;
+
+  /* text */
+  --text-navy: #184a8c;
+  --text-plum: #3a003a;
+  --text-plum-light: #7c2d68;
+
+  /* gold — tuna food / accents */
+  --gold-light: #fff3b8;
+  --gold-mid:   #ffcb66;
+  --gold-dark:  #ffcc33;
+  --gold-glow:  #ffe499;
+  --gold-pale:  #fff5d1;
+
+  /* danger red — close buttons */
+  --danger-red-light: #ff8f8f;
+  --danger-red-dark:  #de4d4d;
+  --danger-red-hover-light: #ff9d9d;
+  --danger-red-hover-dark:  #e85c5c;
+
+  /* tuna snake — its own magenta family, kept distinct from candy-pink */
+  --tuna-pink-light: #ffe2fb;
+  --tuna-pink-dark:  #ff96ec;
+  --tuna-head-light: #fff6ff;
+  --tuna-head-dark:  #fcd3ff;
+  --tuna-glow-a: #ffc7f9;
+  --tuna-glow-b: #ffb0f2;
+  --tuna-head-glow-a: #ffa8f2;
+  --tuna-head-glow-b: #ffdaf7;
+  --tuna-head-border: #ffbdf2;
+
+  /* accents that don't cluster with anything else */
+  --accent-magenta: #d94db0;
+  --bird-cell-border: #f0a9d9;
+  --bird-cell-fill: #ffcbe9;
+  --search-text: #d9ebff;
+  --tuna-grid-border: #b6e6ff;
+  --tuna-button-light: #ffb1e5;
+  --tuna-button-dark:  #f48bd1;
+  --tuna-button-border: #d76ab3;
+  --tuna-button-hover-light: #ffbee9;
+  --tuna-button-hover-dark:  #f997d8;
+  --tuna-input-border: #cda5c5;
+
+  /* GT Paint rainbow — the one intentional exception, still tokenized */
+  --paint-pink: #ff9be7;
+  --paint-cyan: #7dd7ff;
+  --paint-blue: #5ca9ff;
+  --paint-active-pink: #ffb7ee;
+  --paint-active-hotpink: #ff8ee0;
+  --paint-active-cyan: #7ad8ff;
+  --paint-toolbar-text: #7c2d68;
+  --paint-label-text: #7e3d88;
+  --paint-canvas-blue: #bdeeff;
+  --paint-canvas-pink: #ffe6fa;
+  --paint-canvas-gold: #fff7ca;
+  --paint-content-pink: #ffd7f5;
+  --paint-content-blue: #dff4ff;
+  --paint-content-gold: #fff2bd;
+
+  /* neutrals */
+  --neutral-white: #ffffff;
+  --neutral-black: #000000;
+  --neutral-grey:  #999999;
+}
+
+/* =========================
    RESET / BASE
    ========================= */
 
@@ -15,6 +113,26 @@ html, body {
 
 body {
   position: relative;
+}
+
+/* Visually hidden but still readable by screen readers/search engines —
+   used on the page's SEO <h1> and section <h2>s. Standard clip-to-1px
+   pattern, not display:none (which some crawlers/AT treat as truly
+   absent) and not relying on it happening to blend into whatever's
+   behind it (the <h1> using this class had no rule for it at all until
+   now, so it only "looked" hidden by coincidentally being white text
+   over a light sky background — genuinely invisible on any other
+   background). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* =========================
@@ -240,7 +358,7 @@ body {
   left: 0;
   width: 100%;
   height: 40px;
-  background: linear-gradient(to bottom, #3f92ff 0%, #2d79ea 45%, #1f5fcf 100%);
+  background: linear-gradient(to bottom, var(--xp-blue-light) 0%, var(--xp-blue-mid) 48%, var(--xp-blue-dark) 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -262,8 +380,8 @@ body {
   padding: 0 20px 0 18px;
   border: none;
   border-radius: 0 16px 16px 0;
-  background: linear-gradient(to bottom, #58be47 0%, #3ca936 48%, #2b8e26 100%);
-  color: #ffffff;
+  background: linear-gradient(to bottom, var(--start-green-light) 0%, var(--start-green-mid) 48%, var(--start-green-dark) 100%);
+  color: var(--neutral-white);
   font-weight: bold;
   font-size: 23px;
   font-style: italic;
@@ -291,11 +409,11 @@ body {
 }
 
 #start-button:hover {
-  background: linear-gradient(to bottom, #67c955 0%, #49b440 48%, #32982b 100%);
+  background: linear-gradient(to bottom, var(--start-green-hover-light) 0%, var(--start-green-hover-mid) 48%, var(--start-green-hover-dark) 100%);
 }
 
 #start-button:active {
-  background: linear-gradient(to bottom, #2f9129 0%, #46ad3f 100%);
+  background: linear-gradient(to bottom, var(--start-green-active-light) 0%, var(--start-green-active-dark) 100%);
   box-shadow:
     inset 0 2px 4px rgba(0,0,0,0.2),
     inset 0 1px 0 rgba(255,255,255,0.2);
@@ -305,7 +423,7 @@ body {
   flex: 1;
   min-width: 110px;
   margin-left: 10px;
-  color: #dcecff;
+  color: var(--search-text);
   font-style: italic;
   padding-left: 10px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.28);
@@ -319,7 +437,7 @@ body {
   text-align: center;
   font-size: 13px;
   font-weight: bold;
-  color: #ffffff;
+  color: var(--neutral-white);
   text-shadow: 0 1px 2px rgba(0,0,0,0.35);
   white-space: nowrap;
   overflow: hidden;
@@ -391,12 +509,12 @@ body {
   bottom: 40px;
   left: 0;
   width: 220px;
-  background: linear-gradient(to bottom, #f4f9ff 0%, #d9ebff 100%);
-  border: 1px solid #5e97dc;
+  background: linear-gradient(to bottom, var(--start-menu-bg-light) 0%, var(--start-menu-bg-dark) 100%);
+  border: 1px solid var(--start-menu-border);
   border-radius: 0 10px 10px 0;
   padding: 10px 8px 8px;
   z-index: 1000;
-  color: #184a8c;
+  color: var(--text-navy);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.75),
     0 8px 18px rgba(0, 0, 0, 0.28);
@@ -419,7 +537,7 @@ body {
   border-radius: 7px;
   margin-bottom: 4px;
   font-weight: bold;
-  color: #184a8c;
+  color: var(--text-navy);
   text-shadow: 0 1px 0 rgba(255,255,255,0.8);
   transition: background 0.15s ease, color 0.15s ease;
 }
@@ -448,9 +566,9 @@ body {
   display: none;
   flex-direction: column;
   z-index: 50;
-  color: #123d74;
-  background: linear-gradient(to bottom, #fdf2fb 0%, #ffd8ee 100%);
-  border: 1px solid #4f86d8;
+  color: var(--text-navy);
+  background: linear-gradient(to bottom, var(--candy-pink-light) 0%, var(--candy-pink-dark) 100%);
+  border: 1px solid var(--xp-window-border);
   border-radius: 10px;
   overflow: hidden;
   box-shadow:
@@ -491,8 +609,8 @@ body {
   font-size: 13px;
   color: white;
   cursor: move;
-  background: linear-gradient(to bottom, #62a9ff 0%, #397ee5 48%, #2b64cc 100%);
-  border-bottom: 1px solid #1f4fa3;
+  background: linear-gradient(to bottom, var(--xp-blue-light) 0%, var(--xp-blue-mid) 48%, var(--xp-blue-dark) 100%);
+  border-bottom: 1px solid var(--xp-blue-border);
   text-shadow: 0 1px 1px rgba(0,0,0,0.38);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
   box-sizing: border-box;
@@ -504,7 +622,7 @@ body {
   padding: 0;
   border: 1px solid rgba(255,255,255,0.58);
   border-radius: 5px;
-  background: linear-gradient(to bottom, #ff8f8f 0%, #de4d4d 100%);
+  background: linear-gradient(to bottom, var(--danger-red-light) 0%, var(--danger-red-dark) 100%);
   color: white;
   font-size: 12px;
   font-weight: bold;
@@ -517,7 +635,7 @@ body {
 }
 
 .title-bar button:hover {
-  background: linear-gradient(to bottom, #ff9d9d 0%, #e85c5c 100%);
+  background: linear-gradient(to bottom, var(--danger-red-hover-light) 0%, var(--danger-red-hover-dark) 100%);
 }
 
 .title-bar button:active {
@@ -529,30 +647,8 @@ body {
   padding: 14px;
   overflow-y: auto;
   flex: 1;
-  background: linear-gradient(to bottom, #ffe9f7 0%, #ffd2ea 100%);
+  background: linear-gradient(to bottom, var(--candy-pink-light) 0%, var(--candy-pink-dark) 100%);
   box-sizing: border-box;
-}
-
-.pdf-list a,
-#video-list a,
-.internet-link,
-#window-press a {
-  display: block;
-  margin: 6px 0;
-  padding: 6px 8px;
-  border-radius: 6px;
-  color: #184a8c;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.14s ease, color 0.14s ease;
-}
-
-.pdf-list a:hover,
-#video-list a:hover,
-.internet-link:hover,
-#window-press a:hover {
-  background: rgba(255,255,255,0.36);
-  text-decoration: underline;
 }
 
 /* =========================
@@ -562,16 +658,6 @@ body {
 #window-about {
   width: 550px;
   height: 650px;
-}
-
-#window-game {
-  width: 400px;
-  height: 470px;
-}
-
-#window-tuna {
-  width: 500px;
-  height: 565px;
 }
 
 #window-video {
@@ -593,56 +679,117 @@ body {
    BIRDSWEEPER
    ========================= */
 
-#birdsweeper-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 40px);
-  gap: 4px;
-  margin-top: 12px;
-}
-
+/* #birdsweeper-grid's own grid/sizing now lives in aero.css alongside
+   the rest of the device shell (it needs to be responsive within the
+   new screen bezel, not a fixed 40px-cell box) — only the per-cell
+   material lives here, restyled from the old pink/white palette to the
+   translucent aqua glass used everywhere else in the OS. */
 .bird-cell {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 240, 255, 0.72);
-  border: 1px solid #f0a9d9;
-  border-radius: 6px;
-  text-align: center;
-  line-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
   font-weight: bold;
-  font-size: 18px;
-  color: #3a003a;
+  font-size: 15px;
+  color: color-mix(in srgb, white 85%, var(--aero-aqua));
   cursor: pointer;
-  transition: all 0.16s ease-in-out;
-  box-shadow: 0 2px 4px rgba(255, 180, 255, 0.16);
+  transition: filter 0.16s ease-in-out, background 0.16s ease-in-out;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.16), color-mix(in srgb, transparent 82%, var(--aero-aqua)) 60%, color-mix(in srgb, transparent 88%, var(--xp-blue-dark)) 100%);
+  border: 1px solid color-mix(in srgb, transparent 45%, var(--aero-aqua));
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.12);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--aero-aqua) 55%, transparent);
 }
 
 .bird-cell:hover {
-  background: rgba(255,255,255,0.9);
+  filter: brightness(1.3);
 }
 
 .bird-cell.revealed {
-  background: white;
+  background: color-mix(in srgb, transparent 88%, white);
+  border-color: color-mix(in srgb, transparent 65%, var(--aero-aqua));
+  box-shadow: inset 0 2px 5px rgba(0,10,25,0.3);
   cursor: default;
 }
 
 .bird-cell.bird {
-  background: #ffcbe9;
-  color: #3a003a;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.4), color-mix(in srgb, transparent 45%, var(--start-green-light)) 55%, color-mix(in srgb, transparent 70%, var(--start-green-dark)) 100%);
+  border-color: color-mix(in srgb, white 40%, var(--start-green-light));
+  box-shadow: inset 0 2px 5px rgba(255,255,255,0.25), 0 0 10px var(--aero-glow-green);
   font-size: 20px;
+}
+
+/* Same translucent-glass recipe as the Tuna popup (opaque enough that
+   the desktop's ambient ghost companion doesn't bleed through it) —
+   overrides the base .window candy-pink styling. Stays a normal
+   position:absolute window, so no special centering handling needed. */
+.aero-bird-found-popup {
+  width: 320px;
+  background: linear-gradient(160deg, color-mix(in srgb, transparent 12%, var(--aero-aqua)) 0%, color-mix(in srgb, transparent 22%, var(--xp-blue-light)) 45%, color-mix(in srgb, transparent 30%, var(--xp-blue-dark)) 100%);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid color-mix(in srgb, white 70%, var(--aero-aqua));
+  border-radius: 20px;
+  overflow: visible;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    0 0 26px color-mix(in srgb, var(--aero-aqua) 45%, transparent),
+    0 12px 30px rgba(0,10,25,0.5);
+}
+
+/* compound selector, same reason as .tuna-popup .tuna-popup-exit-orb —
+   .gt-exit-orb's own left/top (aero.css) has equal specificity to a
+   plain single-class rule here and loads after style.css, so it would
+   otherwise always win the cascade regardless of what this rule says */
+.aero-bird-found-popup .bird-found-exit-orb {
+  position: absolute;
+  left: calc(100% - 20px);
+  top: -20px;
+  width: 40px;
+  height: 40px;
 }
 
 .bird-popup {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px;
+  gap: 10px;
   text-align: center;
+  padding: 28px 22px 22px;
+  box-sizing: border-box;
+  color: color-mix(in srgb, white 88%, var(--aero-aqua));
+  cursor: grab;
+  /* .window-content's base rule fills this with an opaque candy-pink
+     gradient — without clearing it here, that sat on top of (and
+     completely hid) .aero-bird-found-popup's glass background */
+  background: none;
+}
+
+.bird-popup:active {
+  cursor: grabbing;
+}
+
+.bird-found-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--aero-aqua) 70%, transparent);
+  user-select: none;
+}
+
+.bird-popup p {
+  margin: 0;
+  user-select: none;
+}
+
+#bird-found-fact {
+  opacity: 0.9;
+  font-size: 13px;
 }
 
 .bird-popup img {
   width: 80px;
   height: auto;
-  filter: drop-shadow(0 0 6px rgba(255, 180, 255, 0.35));
+  align-self: center;
+  filter: drop-shadow(0 0 10px var(--aero-glow-green));
   animation: fadeIn 0.35s ease-in-out;
 }
 
@@ -665,143 +812,251 @@ body {
 
 #tuna-grid {
   display: grid;
-  grid-template-columns: repeat(20, 20px);
+  grid-template-columns: repeat(20, 1fr);
+  grid-template-rows: repeat(20, 1fr);
   gap: 1px;
-  width: 420px;
-  height: 420px;
-  margin: 10px auto 0;
+  width: 100%;
+  height: 100%;
   background: url('images/ocean-ripple.png');
   background-size: cover;
-  border: 2px solid #b6e6ff;
-  box-shadow:
-    0 0 18px rgba(173, 255, 255, 0.28),
-    inset 0 0 10px rgba(0, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 8px;
+  box-shadow: inset 0 0 24px rgba(0, 255, 255, 0.18);
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .tuna-cell {
-  width: 20px;
-  height: 20px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  border-radius: 2px;
   transition: background 0.16s ease;
 }
 
 .tuna {
-  background: radial-gradient(circle, #ffe2fb 30%, #ff96ec 100%);
-  box-shadow: 0 0 6px #ffc7f9, inset 0 0 4px #ffb0f2;
+  background: radial-gradient(circle, var(--tuna-pink-light) 30%, var(--tuna-pink-dark) 100%);
+  box-shadow: 0 0 6px var(--tuna-glow-a), inset 0 0 4px var(--tuna-glow-b);
   border-radius: 3px;
 }
 
 .tuna-head {
-  background: linear-gradient(135deg, #fff6ff, #fcd3ff);
-  border: 1px solid #ffbdf2;
-  box-shadow: 0 0 10px #ffa8f2, 0 0 6px #ffdaf7 inset;
+  background: linear-gradient(135deg, var(--tuna-head-light), var(--tuna-head-dark));
+  border: 1px solid var(--tuna-head-border);
+  box-shadow: 0 0 10px var(--tuna-head-glow-a), 0 0 6px var(--tuna-head-glow-b) inset;
 }
 
 .tuna-food {
-  background: radial-gradient(circle, #fff3b8 10%, #ffcb66 70%);
+  background: radial-gradient(circle, var(--gold-light) 10%, var(--gold-mid) 70%);
   border-radius: 50%;
-  box-shadow: 0 0 10px #ffe499, 0 0 6px #ffcc33 inset;
-  border: 1px solid #fff5d1;
+  box-shadow: 0 0 10px var(--gold-glow), 0 0 6px var(--gold-dark) inset;
+  border: 1px solid var(--gold-pale);
 }
 
 /* =========================
    TUNA GAME OVER POPUP
    ========================= */
 
+/* Restyled to match the hologram-glass language the rest of the OS uses
+   (GT Paint/Jukebox/Video Player/Tuna's own shell) — translucent aqua
+   glass, glowing edge, gel buttons. Only the container/rows changed
+   here; the actual score load/save logic in script.js (Firebase reads
+   and writes) is untouched, so nobody's leaderboard entry is lost. */
+/* Deliberately much more OPAQUE than a typical glass panel — this box
+   sits directly over the desktop's ambient decorations (the ghost
+   companion, clouds, other windows), and at the aero-glass system's
+   usual transparency those bled through visibly enough to look like a
+   giant bird sitting on top of the leaderboard. Backdrop-blur is kept
+   for whatever residue still shows through the reduced transparency. */
 .tuna-popup {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 340px;
+  width: 400px;
   display: none;
   flex-direction: column;
   transform: translate(-50%, -50%);
   z-index: 9999;
-  background: linear-gradient(to bottom, #fff0fb 0%, #ffd9ef 100%);
-  border: 1px solid #4f86d8;
-  border-radius: 10px;
-  overflow: hidden;
+  background: linear-gradient(160deg, color-mix(in srgb, transparent 12%, var(--aero-aqua)) 0%, color-mix(in srgb, transparent 22%, var(--xp-blue-light)) 45%, color-mix(in srgb, transparent 30%, var(--xp-blue-dark)) 100%);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid color-mix(in srgb, white 70%, var(--aero-aqua));
+  border-radius: 20px;
+  overflow: visible;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.78),
-    0 12px 26px rgba(0,0,0,0.34);
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    0 0 26px color-mix(in srgb, var(--aero-aqua) 45%, transparent),
+    0 12px 30px rgba(0,10,25,0.5);
 }
 
-.tuna-popup .title-bar {
-  margin: 0;
+/* .gt-exit-orb sets left/top/width as percentages (device-gadget
+   convention); this popup isn't one, so override all three with values
+   that win instead of fighting over left vs. right. Uses calc(100% -
+   half its own width) rather than a fixed px offset tied to one
+   specific .tuna-popup width, so the orb stays centred exactly on the
+   top-right corner even if the popup's width ever changes again. */
+/* .gt-exit-orb's own left/top/width (aero.css) has equal specificity to
+   a single-class selector here, and aero.css loads AFTER style.css —
+   so a plain .tuna-popup-exit-orb rule always lost that fight
+   regardless of which properties it set, no matter how it looked in
+   isolation. Compounding the selector with its .tuna-popup parent
+   raises specificity enough to actually win. */
+.tuna-popup .tuna-popup-exit-orb {
+  position: absolute;
+  left: calc(100% - 20px);
+  top: -20px;
+  width: 40px;
+  height: 40px;
 }
 
-.tuna-popup .window-content {
+.tuna-popup-content {
   width: 100%;
+  max-height: 82vh;
+  padding: 26px 22px 22px;
   text-align: center;
   box-sizing: border-box;
+  color: color-mix(in srgb, white 88%, var(--aero-aqua));
+  cursor: grab;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.tuna-popup input {
-  margin-top: 10px;
+.tuna-popup-content:active {
+  cursor: grabbing;
+}
+
+.tuna-popup-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--aero-aqua) 70%, transparent);
+  user-select: none;
+}
+
+.tuna-popup-score {
+  margin: 0 0 10px;
+  font-weight: bold;
+}
+
+.tuna-popup-score span {
+  color: var(--start-green-light);
+  text-shadow: 0 0 6px var(--aero-glow-green);
+}
+
+.tuna-popup-input {
+  margin-top: 4px;
   padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #cda5c5;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, white 55%, var(--aero-aqua));
   width: 82%;
   text-align: center;
-  font-family: 'Verdana', sans-serif;
-  background: rgba(255,255,255,0.88);
+  background: rgba(255,255,255,0.85);
+  color: var(--text-navy);
   box-sizing: border-box;
+  box-shadow: inset 0 2px 4px rgba(0,20,40,0.15);
 }
 
-.tuna-popup button {
+.tuna-popup-btn {
+  display: inline-block;
   margin-top: 12px;
-  background: linear-gradient(to bottom, #ffb1e5 0%, #f48bd1 100%);
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, white 55%, var(--aero-aqua));
+  background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.55), color-mix(in srgb, transparent 40%, var(--aero-aqua)) 55%, color-mix(in srgb, transparent 62%, var(--xp-blue-dark)) 100%);
   color: white;
-  padding: 7px 14px;
-  border: 1px solid #d76ab3;
-  border-radius: 8px;
-  cursor: pointer;
   font-weight: bold;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.34);
-  font-family: 'Verdana', sans-serif;
-  transition: background 0.18s ease;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), 0 0 12px var(--aero-glow-aqua);
+  transition: filter var(--aero-duration-fast) var(--aero-ease-soft);
 }
 
-.tuna-popup button:hover {
-  background: linear-gradient(to bottom, #ffbee9 0%, #f997d8 100%);
+.tuna-popup-btn:hover {
+  filter: brightness(1.15);
 }
 
-#tuna-leaderboard {
-  margin-top: 16px;
+.tuna-popup-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  filter: none;
+}
+
+.tuna-popup-btn-secondary {
+  margin-left: 8px;
+  background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.35), color-mix(in srgb, transparent 60%, var(--aero-aqua)) 55%, color-mix(in srgb, transparent 78%, var(--xp-blue-dark)) 100%);
+}
+
+.tuna-popup-subheading {
+  margin-top: 18px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, white 70%, var(--aero-aqua));
+  opacity: 0.85;
+  user-select: none;
+}
+
+/* soft fade at the bottom edge instead of an abrupt hard cut when the
+   list scrolls — reads as "more below", not a clipping glitch */
+.tuna-popup-leaderboard {
+  margin-top: 8px;
   text-align: left;
   width: 100%;
-}
-
-/* =========================
-   VIDEO / PRESS / LINKS
-   ========================= */
-
-#video-list {
-  padding: 0;
+  max-height: 216px;
   overflow-y: auto;
-  flex: 1;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(to bottom, black calc(100% - 18px), transparent 100%);
 }
 
-#video-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: black;
-}
-
-.internet-link {
-  display: block;
-  margin: 4px 0;
-  color: #184a8c;
-  text-decoration: none;
+.tuna-leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
   font-weight: bold;
+  user-select: none;
 }
 
-.internet-link:hover {
-  text-decoration: underline;
+.tuna-leaderboard-row:nth-child(odd) {
+  background: rgba(255,255,255,0.08);
+}
+
+.tuna-leaderboard-rank {
+  flex: 0 0 auto;
+  width: 16px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.tuna-leaderboard-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.tuna-leaderboard-name {
+  flex: 1 1 auto;
+  /* flex items default to min-width:auto, which refuses to shrink below
+     the text's own natural width no matter what flex-shrink says — that
+     let a long name push the row (and the whole popup, since nothing
+     upstream clipped it) wider than the panel. min-width:0 lets the
+     ellipsis truncation below actually take effect. */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tuna-leaderboard-score {
+  flex: 0 0 auto;
+  color: var(--start-green-light);
+  text-shadow: 0 0 6px var(--aero-glow-green);
+}
+
+.tuna-leaderboard-empty {
+  padding: 10px 4px;
+  text-align: center;
+  opacity: 0.75;
+  font-style: italic;
 }
 
 /* =========================
@@ -817,8 +1072,8 @@ body {
   width: 200px;
   height: auto;
   border-radius: 12px;
-  border: 2px solid #999;
-  box-shadow: 0 0 12px rgba(255, 180, 240, 0.3);
+  border: 2px solid var(--neutral-grey);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--aero-aqua) 40%, transparent);
   image-rendering: pixelated;
 }
 
@@ -835,7 +1090,7 @@ iframe {
 
 #selection-box {
   position: absolute;
-  border: 1px solid #3399ff;
+  border: 1px solid var(--xp-blue-mid);
   background-color: rgba(120, 180, 255, 0.25);
   pointer-events: none;
   z-index: 3;
@@ -843,44 +1098,8 @@ iframe {
   border-radius: 3px;
 }
 
-.sparkle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 1;
-  transform: scale(1);
-  animation: sparkle-fade 0.8s forwards;
-  background: radial-gradient(circle, #ffc0f0 0%, #c0eaff 100%);
-}
-
-.sparkle.star {
-  width: 16px;
-  height: 16px;
-  background: url('icons/star.png') no-repeat center center;
-  background-size: cover;
-  border-radius: 0;
-  transform: scale(1) rotate(0deg);
-  animation: sparkle-star 2s ease-out forwards;
-}
-
-@keyframes sparkle-fade {
-  to {
-    transform: translateY(-15px) scale(0.4);
-    opacity: 0;
-    filter: blur(1px);
-  }
-}
-
-@keyframes sparkle-star {
-  to {
-    transform: translateY(-20px) scale(0.3) rotate(360deg);
-    opacity: 0;
-    filter: blur(1px);
-  }
-}
+/* the old DOM-node-per-particle cursor trail (.sparkle/.sparkle.star)
+   has been replaced by the canvas-based system in cursor-fx.js */
 
 #spirit-ghost {
   position: fixed;
@@ -892,7 +1111,7 @@ iframe {
   display: block;
   pointer-events: none;
   transition: transform 0.2s ease-out;
-  filter: drop-shadow(0 0 4px #ffcaff);
+  filter: drop-shadow(0 0 4px var(--ghost-glow-pink-dark));
   animation: ghost-idle-blink 6s ease-in-out infinite;
   transform-origin: center;
 }
@@ -937,8 +1156,8 @@ iframe {
 
 .ghost-whisper {
   position: absolute;
-  background: linear-gradient(145deg, #ffe6ff, #ffccff);
-  color: #3a003a;
+  background: linear-gradient(145deg, var(--ghost-glow-pink-light), var(--ghost-glow-pink-dark));
+  color: var(--text-plum);
   padding: 8px 14px;
   border-radius: 16px;
   font-size: 13px;
@@ -954,7 +1173,7 @@ iframe {
   animation: whisper-fade 6s ease-in-out forwards;
   pointer-events: none;
   white-space: nowrap;
-  text-shadow: 0 0 2px #ffffff;
+  text-shadow: 0 0 2px var(--neutral-white);
   transform: translateY(0) scale(1);
   transition: all 0.3s ease-in-out;
 }
@@ -968,7 +1187,7 @@ iframe {
   height: 0;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  border-right: 12px solid #ffccff;
+  border-right: 12px solid var(--ghost-glow-pink-dark);
   filter: drop-shadow(0 0 2px rgba(255, 180, 255, 0.5));
 }
 
@@ -1006,11 +1225,11 @@ iframe {
   overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(255,255,255,0.45), transparent 20%),
-    linear-gradient(135deg, #ffd7f5 0%, #dff4ff 52%, #fff2bd 100%);
+    linear-gradient(135deg, var(--paint-content-pink) 0%, var(--paint-content-blue) 52%, var(--paint-content-gold) 100%);
 }
 
 #window-gtpaint .title-bar {
-  background: linear-gradient(to bottom, #ff9be7 0%, #7dd7ff 52%, #5ca9ff 100%);
+  background: linear-gradient(to bottom, var(--paint-pink) 0%, var(--paint-cyan) 52%, var(--paint-blue) 100%);
 }
 
 .gtpaint-toolbar {
@@ -1037,7 +1256,7 @@ iframe {
   font-weight: bold;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7e3d88;
+  color: var(--paint-label-text);
 }
 
 .gtpaint-toolbar button,
@@ -1045,8 +1264,8 @@ iframe {
   padding: 7px 11px;
   border-radius: 999px;
   border: 1px solid rgba(184, 110, 174, 0.6);
-  background: linear-gradient(to bottom, #ffffff 0%, #ffd7f2 55%, #d7f4ff 100%);
-  color: #7c2d68;
+  background: linear-gradient(to bottom, var(--neutral-white) 0%, var(--paint-content-pink) 55%, var(--paint-content-blue) 100%);
+  color: var(--paint-toolbar-text);
   font-family: 'Verdana', sans-serif;
   font-size: 12px;
   font-weight: bold;
@@ -1071,12 +1290,20 @@ iframe {
 }
 
 .gtpaint-tool.active {
-  background: linear-gradient(to bottom, #ffb7ee 0%, #ff8ee0 55%, #7ad8ff 100%);
+  background: linear-gradient(to bottom, var(--paint-active-pink) 0%, var(--paint-active-hotpink) 55%, var(--paint-active-cyan) 100%);
   color: white;
   border-color: rgba(133, 60, 126, 0.8);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.35),
     0 0 10px rgba(255, 130, 220, 0.35);
+}
+
+#gtpaint-zoom-display {
+  min-width: 40px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--paint-toolbar-text);
 }
 
 .gtpaint-toolbar input[type="color"] {
@@ -1092,13 +1319,104 @@ iframe {
   cursor: pointer;
 }
 
+#gtpaint-zoom-slider {
+  width: 130px;
+}
+
+.gtpaint-subrow {
+  padding-top: 4px;
+  border-top: 1px dashed rgba(184, 110, 174, 0.35);
+}
+
+.gtpaint-mirror-btn.active,
+.gtpaint-shape-texture-btn.active,
+#gtpaint-rainbow-toggle.active {
+  background: linear-gradient(to bottom, var(--paint-active-pink) 0%, var(--paint-active-hotpink) 55%, var(--paint-active-cyan) 100%);
+  color: white;
+  border-color: rgba(133, 60, 126, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 0 10px rgba(255, 130, 220, 0.35);
+}
+
+.gtpaint-stamp-swatch {
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gtpaint-stamp-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gtpaint-stamp-swatch.active {
+  background: linear-gradient(to bottom, var(--paint-active-pink) 0%, var(--paint-active-hotpink) 55%, var(--paint-active-cyan) 100%);
+  border-color: rgba(133, 60, 126, 0.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 0 10px rgba(255, 130, 220, 0.35);
+}
+
+.gtpaint-bg-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 110, 174, 0.6);
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 2px 6px rgba(170, 120, 200, 0.18);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.gtpaint-bg-swatch:hover {
+  transform: translateY(-1px);
+}
+
+.gtpaint-bg-white {
+  background: var(--neutral-white);
+}
+
+.gtpaint-bg-transparent {
+  background:
+    linear-gradient(45deg, rgba(0,0,0,0.15) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.15) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.15) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.15) 75%),
+    var(--neutral-white);
+  background-size: 10px 10px, 10px 10px, 10px 10px, 10px 10px, auto;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0px, 0 0;
+}
+
+.gtpaint-bg-candy-sky {
+  background: linear-gradient(135deg, var(--candy-pink-light), var(--xp-blue-light));
+}
+
+.gtpaint-bg-ghost-glow {
+  background: radial-gradient(circle, var(--ghost-glow-pink-light), var(--ghost-glow-blue));
+}
+
+.gtpaint-bg-sunset-gold {
+  background: linear-gradient(180deg, var(--gold-light), var(--tuna-pink-dark));
+}
+
+.gtpaint-bg-rainbow {
+  background: linear-gradient(90deg, var(--paint-pink), var(--paint-cyan), var(--paint-blue));
+}
+
 #gtpaint-size-display,
 #gtpaint-font-size-display {
   min-width: 26px;
   text-align: center;
   font-size: 12px;
   font-weight: bold;
-  color: #7c2d68;
+  color: var(--paint-toolbar-text);
 }
 
 .gtpaint-canvas-wrap {
@@ -1114,7 +1432,7 @@ iframe {
     linear-gradient(-45deg, rgba(255,255,255,0.15) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.15) 75%),
     linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.15) 75%),
-    linear-gradient(180deg, #bdeeff 0%, #ffe6fa 55%, #fff7ca 100%);
+    linear-gradient(180deg, var(--paint-canvas-blue) 0%, var(--paint-canvas-pink) 55%, var(--paint-canvas-gold) 100%);
   background-size: auto, auto, 20px 20px, 20px 20px, 20px 20px, 20px 20px, auto;
   background-position: 0 0, 0 0, 0 0, 0 10px, 10px -10px, -10px 0px, 0 0;
 }
@@ -1123,14 +1441,12 @@ iframe {
   display: block;
   width: 860px;
   height: 520px;
-  max-width: 100%;
   margin: 0 auto;
-  background: #ffffff;
+  background: var(--neutral-white);
   border: 3px solid rgba(255,255,255,0.7);
   border-radius: 10px;
   box-shadow:
     0 8px 18px rgba(0,0,0,0.16),
     0 0 0 2px rgba(215, 138, 184, 0.45);
   cursor: crosshair;
-  
 }

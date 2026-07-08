@@ -2,23 +2,33 @@
 // GLOBAL STATE
 // =========================
 
+// Read a RitualOS palette variable for contexts (canvas) that can't use var() directly
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
 let topZ = 10;
 let tunaGameInterval = null;
 let tunaKeyListener = null;
 
+// Respect users who prefer reduced motion (skips ghost trails; the
+// cursor trail in cursor-fx.js checks the same media query itself)
+const prefersReducedMotion =
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const icons = [
-  { name: 'Exhibitions', icon: 'folder.png', window: 'exhibitions' },
-  { name: 'Freelance', icon: 'drive.png', window: 'freelance' },
+  { name: 'Exhibitions', icon: 'folder.png', window: 'exhibitions', flyout: 'exhibitions' },
+  { name: 'Freelance', icon: 'drive.png', window: 'freelance', flyout: 'freelance' },
   { name: 'About Me', icon: 'book.png', window: 'about' },
   { name: 'Music', icon: 'headphones.png', window: 'music' },
   { name: 'Contact', icon: 'phone.png', window: 'contact' },
   { name: 'Birdsweeper', icon: 'game.png', window: 'game' },
   { name: 'Tuna', icon: 'tuna.png', window: 'tuna' },
-  { name: 'Video', icon: 'video.png', window: 'video' },
+  { name: 'Video', icon: 'video.png', window: 'video-viewer' },
   { name: 'Internet', icon: 'internet.png', window: 'internet' },
   { name: 'Press', icon: 'press.png', window: 'press' },
-  { name: 'GT Paint', icon: 'gtpaint.png', window: 'gtpaint' },
-  { name: 'Bird Art', icon: 'birdart.png', window: 'birdart' }
+  { name: 'Paint', icon: 'gtpaint.png', window: 'gtpaint' },
+  { name: 'Bird Call', icon: 'birdart.png', window: 'birdart' }
 ];
 
 const birdIcons = [
@@ -59,7 +69,7 @@ const pressLinks = [
 // BOOT / INIT
 // =========================
 
-window.onload = function () {
+window.addEventListener('load', function () {
   const boot = document.getElementById('boot-screen');
   if (boot) {
     setTimeout(() => {
@@ -77,33 +87,71 @@ window.onload = function () {
       });
     };
     updateClock();
-    setInterval(updateClock, 1000);
+    setInterval(updateClock, 30000); // clock shows minutes only — no need to tick every second
   }
 
-  const startup = document.getElementById('startup');
-  const ambient = document.getElementById('ambient-sound');
-  if (startup) startup.play().catch(() => {});
-  if (ambient) ambient.play().catch(() => {});
+  initAudio();
 
   document.body.style.cursor = "url('icons/glitter-cursor.png'), auto";
 
   buildDesktopIcons();
   buildTaskbarApps();
+  buildStartMenu();
   loadIconPositions();
   makeIconsDraggable();
-  enableDragging();
+  initWindowDragging();
 
   listPDFs('exhibitions', 'pdfs-exhibitions');
   listPDFs('freelance', 'pdfs-freelance');
-  listVideos('video-list');
-  loadInternetLinks();
-  loadPressLinks();
+  renderLinkList(internetLinks, 'internet-links');
+  renderLinkList(pressLinks, 'press-links');
 
   initDesktopSelection();
   initGlobalWindowFocus();
-  initSparkles();
+  initStartMenuDismiss();
   initGhost();
-};
+});
+
+// =========================
+// AUDIO
+// =========================
+
+function initAudio() {
+  const startup = document.getElementById('startup');
+  const ambient = document.getElementById('ambient-sound');
+
+  const tryPlay = () => {
+    if (startup) startup.play().catch(() => {});
+    if (ambient) ambient.play().catch(() => {});
+  };
+
+  tryPlay();
+
+  // Browsers block autoplay until the user interacts — retry once on first interaction
+  const unlock = () => {
+    if (ambient && ambient.paused) {
+      ambient.play().catch(() => {});
+    }
+    document.removeEventListener('pointerdown', unlock);
+  };
+  document.addEventListener('pointerdown', unlock, { once: true });
+}
+
+function toggleAudio() {
+  const ambient = document.getElementById('ambient-sound');
+  const button = document.getElementById('audio-toggle');
+  if (!ambient || !button) return;
+
+  if (!ambient.paused) {
+    ambient.pause();
+    button.textContent = '🔇';
+    button.setAttribute('aria-pressed', 'false');
+  } else {
+    ambient.play().catch(() => {});
+    button.textContent = '🔊';
+    button.setAttribute('aria-pressed', 'true');
+  }
+}
 
 // =========================
 // WINDOW HELPERS
@@ -141,6 +189,22 @@ function centerWindow(win) {
   }
 }
 
+// Keep a window at least partially on screen (used on resize)
+function clampWindowIntoView(win) {
+  const width = win.offsetWidth;
+  const height = win.offsetHeight;
+  const taskbarHeight = 40;
+
+  let left = parseFloat(win.style.left) || 0;
+  let top = parseFloat(win.style.top) || 0;
+
+  left = Math.min(Math.max(left, 10 - width + 80), window.innerWidth - 80);
+  top = Math.min(Math.max(top, 0), window.innerHeight - taskbarHeight - 40);
+
+  win.style.left = `${left}px`;
+  win.style.top = `${top}px`;
+}
+
 function playWindowOpenAnimation(win) {
   if (!win) return;
   win.classList.remove('window-opening');
@@ -148,9 +212,11 @@ function playWindowOpenAnimation(win) {
   win.classList.add('window-opening');
 }
 
-function openWindow(name, shouldInit = true) {
+function openWindow(name) {
+  closeStartMenu();
+
   if (name === 'birdart') {
-    window.open('./birdart/index.html', '_blank');
+    window.open('./birdart/index.html', '_blank', 'noopener');
     return;
   }
 
@@ -163,7 +229,11 @@ function openWindow(name, shouldInit = true) {
   bringToFront(win);
   updateAppStates();
 
-  if (name === 'tuna' && shouldInit) {
+  if (typeof spawnLensFlares === 'function') {
+    spawnLensFlares(win);
+  }
+
+  if (name === 'tuna') {
     setTimeout(initTunaGame, 100);
   }
 
@@ -174,13 +244,50 @@ function openWindow(name, shouldInit = true) {
   if (name === 'gtpaint') {
     setTimeout(initGTPaint, 50);
   }
+
+  if (name === 'music') {
+    setTimeout(initMusicPlayer, 50);
+  }
+
+  if (name === 'video-viewer') {
+    setTimeout(initVideoPlayer, 50);
+  }
 }
 
 function closeWindow(name) {
   const win = document.getElementById(`window-${name}`);
   if (!win) return;
 
+  // confirmGTPaintClose() now shows an aero-styled modal instead of a
+  // native confirm() dialog, so it can't return a boolean synchronously
+  // — it calls this callback once the user actually confirms.
+  if (name === 'gtpaint' && typeof confirmGTPaintClose === 'function') {
+    confirmGTPaintClose(() => finishCloseWindow(name));
+    return;
+  }
+
+  finishCloseWindow(name);
+}
+
+function finishCloseWindow(name) {
+  const win = document.getElementById(`window-${name}`);
+  if (!win) return;
+
   win.style.display = 'none';
+
+  // Stop game loops / media when their windows close
+  if (name === 'tuna') stopTunaGame();
+  if (name === 'video-viewer' && typeof pauseVideoPlayer === 'function') {
+    pauseVideoPlayer();
+  }
+  if (name === 'pdf-viewer') {
+    const pdfFrame = document.getElementById('pdf-frame');
+    if (pdfFrame) pdfFrame.src = '';
+  }
+  if (name === 'music' && typeof pauseMusicPlayer === 'function') {
+    pauseMusicPlayer();
+  }
+
   updateAppStates();
 }
 
@@ -197,33 +304,99 @@ function updateAppStates() {
 
 window.addEventListener('resize', () => {
   document.querySelectorAll('.window').forEach(win => {
-    if (getComputedStyle(win).display !== 'none' && !win.classList.contains('tuna-popup')) {
-      centerWindow(win);
+    // .tuna-popup and .gtpaint-modal both self-center via position:fixed +
+    // translate(-50%,-50%) — clampWindowIntoView's inline left/top would
+    // fight that transform and push them off-screen (same bug, same fix
+    // for both: see DESIGN.md).
+    if (getComputedStyle(win).display !== 'none' && !win.classList.contains('tuna-popup') && !win.classList.contains('gtpaint-modal')) {
+      clampWindowIntoView(win);
     }
   });
 });
 
 // =========================
-// START MENU / AUDIO
+// START MENU
 // =========================
 
 function toggleStartMenu() {
   const menu = document.getElementById('start-menu');
-  if (menu) menu.classList.toggle('hidden');
+  const startButton = document.getElementById('start-button');
+  if (!menu) return;
+
+  menu.classList.toggle('hidden');
+  if (startButton) {
+    startButton.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
+  }
 }
 
-function toggleAudio() {
-  const ambient = document.getElementById('ambient-sound');
-  const button = document.getElementById('audio-toggle');
-  if (!ambient || !button) return;
-
-  if (!ambient.paused) {
-    ambient.pause();
-    button.textContent = '🔇';
-  } else {
-    ambient.play().catch(() => {});
-    button.textContent = '🔊';
+function closeStartMenu() {
+  const menu = document.getElementById('start-menu');
+  const startButton = document.getElementById('start-button');
+  if (menu && !menu.classList.contains('hidden')) {
+    menu.classList.add('hidden');
+    if (startButton) startButton.setAttribute('aria-expanded', 'false');
   }
+}
+
+function initStartMenuDismiss() {
+  document.addEventListener('mousedown', (e) => {
+    const menu = document.getElementById('start-menu');
+    if (!menu || menu.classList.contains('hidden')) return;
+
+    if (!e.target.closest('#start-menu') && !e.target.closest('#start-button')) {
+      closeStartMenu();
+    }
+  });
+}
+
+function buildStartMenu() {
+  const list = document.getElementById('start-menu-list');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  icons.forEach(i => {
+    const li = document.createElement('li');
+    li.className = 'start-menu-item';
+    li.innerHTML = `<img class="start-menu-icon" src="icons/${i.icon}" alt="">
+      <span class="start-menu-label">${i.name}</span>`;
+
+    li.addEventListener('click', () => openWindow(i.window));
+
+    if (i.flyout) {
+      li.classList.add('has-flyout');
+      li.innerHTML += `<span class="start-menu-arrow">&#9656;</span>
+        <div class="start-menu-flyout" id="flyout-${i.flyout}"></div>`;
+      populateStartMenuFlyout(i.flyout);
+    }
+
+    list.appendChild(li);
+  });
+}
+
+function populateStartMenuFlyout(folder) {
+  fetch(`pdfs/${folder}/index.json`)
+    .then(res => res.json())
+    .then(files => {
+      const cont = document.getElementById(`flyout-${folder}`);
+      if (!cont) return;
+
+      cont.innerHTML = '';
+      files.forEach(name => {
+        const item = document.createElement('a');
+        item.href = '#';
+        item.className = 'start-menu-flyout-item';
+        item.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
+        item.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeStartMenu();
+          openPDF(`pdfs/${folder}/${name}`);
+        };
+        cont.appendChild(item);
+      });
+    })
+    .catch(() => {});
 }
 
 // =========================
@@ -260,6 +433,11 @@ function buildDesktopIcons() {
     }
 
     const openAndHighlight = () => {
+      // If the icon was just dragged, don't treat the mouseup as a click
+      if (el.dataset.suppressClick === 'true') {
+        el.dataset.suppressClick = 'false';
+        return;
+      }
       document.querySelectorAll('.icon').forEach(icon => icon.classList.remove('selected'));
       el.classList.add('selected');
       openWindow(i.window);
@@ -285,7 +463,14 @@ function loadIconPositions() {
   const saved = localStorage.getItem('iconPositions');
   if (!saved) return;
 
-  const positions = JSON.parse(saved);
+  let positions = [];
+  try {
+    positions = JSON.parse(saved) || [];
+  } catch (err) {
+    localStorage.removeItem('iconPositions');
+    return;
+  }
+
   const allIcons = document.querySelectorAll('.icon');
 
   allIcons.forEach((icon, index) => {
@@ -321,27 +506,43 @@ function makeIconsDraggable() {
   let currentIcon = null;
   let offsetX = 0;
   let offsetY = 0;
+  let startClientX = 0;
+  let startClientY = 0;
+  let moved = false;
 
-  desktop.querySelectorAll('.icon').forEach(icon => {
-    icon.style.position = 'absolute';
+  desktop.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
 
-    icon.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      if (!icon.contains(e.target)) return;
+    const icon = e.target.closest('.icon');
+    if (!icon) return;
 
-      currentIcon = icon;
-      offsetX = e.clientX - icon.offsetLeft;
-      offsetY = e.clientY - icon.offsetTop;
-      isDragging = true;
+    currentIcon = icon;
+    offsetX = e.clientX - icon.offsetLeft;
+    offsetY = e.clientY - icon.offsetTop;
+    startClientX = e.clientX;
+    startClientY = e.clientY;
+    moved = false;
+    isDragging = true;
 
-      icon.style.zIndex = '10000';
-      icon.classList.add('dragging');
-      e.preventDefault();
-    });
+    icon.style.zIndex = '10000';
+    e.preventDefault();
   });
 
   document.addEventListener('mousemove', (e) => {
     if (!isDragging || !currentIcon) return;
+
+    // Only count it as a drag once the mouse has actually moved a little
+    if (!moved) {
+      const dx = Math.abs(e.clientX - startClientX);
+      const dy = Math.abs(e.clientY - startClientY);
+      if (dx > 4 || dy > 4) {
+        moved = true;
+        currentIcon.classList.add('dragging');
+      } else {
+        return;
+      }
+    }
+
     currentIcon.style.left = `${e.clientX - offsetX}px`;
     currentIcon.style.top = `${e.clientY - offsetY}px`;
   });
@@ -352,7 +553,16 @@ function makeIconsDraggable() {
     isDragging = false;
     currentIcon.classList.remove('dragging');
     currentIcon.style.zIndex = '';
-    saveIconPositions();
+
+    if (moved) {
+      const icon = currentIcon;
+      icon.dataset.suppressClick = 'true';
+      // Clear the flag right after this event cycle so it can't
+      // accidentally swallow a future genuine click
+      setTimeout(() => { icon.dataset.suppressClick = 'false'; }, 0);
+      saveIconPositions();
+    }
+
     currentIcon = null;
   });
 }
@@ -372,6 +582,9 @@ function buildTaskbarApps() {
     app.classList.add('taskbar-app');
     app.style.backgroundImage = `url(icons/${i.icon})`;
     app.dataset.window = i.window;
+    app.setAttribute('role', 'button');
+    app.setAttribute('aria-label', `Open ${i.name}`);
+    app.setAttribute('title', i.name);
 
     app.onclick = () => {
       openWindow(i.window);
@@ -396,7 +609,8 @@ function listPDFs(folder, containerId) {
       files.forEach(name => {
         const link = document.createElement('a');
         link.href = '#';
-        link.textContent = name;
+        link.className = 'aero-content-bubble';
+        link.textContent = name.replace('.pdf', '').replace(/_/g, ' ');
         link.onclick = (e) => {
           e.preventDefault();
           openPDF(`pdfs/${folder}/${name}`);
@@ -422,106 +636,71 @@ function openPDF(src) {
   updateAppStates();
 }
 
-function listVideos(containerId) {
-  fetch('videos/index.json')
-    .then(res => res.json())
-    .then(files => {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      container.innerHTML = '';
-      files.forEach(filename => {
-        const link = document.createElement('a');
-        link.href = '#';
-        link.textContent = filename;
-        link.onclick = (e) => {
-          e.preventDefault();
-          openVideoPlayer(`videos/${filename}`);
-        };
-        container.appendChild(link);
-      });
-    })
-    .catch(err => console.error(err));
-}
-
-function openVideoPlayer(src) {
-  const videoFrame = document.getElementById('video-frame');
-  const viewer = document.getElementById('window-video-viewer');
-  if (!videoFrame || !viewer) return;
-
-  videoFrame.src = src;
-  viewer.style.width = '80vw';
-  viewer.style.height = '70vh';
-  viewer.style.display = 'flex';
-  centerWindow(viewer);
-  playWindowOpenAnimation(viewer);
-  bringToFront(viewer);
-  updateAppStates();
-}
-
-function loadInternetLinks() {
-  const container = document.getElementById('internet-links');
+function renderLinkList(links, containerId) {
+  const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = '';
-  internetLinks.forEach(link => {
+  links.forEach(link => {
     const a = document.createElement('a');
     a.href = link.url;
     a.textContent = link.title;
     a.target = '_blank';
-    a.className = 'internet-link';
-    container.appendChild(a);
-  });
-}
-
-function loadPressLinks() {
-  const container = document.getElementById('press-links');
-  if (!container) return;
-
-  container.innerHTML = '';
-  pressLinks.forEach(link => {
-    const a = document.createElement('a');
-    a.href = link.url;
-    a.textContent = link.title;
-    a.target = '_blank';
-    a.className = 'internet-link';
+    a.rel = 'noopener noreferrer';
+    a.className = 'aero-content-bubble';
     container.appendChild(a);
   });
 }
 
 // =========================
-// DRAGGING WINDOWS
+// DRAGGING WINDOWS (single delegated handler — works for
+// every window including ones created later, like the Tuna popup)
 // =========================
 
-function enableDragging() {
-  document.querySelectorAll('.window').forEach(win => {
-    const titleBar = win.querySelector('.title-bar');
-    if (!titleBar || titleBar.dataset.dragBound === 'true') return;
+function initWindowDragging() {
+  let draggedWindow = null;
+  let offsetX = 0;
+  let offsetY = 0;
 
-    titleBar.dataset.dragBound = 'true';
+  document.addEventListener('mousedown', (e) => {
+    // Most windows drag from their title bar. Devices with no title bar
+    // (GT Paint's gadget shell) instead mark a background region as
+    // draggable — grabbing any non-control part of the shell moves it.
+    const dragHandle = e.target.closest('.title-bar') || e.target.closest('.aero-drag-region');
+    if (!dragHandle || e.target.closest('button, input, canvas, .gtpaint-wheel, #jukebox-volume-ring, a')) return;
 
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
+    const win = dragHandle.closest('.window');
+    if (!win) return;
 
-    titleBar.addEventListener('mousedown', e => {
-      if (e.target.closest('button')) return;
+    // Fixed-position popups (Tuna game over) use transform centering —
+    // convert to absolute pixel position before dragging. Also drop the
+    // opening-animation class: if a window is grabbed while its
+    // aeroBuoyantOpen animation is still mid-flight, the animation
+    // would otherwise keep re-applying its own transform every frame
+    // and fight the drag (an inline `transform: none` doesn't win
+    // against a still-running CSS animation on the same property).
+    win.classList.remove('window-opening');
+    const rect = win.getBoundingClientRect();
+    if (getComputedStyle(win).transform !== 'none') {
+      win.style.transform = 'none';
+      win.style.left = `${rect.left}px`;
+      win.style.top = `${rect.top}px`;
+    }
 
-      isDragging = true;
-      offsetX = e.clientX - win.offsetLeft;
-      offsetY = e.clientY - win.offsetTop;
-      bringToFront(win);
-    });
+    draggedWindow = win;
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    bringToFront(win);
+  });
 
-    document.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      win.style.left = `${e.clientX - offsetX}px`;
-      win.style.top = `${e.clientY - offsetY}px`;
-    });
+  document.addEventListener('mousemove', (e) => {
+    if (!draggedWindow) return;
+    draggedWindow.style.left = `${e.clientX - offsetX}px`;
+    draggedWindow.style.top = `${e.clientY - offsetY}px`;
+  });
 
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
+  document.addEventListener('mouseup', () => {
+    draggedWindow = null;
   });
 }
 
@@ -587,43 +766,6 @@ function initDesktopSelection() {
 }
 
 // =========================
-// SPARKLES
-// =========================
-
-function initSparkles() {
-  document.addEventListener('mousemove', (e) => {
-    const sparkle = document.createElement('div');
-    sparkle.className = Math.random() > 0.5 ? 'sparkle star' : 'sparkle';
-    sparkle.style.left = `${e.pageX}px`;
-    sparkle.style.top = `${e.pageY}px`;
-    document.body.appendChild(sparkle);
-
-    setTimeout(() => sparkle.remove(), 1000);
-  });
-
-  document.addEventListener('click', (e) => {
-    const particles = 25;
-
-    for (let i = 0; i < particles; i++) {
-      const sparkle = document.createElement('div');
-      sparkle.className = Math.random() > 0.4 ? 'sparkle star' : 'sparkle';
-      sparkle.style.left = `${e.pageX}px`;
-      sparkle.style.top = `${e.pageY}px`;
-
-      const angle = Math.random() * 2 * Math.PI;
-      const radius = 30 + Math.random() * 20;
-      const offsetX = Math.cos(angle) * radius;
-      const offsetY = Math.sin(angle) * radius;
-
-      sparkle.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1)`;
-
-      document.body.appendChild(sparkle);
-      setTimeout(() => sparkle.remove(), 1500);
-    }
-  });
-}
-
-// =========================
 // GHOST
 // =========================
 
@@ -653,6 +795,10 @@ function initGhost() {
   ];
 
   function leaveGhostTrail() {
+    // Only leave a trail occasionally — the old version created
+    // ~60 DOM nodes per second, one on every animation frame
+    if (prefersReducedMotion || Math.random() > 0.15) return;
+
     const trail = document.createElement('div');
     trail.className = 'ghost-trail';
     trail.style.left = `${ghostX + 8}px`;
@@ -710,8 +856,8 @@ function initGhost() {
     const whisper = document.createElement('div');
     whisper.className = 'ghost-whisper';
     whisper.textContent = msg;
-    whisper.style.left = `${ghostX + 40}px`;
-    whisper.style.top = `${ghostY - 20}px`;
+    whisper.style.left = `${Math.min(ghostX + 40, window.innerWidth - 240)}px`;
+    whisper.style.top = `${Math.max(ghostY - 20, 10)}px`;
     document.body.appendChild(whisper);
 
     setTimeout(() => {
@@ -866,10 +1012,57 @@ function resetBirdsweeper() {
 // TUNA
 // =========================
 
+let tunaSetDirection = null; // reassigned by each initTunaGame() call; the D-pad buttons call through this
+let tunaControlsInitialized = false;
+
+function stopTunaGame() {
+  if (tunaGameInterval) {
+    clearInterval(tunaGameInterval);
+    tunaGameInterval = null;
+  }
+  if (tunaKeyListener) {
+    document.removeEventListener('keydown', tunaKeyListener);
+    tunaKeyListener = null;
+  }
+}
+
+function isTunaFocused() {
+  const win = document.getElementById('window-tuna');
+  if (!win || win.style.display === 'none') return false;
+  return String(win.style.zIndex) === String(topZ);
+}
+
+// Wires the shell's static controls (New Game / Leaderboard / D-pad)
+// exactly once — these buttons live outside #tuna-grid so they aren't
+// recreated every time initTunaGame() rebuilds the board.
+function initTunaControls() {
+  if (tunaControlsInitialized) return;
+  tunaControlsInitialized = true;
+
+  document.getElementById('tuna-new-game-btn').addEventListener('click', () => initTunaGame());
+  document.getElementById('tuna-leaderboard-btn').addEventListener('click', showTunaLeaderboardPanel);
+
+  const dpadDirections = {
+    'tuna-dpad-up': 'up',
+    'tuna-dpad-down': 'down',
+    'tuna-dpad-left': 'left',
+    'tuna-dpad-right': 'right',
+  };
+  Object.keys(dpadDirections).forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        if (tunaSetDirection) tunaSetDirection(dpadDirections[id]);
+      });
+    }
+  });
+}
+
 function initTunaGame() {
   const container = document.getElementById('tuna-grid');
   if (!container) return;
 
+  initTunaControls();
   container.innerHTML = '';
 
   const gridSize = 20;
@@ -888,8 +1081,10 @@ function initTunaGame() {
   let food = null;
   let score = 0;
 
-  if (tunaGameInterval) clearInterval(tunaGameInterval);
-  if (tunaKeyListener) document.removeEventListener('keydown', tunaKeyListener);
+  stopTunaGame();
+
+  const scoreEl = document.getElementById('tuna-score-text');
+  if (scoreEl) scoreEl.textContent = '0';
 
   function drawSnake() {
     cellEls.forEach(cell => cell.classList.remove('tuna', 'tuna-head', 'tuna-food'));
@@ -908,28 +1103,48 @@ function initTunaGame() {
     } while (snake.includes(food));
   }
 
+  // Shared by the keyboard listener below AND the D-pad buttons (see
+  // tunaSetDirection/initTunaControls) so both control paths are
+  // guaranteed to behave identically — arrow keys remain the primary,
+  // smarter way to play, the D-pad is the click-friendly alternative.
+  function applyDirection(key) {
+    if (key === 'up' && direction !== gridSize) direction = -gridSize;
+    if (key === 'down' && direction !== -gridSize) direction = gridSize;
+    if (key === 'left' && direction !== 1) direction = -1;
+    if (key === 'right' && direction !== -1) direction = 1;
+  }
+  tunaSetDirection = applyDirection;
+
   function move() {
     const head = snake[snake.length - 1];
     const next = head + direction;
+    const willEat = next === food;
+
+    // snake[0] is the tail (oldest segment) — it's about to vacate its
+    // cell via snake.shift() below whenever this move doesn't eat food,
+    // so moving the head into it this same tick is legal, not a crash.
+    // Only include it in the check when the snake is growing (tail stays put).
+    const body = willEat ? snake : snake.slice(1);
 
     const hitWall = (
       next < 0 ||
       next >= totalCells ||
       (direction === 1 && head % gridSize === gridSize - 1) ||
       (direction === -1 && head % gridSize === 0) ||
-      snake.includes(next)
+      body.includes(next)
     );
 
     if (hitWall) {
-      clearInterval(tunaGameInterval);
+      stopTunaGame();
       showTunaGameOver(score);
       return;
     }
 
     snake.push(next);
 
-    if (next === food) {
+    if (willEat) {
       score++;
+      if (scoreEl) scoreEl.textContent = String(score);
       spawnFood();
     } else {
       snake.shift();
@@ -938,12 +1153,15 @@ function initTunaGame() {
     drawSnake();
   }
 
+  const keyToDirection = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+
   tunaKeyListener = function (e) {
-    const key = e.key;
-    if (key === 'ArrowUp' && direction !== gridSize) direction = -gridSize;
-    if (key === 'ArrowDown' && direction !== -gridSize) direction = gridSize;
-    if (key === 'ArrowLeft' && direction !== 1) direction = -1;
-    if (key === 'ArrowRight' && direction !== -1) direction = 1;
+    if (!isTunaFocused()) return;
+    const key = keyToDirection[e.key];
+    if (!key) return;
+
+    e.preventDefault(); // stop arrow keys scrolling the page while playing
+    applyDirection(key);
   };
 
   document.addEventListener('keydown', tunaKeyListener);
@@ -952,32 +1170,46 @@ function initTunaGame() {
   tunaGameInterval = setInterval(move, 200);
 }
 
-function showTunaGameOver(score) {
+// Shared glass-panel shell for both the game-over score submission and
+// the standalone leaderboard view — same aero-glass language as the
+// rest of the OS's popups. Only the container/rows were restyled here;
+// the actual Firebase load/save logic below is untouched.
+function createTunaPopupShell(title, bodyHTML) {
   document.querySelectorAll('.tuna-popup').forEach(el => el.remove());
 
   const popup = document.createElement('div');
   popup.className = 'window tuna-popup';
   popup.style.display = 'flex';
-
   popup.innerHTML = `
-    <div class="title-bar">
-      <span>Oh no! 🐟</span>
-      <button onclick="this.closest('.window').remove()">X</button>
-    </div>
-    <div class="window-content">
-      <p><strong>The tuna got tangled...</strong></p>
-      <p>Your score: <span style="color:#d94db0">${score}</span></p>
-      <input id="tuna-name" type="text" placeholder="Your name" />
-      <button id="submit-tuna-score">Submit</button>
-      <div id="tuna-leaderboard" style="margin-top:20px;"></div>
-      <button onclick="restartTunaGame()">Try Again</button>
+    <button class="gt-exit-orb tuna-popup-exit-orb" onclick="this.closest('.window').remove()" aria-label="Close">✕</button>
+    <div class="tuna-popup-content aero-drag-region">
+      <h3 class="tuna-popup-title">${title}</h3>
+      ${bodyHTML}
     </div>
   `;
 
   document.body.appendChild(popup);
-  centerWindow(popup);
+  // NOT centerWindow(popup): that sets inline left/top assuming normal
+  // absolute-position centering, but .tuna-popup centers itself via
+  // position:fixed + top/left:50% + transform:translate(-50%,-50%) —
+  // combining both pushed the popup off-screen (inline left/top wins
+  // over the CSS rule, then the still-active transform translates it
+  // by half its own size from that wrong point). The CSS handles
+  // centering on its own; nothing else to do here.
   playWindowOpenAnimation(popup);
   bringToFront(popup);
+  return popup;
+}
+
+function showTunaGameOver(score) {
+  createTunaPopupShell('The tuna got tangled...', `
+    <p class="tuna-popup-score">Your score: <span>${Number(score)}</span></p>
+    <input id="tuna-name" type="text" placeholder="Your name" maxlength="20" class="tuna-popup-input" />
+    <button id="submit-tuna-score" class="tuna-popup-btn">Submit</button>
+    <div class="tuna-popup-subheading">Leaderboard</div>
+    <div id="tuna-leaderboard" class="tuna-popup-leaderboard"></div>
+    <button onclick="restartTunaGame()" class="tuna-popup-btn tuna-popup-btn-secondary">Try Again</button>
+  `);
 
   const submitButton = document.getElementById('submit-tuna-score');
   if (submitButton) {
@@ -987,25 +1219,41 @@ function showTunaGameOver(score) {
   }
 
   loadScoresFromFirebase();
-  enableDragging();
+}
+
+// Lets the "Leaderboard" gel button on the shell show scores any time —
+// not just after a game over, per the user's explicit ask for a
+// standalone leaderboard view matching the sketch.
+function showTunaLeaderboardPanel() {
+  // Stop the game loop before showing the popup — otherwise the snake
+  // keeps moving behind it while isTunaFocused() (gated on z-index) has
+  // already stopped routing arrow keys to it, so it crashes unseen.
+  stopTunaGame();
+  createTunaPopupShell('Leaderboard', `
+    <div id="tuna-leaderboard" class="tuna-popup-leaderboard"></div>
+  `);
+  loadScoresFromFirebase();
 }
 
 function submitTunaScore(score) {
   const input = document.getElementById('tuna-name');
+  const submitButton = document.getElementById('submit-tuna-score');
   const name = input?.value?.trim() || 'Anonymous';
   const numericScore = Number(score);
 
   saveScoreToFirebase(name, numericScore);
 
   if (input) input.disabled = true;
-  if (input?.nextElementSibling) input.nextElementSibling.disabled = true;
+  if (submitButton) submitButton.disabled = true;
 }
 
 function saveScoreToFirebase(name, score) {
+  if (typeof database === 'undefined') return;
+
   const scoresRef = database.ref('scores');
 
   const newScore = {
-    name,
+    name: String(name).slice(0, 20),
     score,
     timestamp: Date.now()
   };
@@ -1020,6 +1268,8 @@ function saveScoreToFirebase(name, score) {
 }
 
 function loadScoresFromFirebase() {
+  if (typeof database === 'undefined') return;
+
   const scoresRef = database.ref('scores');
 
   scoresRef.orderByChild('score').limitToLast(10).once('value', (snapshot) => {
@@ -1028,7 +1278,7 @@ function loadScoresFromFirebase() {
       scores.push(childSnapshot.val());
     });
 
-    scores.reverse();
+    scores.sort((a, b) => Number(b?.score || 0) - Number(a?.score || 0));
     renderTunaLeaderboard(scores);
   });
 }
@@ -1037,34 +1287,30 @@ function renderTunaLeaderboard(scores = []) {
   const container = document.getElementById('tuna-leaderboard');
   if (!container) return;
 
-  
   container.innerHTML = '';
 
-
-  const title = document.createElement('h4');
-  title.style.marginBottom = '10px';
-  title.style.color = '#660066';
-  title.textContent = 'Leaderboard';
-  container.appendChild(title);
-
+  if (!scores.length) {
+    const empty = document.createElement('div');
+    empty.className = 'tuna-leaderboard-empty';
+    empty.textContent = 'No scores yet — be the first!';
+    container.appendChild(empty);
+    return;
+  }
 
   scores.forEach((entry, i) => {
     const row = document.createElement('div');
-    row.style.margin = '4px 0';
-    row.style.color = '#3a003a';
-    row.style.fontWeight = 'bold';
-    row.style.display = 'flex';
-    row.style.alignItems = 'center';
-    row.style.gap = '6px';
+    row.className = 'tuna-leaderboard-row';
 
+    const rank = document.createElement('span');
+    rank.className = 'tuna-leaderboard-rank';
+    rank.textContent = String(i + 1);
+    row.appendChild(rank);
 
     if (birdIcons[i]) {
       const img = document.createElement('img');
       img.src = birdIcons[i];
       img.alt = '';
-      img.style.width = '16px';
-      img.style.height = '16px';
-      img.style.verticalAlign = 'middle';
+      img.className = 'tuna-leaderboard-icon';
       row.appendChild(img);
     }
 
@@ -1076,9 +1322,15 @@ function renderTunaLeaderboard(scores = []) {
     const safeScore = Number(entry?.score);
     const scoreText = Number.isFinite(safeScore) ? safeScore : 0;
 
-    const text = document.createElement('span');
-    text.textContent = `${safeName} — ${scoreText}`;
-    row.appendChild(text);
+    const name = document.createElement('span');
+    name.className = 'tuna-leaderboard-name';
+    name.textContent = safeName;
+    row.appendChild(name);
+
+    const score = document.createElement('span');
+    score.className = 'tuna-leaderboard-score';
+    score.textContent = String(scoreText);
+    row.appendChild(score);
 
     container.appendChild(row);
   });
@@ -1088,487 +1340,7 @@ function restartTunaGame() {
   const existingPopup = document.querySelector('.tuna-popup');
   if (existingPopup) existingPopup.remove();
 
-  const win = document.getElementById('window-tuna');
-  if (win) {
-    openWindow('tuna');
-    setTimeout(initTunaGame, 100);
-  }
+  openWindow('tuna'); // openWindow already re-initialises the game
 }
 
-// =========================
-// GT PAINT — CLEAN WINDOW VERSION
-// =========================
-
-let gtPaintInitialized = false;
-let gtPaintIsDrawing = false;
-let gtPaintTool = 'pencil';
-let gtPaintColor = '#ff4fd8';
-let gtPaintSize = 14;
-let gtPaintFontSize = 42;
-
-let gtPaintUndoStack = [];
-let gtPaintRedoStack = [];
-const GT_PAINT_HISTORY_LIMIT = 30;
-
-function initGTPaint() {
-  const canvas = document.getElementById('gtpaint-canvas');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  const pencilBtn = document.getElementById('gtpaint-pencil');
-  const eraserBtn = document.getElementById('gtpaint-eraser');
-  const sprayBtn = document.getElementById('gtpaint-spray');
-  const glowBtn = document.getElementById('gtpaint-glow');
-  const tubeBtn = document.getElementById('gtpaint-tube');
-  const ribbonBtn = document.getElementById('gtpaint-ribbon');
-  const glitterBtn = document.getElementById('gtpaint-glitter');
-  const typeBtn = document.getElementById('gtpaint-type');
-
-  const colorInput = document.getElementById('gtpaint-color');
-  const sizeInput = document.getElementById('gtpaint-size');
-  const sizeDisplay = document.getElementById('gtpaint-size-display');
-
-  const fontSizeInput = document.getElementById('gtpaint-font-size');
-  const fontSizeDisplay = document.getElementById('gtpaint-font-size-display');
-
-  const fillBtn = document.getElementById('gtpaint-fill');
-  const undoBtn = document.getElementById('gtpaint-undo');
-  const redoBtn = document.getElementById('gtpaint-redo');
-  const clearBtn = document.getElementById('gtpaint-clear');
-  const downloadBtn = document.getElementById('gtpaint-download');
-
-  if (!gtPaintInitialized) {
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    saveGTPaintState();
-
-    function setTool(tool) {
-      gtPaintTool = tool;
-      document.querySelectorAll('#window-gtpaint .gtpaint-tool').forEach(btn => btn.classList.remove('active'));
-
-      if (tool === 'pencil') pencilBtn.classList.add('active');
-      if (tool === 'eraser') eraserBtn.classList.add('active');
-      if (tool === 'spray') sprayBtn.classList.add('active');
-      if (tool === 'glow') glowBtn.classList.add('active');
-      if (tool === 'tube') tubeBtn.classList.add('active');
-      if (tool === 'ribbon') ribbonBtn.classList.add('active');
-      if (tool === 'glitter') glitterBtn.classList.add('active');
-      if (tool === 'type') typeBtn.classList.add('active');
-
-      canvas.style.cursor = tool === 'type' ? 'text' : 'crosshair';
-    }
-
-    function hexToRgb(hex) {
-      const clean = hex.replace('#', '');
-      const bigint = parseInt(clean, 16);
-      return {
-        r: (bigint >> 16) & 255,
-        g: (bigint >> 8) & 255,
-        b: bigint & 255
-      };
-    }
-
-    function lightenColor(hex, amount = 0.35) {
-      const { r, g, b } = hexToRgb(hex);
-      const lr = Math.round(r + (255 - r) * amount);
-      const lg = Math.round(g + (255 - g) * amount);
-      const lb = Math.round(b + (255 - b) * amount);
-      return `rgb(${lr}, ${lg}, ${lb})`;
-    }
-
-    function darkenColor(hex, amount = 0.25) {
-      const { r, g, b } = hexToRgb(hex);
-      const dr = Math.round(r * (1 - amount));
-      const dg = Math.round(g * (1 - amount));
-      const db = Math.round(b * (1 - amount));
-      return `rgb(${dr}, ${dg}, ${db})`;
-    }
-
-    function getCanvasPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-
-      return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY
-      };
-    }
-
-    function saveGTPaintState() {
-      try {
-        const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        gtPaintUndoStack.push(snapshot);
-
-        if (gtPaintUndoStack.length > GT_PAINT_HISTORY_LIMIT) {
-          gtPaintUndoStack.shift();
-        }
-
-        gtPaintRedoStack = [];
-      } catch (err) {
-        console.error('GT Paint history save error:', err);
-      }
-    }
-
-    function restoreGTPaintState(stackFrom, stackTo) {
-      if (stackFrom.length <= 1) return;
-
-      const current = stackFrom.pop();
-      stackTo.push(current);
-
-      const previous = stackFrom[stackFrom.length - 1];
-      if (previous) {
-        ctx.putImageData(previous, 0, 0);
-      }
-    }
-
-    function restoreRedoState() {
-      if (!gtPaintRedoStack.length) return;
-
-      const redoState = gtPaintRedoStack.pop();
-      gtPaintUndoStack.push(redoState);
-      ctx.putImageData(redoState, 0, 0);
-    }
-
-    function drawPencil(from, to) {
-      ctx.save();
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = gtPaintSize;
-      ctx.strokeStyle = gtPaintColor;
-      ctx.globalAlpha = 1;
-      ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    function drawEraser(from, to) {
-      ctx.save();
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = gtPaintSize * 1.2;
-      ctx.strokeStyle = '#ffffff';
-      ctx.globalAlpha = 1;
-      ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    function drawSpray(pos) {
-      ctx.save();
-      const density = Math.max(12, Math.floor(gtPaintSize * 2.6));
-      const radius = gtPaintSize * 1.45;
-      const { r, g, b } = hexToRgb(gtPaintColor);
-
-      for (let i = 0; i < density; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * radius;
-        const x = pos.x + Math.cos(angle) * dist;
-        const y = pos.y + Math.sin(angle) * dist;
-        const dot = Math.random() * (gtPaintSize * 0.18) + 0.7;
-
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.08 + Math.random() * 0.22})`;
-        ctx.beginPath();
-        ctx.arc(x, y, dot, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.restore();
-    }
-
-    function drawGlow(pos) {
-      ctx.save();
-      const { r, g, b } = hexToRgb(gtPaintColor);
-
-      const grad = ctx.createRadialGradient(
-        pos.x, pos.y, 0,
-        pos.x, pos.y, gtPaintSize * 2.4
-      );
-
-      grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.28)`);
-      grad.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, 0.16)`);
-      grad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, gtPaintSize * 2.4, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    }
-
-    function drawTube(from, to) {
-      const angle = Math.atan2(to.y - from.y, to.x - from.x);
-      const nx = Math.cos(angle + Math.PI / 2);
-      const ny = Math.sin(angle + Math.PI / 2);
-      const radius = gtPaintSize * 0.62;
-
-      ctx.save();
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.strokeStyle = darkenColor(gtPaintColor, 0.28);
-      ctx.lineWidth = radius * 2.2;
-      ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
-      ctx.stroke();
-
-      const grad = ctx.createLinearGradient(
-        from.x - nx * radius,
-        from.y - ny * radius,
-        from.x + nx * radius,
-        from.y + ny * radius
-      );
-      grad.addColorStop(0, darkenColor(gtPaintColor, 0.34));
-      grad.addColorStop(0.22, gtPaintColor);
-      grad.addColorStop(0.5, lightenColor(gtPaintColor, 0.55));
-      grad.addColorStop(0.72, gtPaintColor);
-      grad.addColorStop(1, darkenColor(gtPaintColor, 0.25));
-
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = radius * 1.9;
-      ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
-      ctx.stroke();
-
-      ctx.strokeStyle = 'rgba(255,255,255,0.34)';
-      ctx.lineWidth = Math.max(1.5, radius * 0.42);
-      ctx.beginPath();
-      ctx.moveTo(from.x - nx * radius * 0.28, from.y - ny * radius * 0.28);
-      ctx.lineTo(to.x - nx * radius * 0.28, to.y - ny * radius * 0.28);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    function drawRibbon(from, to) {
-      const angle = Math.atan2(to.y - from.y, to.x - from.x);
-      const nx = Math.cos(angle + Math.PI / 2);
-      const ny = Math.sin(angle + Math.PI / 2);
-      const width = gtPaintSize * 0.9;
-
-      ctx.save();
-
-      const grad = ctx.createLinearGradient(
-        from.x - nx * width,
-        from.y - ny * width,
-        from.x + nx * width,
-        from.y + ny * width
-      );
-      grad.addColorStop(0, lightenColor(gtPaintColor, 0.45));
-      grad.addColorStop(0.35, gtPaintColor);
-      grad.addColorStop(0.65, darkenColor(gtPaintColor, 0.22));
-      grad.addColorStop(1, lightenColor(gtPaintColor, 0.2));
-
-      ctx.strokeStyle = grad;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = width;
-      ctx.globalAlpha = 0.82;
-      ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-
-    function drawGlitter(pos) {
-      ctx.save();
-
-      for (let i = 0; i < Math.max(4, Math.floor(gtPaintSize / 3)); i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * gtPaintSize * 1.6;
-        const x = pos.x + Math.cos(angle) * dist;
-        const y = pos.y + Math.sin(angle) * dist;
-        const size = Math.random() * 5 + 2;
-
-        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.85)' : gtPaintColor;
-
-        ctx.beginPath();
-        ctx.moveTo(x, y - size);
-        ctx.lineTo(x + size * 0.35, y - size * 0.35);
-        ctx.lineTo(x + size, y);
-        ctx.lineTo(x + size * 0.35, y + size * 0.35);
-        ctx.lineTo(x, y + size);
-        ctx.lineTo(x - size * 0.35, y + size * 0.35);
-        ctx.lineTo(x - size, y);
-        ctx.lineTo(x - size * 0.35, y - size * 0.35);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      ctx.restore();
-    }
-
-    function placeType(pos) {
-      const text = prompt('Enter your text:');
-      if (!text) return;
-
-      saveGTPaintState();
-
-      ctx.save();
-      ctx.fillStyle = gtPaintColor;
-      ctx.font = `bold ${gtPaintFontSize}px Inter, Verdana, sans-serif`;
-      ctx.textBaseline = 'top';
-      ctx.shadowColor = 'rgba(255,255,255,0.25)';
-      ctx.shadowBlur = 8;
-      ctx.fillText(text, pos.x, pos.y);
-      ctx.restore();
-    }
-
-    let lastPos = null;
-
-    function startDrawing(e) {
-      const pos = getCanvasPos(e);
-
-      if (gtPaintTool === 'type') {
-        placeType(pos);
-        return;
-      }
-
-      gtPaintIsDrawing = true;
-      lastPos = pos;
-      saveGTPaintState();
-
-      if (gtPaintTool === 'spray') drawSpray(pos);
-      if (gtPaintTool === 'glow') drawGlow(pos);
-      if (gtPaintTool === 'glitter') drawGlitter(pos);
-      if (gtPaintTool === 'pencil') drawPencil(pos, pos);
-      if (gtPaintTool === 'eraser') drawEraser(pos, pos);
-    }
-
-    function draw(e) {
-      if (!gtPaintIsDrawing) return;
-
-      const pos = getCanvasPos(e);
-
-      if (gtPaintTool === 'pencil') {
-        drawPencil(lastPos, pos);
-      } else if (gtPaintTool === 'eraser') {
-        drawEraser(lastPos, pos);
-      } else if (gtPaintTool === 'spray') {
-        drawSpray(pos);
-      } else if (gtPaintTool === 'glow') {
-        drawGlow(pos);
-      } else if (gtPaintTool === 'tube') {
-        drawTube(lastPos, pos);
-      } else if (gtPaintTool === 'ribbon') {
-        drawRibbon(lastPos, pos);
-      } else if (gtPaintTool === 'glitter') {
-        drawGlitter(pos);
-      }
-
-      lastPos = pos;
-    }
-
-    function stopDrawing() {
-      gtPaintIsDrawing = false;
-      lastPos = null;
-    }
-
-    pencilBtn.addEventListener('click', () => setTool('pencil'));
-    eraserBtn.addEventListener('click', () => setTool('eraser'));
-    sprayBtn.addEventListener('click', () => setTool('spray'));
-    glowBtn.addEventListener('click', () => setTool('glow'));
-    tubeBtn.addEventListener('click', () => setTool('tube'));
-    ribbonBtn.addEventListener('click', () => setTool('ribbon'));
-    glitterBtn.addEventListener('click', () => setTool('glitter'));
-    typeBtn.addEventListener('click', () => setTool('type'));
-
-    colorInput.addEventListener('input', (e) => {
-      gtPaintColor = e.target.value;
-    });
-
-    sizeInput.addEventListener('input', (e) => {
-      gtPaintSize = parseInt(e.target.value, 10);
-      sizeDisplay.textContent = gtPaintSize;
-    });
-
-    fontSizeInput.addEventListener('input', (e) => {
-      gtPaintFontSize = parseInt(e.target.value, 10);
-      fontSizeDisplay.textContent = gtPaintFontSize;
-    });
-
-    fillBtn.addEventListener('click', () => {
-      saveGTPaintState();
-      ctx.fillStyle = gtPaintColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    });
-
-    undoBtn.addEventListener('click', () => {
-      restoreGTPaintState(gtPaintUndoStack, gtPaintRedoStack);
-    });
-
-    redoBtn.addEventListener('click', () => {
-      restoreRedoState();
-    });
-
-    clearBtn.addEventListener('click', () => {
-      saveGTPaintState();
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    });
-
-    downloadBtn.addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = 'gt-paint-artwork.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      startDrawing({
-        clientX: touch.clientX,
-        clientY: touch.clientY
-      });
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      const touch = e.touches[0];
-      draw({
-        clientX: touch.clientX,
-        clientY: touch.clientY
-      });
-    }, { passive: false });
-
-    window.addEventListener('touchend', stopDrawing);
-
-    window.addEventListener('keydown', (e) => {
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-      const mod = isMac ? e.metaKey : e.ctrlKey;
-
-      if (!mod) return;
-
-      if (e.key.toLowerCase() === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        restoreGTPaintState(gtPaintUndoStack, gtPaintRedoStack);
-      }
-
-      if ((e.key.toLowerCase() === 'y') || (e.key.toLowerCase() === 'z' && e.shiftKey)) {
-        e.preventDefault();
-        restoreRedoState();
-      }
-    });
-
-    setTool('pencil');
-    gtPaintInitialized = true;
-  }
-
-  document.getElementById('gtpaint-size-display').textContent = gtPaintSize;
-  document.getElementById('gtpaint-font-size-display').textContent = gtPaintFontSize;
-}
+// GT Paint (tools, canvas, undo/redo, zoom) now lives in gtpaint.js

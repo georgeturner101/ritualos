@@ -1,6 +1,16 @@
-/* =========================
+/* =========================================================
    BIRD ART — LIVING MORPH VERSION
-   ========================= */
+   =========================================================
+   Back on the original p5.js/2D-canvas foundation (the Three.js/GPU
+   rewrite made things worse, not better, on real hardware — reverted).
+   This pass: cleaned up organisation, tuned audio reactivity to be more
+   dramatic, added cheap visual richness (motion trail, per-bird ambient
+   glow), and layered in the full interaction model (drag, cursor
+   proximity, click shockwave, hold-gravity, scroll zoom, keyboard bird
+   switch) — all as small additions to the existing per-particle loop,
+   not new passes over the array, so none of it should cost meaningfully
+   more than the original already did.
+   ========================================================= */
 
 let N = 4200;
 let centerX, centerY, D;
@@ -30,6 +40,37 @@ let orbitBias, driftSeed;
 let soulSettings = {};
 let colorSettings = {};
 let pulseField = 0;
+
+/* =========================================================
+   INTERACTION STATE
+   Drag rotates the field (with inertia). A gentle cursor-proximity
+   repeller is always active. A quick click/tap fires a shockwave from
+   that point. Pressing and holding pulls particles toward the cursor
+   (gravity) instead. Scroll resizes the orb. Keys 1-7 jump straight to
+   a bird. None of this needs touch-specific handlers — p5 calls
+   mousePressed/mouseDragged/mouseReleased for touch automatically as
+   long as touchStarted/touchMoved/touchEnded aren't separately defined.
+   ========================================================= */
+
+let dragRotation = 0;      // accumulated rotation offset applied to every particle's angle
+let dragRotationVel = 0;   // inertia — decays each frame after release
+let pressStartTime = 0;
+let pressStartX = 0, pressStartY = 0;
+let isDraggingGesture = false;
+let holdActive = false;
+const DRAG_MOVE_THRESHOLD = 6;   // px of movement before a press counts as a drag, not a hold
+const HOLD_DELAY_MS = 220;       // press-and-still longer than this becomes a gravity hold
+
+let clickPulseX = 0, clickPulseY = 0, clickPulseStrength = 0;
+
+let zoomFactor = 1.0;
+const ZOOM_MIN = 0.55;
+const ZOOM_MAX = 1.9;
+
+const KEY_BIRD_MAP = {
+  '1': 'tui', '2': 'kaka', '3': 'korimako', '4': 'kokako',
+  '5': 'riroriro', '6': 'ruru', '7': 'tieke'
+};
 
 /* =========================
    P5 LIFECYCLE
@@ -73,7 +114,10 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+  // low-alpha fill instead of a hard clear — leaves a soft motion trail
+  // behind fast-moving particles. Same cost as a full clear, free
+  // visual richness.
+  background(0, 0, 0, 46);
 
   if (!started) {
     drawIdleGlow();
@@ -91,10 +135,12 @@ function draw() {
 
   const setA = soulSettings[currentBird] || soulSettings.tui;
   const setB = soulSettings[targetBird] || soulSettings.tui;
-  const set = blendProfiles(setA, setB, morphAmount);
+  const soul = blendProfiles(setA, setB, morphAmount);
 
   const colA = colorSettings[currentBird] || colorSettings.tui;
   const colB = colorSettings[targetBird] || colorSettings.tui;
+
+  drawAmbientGlow(colA, colB);
 
   const spec = fft.analyze();
 
@@ -102,8 +148,7 @@ function draw() {
   const mid = clamp(fft.getEnergy(160, 2000), 0, 255);
   const treble = clamp(fft.getEnergy(2000, 8000), 0, 255);
 
-  
-  const eq = set.focus;
+  const eq = soul.focus;
   const f1 = clamp(fft.getEnergy(eq[0].lo, eq[0].hi), 0, 255) * eq[0].w;
   const f2 = clamp(fft.getEnergy(eq[1].lo, eq[1].hi), 0, 255) * eq[1].w;
   const fDen = Math.max(eq[0].w + eq[1].w, 1e-6);
@@ -129,7 +174,9 @@ function draw() {
   const fluxNorm = flux / 800.0;
   const focusJump = Math.max(0, focusRaw - sFocus) * 0.8;
 
-  if (fluxNorm > 0.9 || (total - prevGlobal) > 16 || focusJump > 10) {
+  // more sensitive than before — every distinct syllable of a call
+  // should visibly fire, not just the loudest peaks
+  if (fluxNorm > 0.68 || (total - prevGlobal) > 11 || focusJump > 7) {
     onset = 1.0;
     pulseField = 1.0;
   }
@@ -139,14 +186,28 @@ function draw() {
 
   const reactGain = clamp(160 / (loudnessEMA + 10), 0.7, 2.2);
   const focusGate = smoothstep(0.16, 0.45, sFocus / 255);
-  const onsetBoost = 1.0 + onset * 0.65;
+  const onsetBoost = 1.0 + onset * 1.0; // was 0.65 — bigger swing per onset
 
   const B = pow2(map01(sBass) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.65) * onsetBoost;
   const M = pow2(map01(sMid) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.65) * onsetBoost;
-  const T = pow2(map01(sTreble) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.75) * (1.0 + onset * 0.85);
+  const T = pow2(map01(sTreble) * reactGain) * clamp(0.72 + 0.9 * focusGate, 0.72, 1.75) * (1.0 + onset * 1.2);
 
   t += 0.0045;
   thetaSpin += 0.0012 * (0.45 + 0.38 * map01(sMid) + 0.3 * map01(sTreble));
+
+  // drag inertia decays toward rest each frame
+  dragRotation += dragRotationVel;
+  dragRotationVel *= 0.92;
+
+  // a press that hasn't moved far but has been held past the threshold
+  // becomes a gravity hold, even without a fresh mouseDragged event
+  if (mouseIsPressed && started && !isDraggingGesture && !holdActive) {
+    if (millis() - pressStartTime > HOLD_DELAY_MS) {
+      holdActive = true;
+    }
+  }
+
+  clickPulseStrength *= 0.9;
 
   // phase evolution is continuous
   setA.phiB += setA.rotSpeed * 0.36;
@@ -159,29 +220,29 @@ function draw() {
   setB.phiT += setB.rotSpeed * 0.96;
   setB.phiV += setB.rotSpeed * setB.veinPhase;
 
-  set.phiB = lerp(setA.phiB, setB.phiB, morphAmount);
-  set.phiM = lerp(setA.phiM, setB.phiM, morphAmount);
-  set.phiT = lerp(setA.phiT, setB.phiT, morphAmount);
-  set.phiV = lerp(setA.phiV, setB.phiV, morphAmount);
+  soul.phiB = lerp(setA.phiB, setB.phiB, morphAmount);
+  soul.phiM = lerp(setA.phiM, setB.phiM, morphAmount);
+  soul.phiT = lerp(setA.phiT, setB.phiT, morphAmount);
+  soul.phiV = lerp(setA.phiV, setB.phiV, morphAmount);
 
-  const R0 = D * (0.29 + 0.15 * B * set.bassInflate) * (1.0 + onset * 0.12 * focusGate);
+  const R0 = D * (0.29 + 0.15 * B * soul.bassInflate) * (1.0 + onset * 0.16 * focusGate) * zoomFactor;
 
   // thicker body, less surface sticking
-  const band = Math.max(D * 0.30, (D * 0.16) + M * (D * 0.20));
+  const band = (Math.max(D * 0.30, (D * 0.16) + M * (D * 0.20))) * zoomFactor;
 
-  const kSpring = set.spring * 0.86;
-  const twirlK = set.twirl * (0.32 + 1.2 * M);
-  const waveK = set.wave * (0.16 + 1.0 * B);
-  const swirlK = 0.52 + set.swirl * 0.95;
-  const flareK = (sTreble > 55 ? (T * set.trebleFlare * 0.85 * focusGate) : 0);
-  const chaosK = ((globalEnergy > 210 ? set.chaos : 0) + onset * set.chaos * 0.45) * 0.62 * focusGate;
-  const stretchK = set.stretchGain * (0.18 + 0.85 * T);
+  const kSpring = soul.spring * 0.86;
+  const twirlK = soul.twirl * (0.32 + 1.2 * M);
+  const waveK = soul.wave * (0.16 + 1.0 * B);
+  const swirlK = 0.52 + soul.swirl * 0.95;
+  const flareK = (sTreble > 55 ? (T * soul.trebleFlare * 0.85 * focusGate) : 0);
+  const chaosK = ((globalEnergy > 210 ? soul.chaos : 0) + onset * soul.chaos * 0.6) * 0.62 * focusGate;
+  const stretchK = soul.stretchGain * (0.18 + 0.85 * T);
 
-  const RMIN = D * 0.16;
-  const RMAX = D * 0.47;
+  const RMIN = D * 0.16 * zoomFactor;
+  const RMAX = D * 0.47 * zoomFactor;
 
-  const brightnessBase = 132 + map01(globalEnergy) * 165 + onset * 70;
-  const sizeBase = 1.0 + map01(globalEnergy) * 1.45 + onset * 0.45;
+  const brightnessBase = 132 + map01(globalEnergy) * 165 + onset * 90;
+  const sizeBase = 1.0 + map01(globalEnergy) * 1.45 + onset * 0.55;
 
   const maxDepth = band * 0.85 + R0 * 0.44;
 
@@ -203,22 +264,22 @@ function draw() {
 
     let theta = Math.atan2(dy, dx);
     const phiOff = (nOX[i] * 0.1234567) % 1 * TWO_PI;
-    const th = theta + thetaSpin + 0.4 * phiOff;
+    const th = theta + thetaSpin + dragRotation + 0.4 * phiOff;
 
     // smoother geometry - less hard snapping
-    const bloom = set.ampB * 0.62 * B * Math.cos(set.petB * th + set.phiB);
-    const ripple = set.ampM * 0.72 * M * Math.cos(set.petM * th + set.phiM);
-    const spike = set.ampT * 0.55 * T * Math.cos(set.petT * th + set.phiT);
-    const fold = set.foldAmt * 0.55 * Math.cos(2 * th + set.phiM * 0.5) * (0.22 + 0.65 * M);
-    const harm2 = set.geomH2 * 0.45 * M * Math.cos((set.petM * 2) * th + set.phiM * 0.7);
-    const harm4 = set.geomH4 * 0.32 * T * Math.cos(4.0 * th + set.phiT * 0.9);
+    const bloom = soul.ampB * 0.62 * B * Math.cos(soul.petB * th + soul.phiB);
+    const ripple = soul.ampM * 0.72 * M * Math.cos(soul.petM * th + soul.phiM);
+    const spike = soul.ampT * 0.55 * T * Math.cos(soul.petT * th + soul.phiT);
+    const fold = soul.foldAmt * 0.55 * Math.cos(2 * th + soul.phiM * 0.5) * (0.22 + 0.65 * M);
+    const harm2 = soul.geomH2 * 0.45 * M * Math.cos((soul.petM * 2) * th + soul.phiM * 0.7);
+    const harm4 = soul.geomH4 * 0.32 * T * Math.cos(4.0 * th + soul.phiT * 0.9);
     const Rsurf = R0 + bloom + ripple + spike + fold + harm2 + harm4;
 
     let veinRad = 0;
     let veinTan = 0;
-    const K = Math.max(3, set.veins | 0);
-    const sharp = set.veinSharp;
-    const phase = set.phiV;
+    const K = Math.max(3, soul.veins | 0);
+    const sharp = soul.veinSharp;
+    const phase = soul.phiV;
     const baseK = TWO_PI / K;
 
     for (let k = 0; k < K; k++) {
@@ -253,7 +314,7 @@ function draw() {
     }
 
     zVel[i] = clampMag(zVel[i] + zAcc[i], 4.6);
-    zVel[i] *= set.drag;
+    zVel[i] *= soul.drag;
     zPos[i] += zVel[i];
 
     const zLimit = RMAX * 0.95;
@@ -278,11 +339,11 @@ function draw() {
     const tx = -uy;
     const ty = ux;
 
-    const wave = waveK * Math.sin(set.petM * th + t * 1.8 + nOX[i] * 0.01);
+    const wave = waveK * Math.sin(soul.petM * th + t * 1.8 + nOX[i] * 0.01);
     const angDiff = (noise(nOX[i] * 0.82 + t * 0.55, nOY[i] * 0.76 - t * 0.42) - 0.5) * (0.28 + 0.75 * M);
 
-    const veinTanK = (0.7 + 1.4 * M) * set.veinTanGain;
-    const veinRadK = (0.22 + 0.65 * B) * set.veinRadGain;
+    const veinTanK = (0.7 + 1.4 * M) * soul.veinTanGain;
+    const veinRadK = (0.22 + 0.65 * B) * soul.veinRadGain;
 
     // stronger orbital travel around the orb
     const orbitalFlow = orbitBias[i] * (0.55 + 1.4 * M + 0.55 * T);
@@ -295,23 +356,23 @@ function draw() {
     accY[i] += uy * (veinRad * veinRadK);
 
     const dR_dTheta =
-      -set.ampB * 0.62 * B * set.petB * Math.sin(set.petB * th + set.phiB) +
-      -set.ampM * 0.72 * M * set.petM * Math.sin(set.petM * th + set.phiM) +
-      -set.ampT * 0.55 * T * set.petT * Math.sin(set.petT * th + set.phiT) +
-      -2.0 * set.foldAmt * 0.55 * Math.sin(2 * th + set.phiM * 0.5) * (0.22 + 0.65 * M);
+      -soul.ampB * 0.62 * B * soul.petB * Math.sin(soul.petB * th + soul.phiB) +
+      -soul.ampM * 0.72 * M * soul.petM * Math.sin(soul.petM * th + soul.phiM) +
+      -soul.ampT * 0.55 * T * soul.petT * Math.sin(soul.petT * th + soul.phiT) +
+      -2.0 * soul.foldAmt * 0.55 * Math.sin(2 * th + soul.phiM * 0.5) * (0.22 + 0.65 * M);
 
-    accX[i] += tx * dR_dTheta * (set.tangentGain * 0.009);
-    accY[i] += ty * dR_dTheta * (set.tangentGain * 0.009);
+    accX[i] += tx * dR_dTheta * (soul.tangentGain * 0.009);
+    accY[i] += ty * dR_dTheta * (soul.tangentGain * 0.009);
 
     const c = curlNoise(nOX[i] * 0.012 + t * 0.26, nOY[i] * 0.012 - t * 0.22);
     accX[i] += c.x * (0.55 + 1.2 * (0.5 * M + 0.5 * T));
     accY[i] += c.y * (0.55 + 1.2 * (0.5 * M + 0.5 * T));
 
-    accX[i] += ux * stretchK * 0.30 * Math.cos(set.petT * th + set.phiT);
-    accY[i] += uy * stretchK * 0.30 * Math.cos(set.petT * th + set.phiT);
+    accX[i] += ux * stretchK * 0.30 * Math.cos(soul.petT * th + soul.phiT);
+    accY[i] += uy * stretchK * 0.30 * Math.cos(soul.petT * th + soul.phiT);
 
-    accX[i] += ux * (B * set.bassBreath * 0.34);
-    accY[i] += uy * (B * set.bassBreath * 0.34);
+    accX[i] += ux * (B * soul.bassBreath * 0.34);
+    accY[i] += uy * (B * soul.bassBreath * 0.34);
 
     if (flareK > 0 && (i & 31) === 0) {
       const ra = (phiOff + t * 6.2) % TWO_PI;
@@ -325,9 +386,49 @@ function draw() {
       accY[i] += Math.sin(ra) * chaosK * 0.46;
     }
 
-    const pulseWave = pulseField * 12 * Math.sin((r * 0.02) - t * 8.4 + phiOff);
-    accX[i] += ux * pulseWave * 0.03;
-    accY[i] += uy * pulseWave * 0.03;
+    // audio-onset shockwave — a ring pulse from the orb's own centre,
+    // one per detected syllable
+    const pulseWave = pulseField * 16 * Math.sin((r * 0.02) - t * 8.4 + phiOff);
+    accX[i] += ux * pulseWave * 0.04;
+    accY[i] += uy * pulseWave * 0.04;
+
+    // click/tap shockwave — same idea, but from wherever the user
+    // pressed rather than the orb's centre
+    if (clickPulseStrength > 0.01) {
+      const cdx = posX[i] - clickPulseX;
+      const cdy = posY[i] - clickPulseY;
+      const cr = Math.hypot(cdx, cdy) + 1e-6;
+      const cux = cdx / cr;
+      const cuy = cdy / cr;
+      const ring = Math.exp(-cr / (D * 0.4)) * clickPulseStrength;
+      accX[i] += cux * ring * 22;
+      accY[i] += cuy * ring * 22;
+    }
+
+    // gentle cursor-proximity repeller — always active once started,
+    // independent of click/hold, so the field visibly parts around the
+    // cursor as it passes nearby
+    if (started) {
+      const mdx = posX[i] - mouseX;
+      const mdy = posY[i] - mouseY;
+      const mr = Math.hypot(mdx, mdy) + 1e-6;
+      const proxRange = D * 0.42;
+      if (mr < proxRange) {
+        const influence = 1 - mr / proxRange;
+        accX[i] += (mdx / mr) * influence * influence * 0.55;
+        accY[i] += (mdy / mr) * influence * influence * 0.55;
+      }
+    }
+
+    // hold-to-gather — press and hold (without dragging) pulls the
+    // whole field toward the cursor; released, it springs back
+    if (holdActive) {
+      const hdx = mouseX - posX[i];
+      const hdy = mouseY - posY[i];
+      const hr = Math.hypot(hdx, hdy) + 1e-6;
+      accX[i] += (hdx / hr) * 1.7;
+      accY[i] += (hdy / hr) * 1.7;
+    }
 
     // softer containment so less shell-sticking
     if (r > RMAX) {
@@ -350,8 +451,8 @@ function draw() {
 
     velX[i] = clampMag(velX[i] + accX[i], 5.7);
     velY[i] = clampMag(velY[i] + accY[i], 5.7);
-    velX[i] *= set.drag;
-    velY[i] *= set.drag;
+    velX[i] *= soul.drag;
+    velY[i] *= soul.drag;
     posX[i] += velX[i];
     posY[i] += velY[i];
 
@@ -370,7 +471,7 @@ function draw() {
     let gCol = lerp(gColA, gColB, morphAmount);
     let bCol = lerp(bColA, bColB, morphAmount);
 
-    if (set.colorFlicker && sMid > 160 && (i & 31) === 0) {
+    if (soul.colorFlicker && sMid > 160 && (i & 31) === 0) {
       flicker[i] = 0.4 + Math.random() * 0.6;
     }
 
@@ -381,12 +482,12 @@ function draw() {
     const frontBoost = 0.82 + 0.36 * (zNorm * 0.5 + 0.5);
     const interiorBoost = 0.96 + 0.16 * (1.0 - rFrac[i]);
 
-    const hotBoost = onset * 0.34 + T * 0.18;
-    const rr = lerp(rCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.12) * frontBoost * interiorBoost;
-    const gg = lerp(gCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.10) * frontBoost * interiorBoost;
-    const bb = lerp(bCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.14) * frontBoost * interiorBoost;
+    const hotBoost = onset * 0.42 + T * 0.22;
+    const rr = lerp(rCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.14) * frontBoost * interiorBoost;
+    const gg = lerp(gCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.12) * frontBoost * interiorBoost;
+    const bb = lerp(bCol, 255, (flicker[i] - 0.5) * 0.58 + hotBoost * 0.16) * frontBoost * interiorBoost;
 
-    const highlightBoost = 1.0 + onset * 0.42 + T * 0.22;
+    const highlightBoost = 1.0 + onset * 0.55 + T * 0.26;
     const brightness = brightnessBase * (0.88 + 0.24 * (zNorm * 0.5 + 0.5)) * interiorBoost * highlightBoost;
 
     const sz =
@@ -394,7 +495,7 @@ function draw() {
       sizeBase *
       (0.88 + 0.26 * (zNorm * 0.5 + 0.5)) *
       (0.97 + 0.08 * (1.0 - rFrac[i])) *
-      (1.0 + onset * 0.22);
+      (1.0 + onset * 0.28);
 
     fill(clamp(rr, 0, 255), clamp(gg, 0, 255), clamp(bb, 0, 255), brightness);
     ellipse(posX[i], posY[i], sz, sz);
@@ -402,10 +503,14 @@ function draw() {
 
   blendMode(BLEND);
 
-  if (frameCount % 180 === 0) {
+  if (frameCount % 120 === 0) {
     autoTunePerformance();
   }
 }
+
+/* =========================
+   POINTER / TOUCH / KEYBOARD INTERACTION
+   ========================= */
 
 function mousePressed() {
   if (!started) {
@@ -413,6 +518,62 @@ function mousePressed() {
     const panel = document.getElementById('start-panel');
     if (panel) panel.classList.add('hidden');
     playBirdSound(currentBird);
+    return;
+  }
+
+  pressStartTime = millis();
+  pressStartX = mouseX;
+  pressStartY = mouseY;
+  isDraggingGesture = false;
+  holdActive = false;
+}
+
+function mouseDragged() {
+  if (!started) return;
+
+  const totalMove = dist(mouseX, mouseY, pressStartX, pressStartY);
+  if (totalMove > DRAG_MOVE_THRESHOLD) {
+    isDraggingGesture = true;
+    holdActive = false;
+    const dxMove = mouseX - pmouseX;
+    dragRotation += dxMove * 0.006;
+    dragRotationVel = dxMove * 0.006;
+  }
+}
+
+function mouseReleased() {
+  if (!started) return;
+
+  const heldDuration = millis() - pressStartTime;
+  if (!isDraggingGesture && !holdActive && heldDuration < HOLD_DELAY_MS) {
+    fireClickPulse(mouseX, mouseY);
+  }
+  isDraggingGesture = false;
+  holdActive = false;
+}
+
+function fireClickPulse(x, y) {
+  clickPulseX = x;
+  clickPulseY = y;
+  clickPulseStrength = 1.0;
+}
+
+function mouseWheel(event) {
+  if (!started) return false;
+  zoomFactor = constrain(zoomFactor - event.delta * 0.0007, ZOOM_MIN, ZOOM_MAX);
+  return false; // prevent page scroll
+}
+
+function keyPressed() {
+  const bird = KEY_BIRD_MAP[key];
+  if (!bird) return;
+
+  const select = document.getElementById('birdSelect');
+  if (select) select.value = bird;
+  targetBird = bird;
+
+  if (started) {
+    playBirdSound(bird);
   }
 }
 
@@ -435,12 +596,18 @@ function playBirdSound(name) {
   } catch (e) {}
 
   try {
-    birdSound = loadSound(
+    // capture this specific SoundFile so the load callback can check it's
+    // still the current one — if the user switches birds again before
+    // this mp3 finishes loading, the stale callback bails out instead of
+    // calling .loop() on a buffer that isn't ready ("not ready to play
+    // file" errors from rapid bird-switching, fixed here)
+    const sound = loadSound(
       `audio/${name}.mp3`,
       () => {
+        if (birdSound !== sound) return;
         try {
-          birdSound.loop();
-          fft.setInput(birdSound);
+          sound.loop();
+          fft.setInput(sound);
         } catch (e) {
           console.error(e);
         }
@@ -449,6 +616,7 @@ function playBirdSound(name) {
         console.error(`Failed to load audio/${name}.mp3`, e);
       }
     );
+    birdSound = sound;
   } catch (e) {
     console.error('Audio load exception:', e);
   }
@@ -552,6 +720,28 @@ function drawIdleGlow() {
 
   fill(255, 255, 255, 6);
   ellipse(centerX, centerY, D * 0.38, D * 0.38);
+}
+
+// A single cheap radial gradient wash behind the particles, tinted by
+// whichever bird(s) are active — uses the canvas 2D context directly
+// (one gradient fill per frame) rather than extra particles, so it adds
+// real atmosphere for effectively free.
+function drawAmbientGlow(colA, colB) {
+  const ctx = drawingContext;
+  const rGlow = D * 0.62;
+
+  const mixR = lerp(red(colA.start), red(colB.start), morphAmount);
+  const mixG = lerp(green(colA.start), green(colB.start), morphAmount);
+  const mixB = lerp(blue(colA.start), blue(colB.start), morphAmount);
+
+  const grad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, rGlow);
+  grad.addColorStop(0, `rgba(${mixR}, ${mixG}, ${mixB}, 0.10)`);
+  grad.addColorStop(1, `rgba(${mixR}, ${mixG}, ${mixB}, 0)`);
+
+  ctx.save();
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, width, height);
+  ctx.restore();
 }
 
 function autoTunePerformance() {
@@ -858,7 +1048,6 @@ function wrapPI(a) {
   return a;
 }
 
-
 function softRecenter(alpha) {
   let cx = 0, cy = 0;
   for (let i = 0; i < N; i++) {
@@ -878,7 +1067,6 @@ function softRecenter(alpha) {
     }
   }
 }
-
 
 function curlNoise(x, y) {
   const e = 0.01;
